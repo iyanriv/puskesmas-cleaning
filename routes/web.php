@@ -58,6 +58,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/detail', [CeklisKebersihanController::class, 'detail'])->name('detail');
     });
 
+    // Penilaian ceklis oleh supervisor (FR-029)
+    Route::middleware('peran:supervisor,pj_lantai,admin')->prefix('ceklis')->name('ceklis.')->group(function () {
+        Route::patch('/{id}/nilai', [CeklisKebersihanController::class, 'nilaiCeklis'])->name('nilai');
+    });
+
     // =============================================
     // MODUL 2: OPERAN SHIFT (CS + PJ Lantai)
     // =============================================
@@ -95,9 +100,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/sampah/simpan', [SetoranSampahController::class, 'simpan'])->name('sampah.simpan');
     });
 
-    // Sisi Supervisor/Admin: Rekapan
+    // Sisi Supervisor/Admin: Rekapan & Validasi
     Route::middleware('peran:supervisor,pj_lantai,admin')->group(function () {
         Route::get('/sampah/rekapan', [SetoranSampahController::class, 'rekapan'])->name('sampah.rekapan');
+        Route::patch('/sampah/{id}/validasi', [SetoranSampahController::class, 'validasi'])->name('sampah.validasi');
+        Route::patch('/sampah/{id}/tolak', [SetoranSampahController::class, 'tolak'])->name('sampah.tolak');
     });
 
     // =============================================
@@ -112,11 +119,14 @@ Route::middleware('auth')->group(function () {
     });
 
     // =============================================
-    // MODUL LAPORAN
+    // MODUL LAPORAN (FR-034 s/d FR-037)
+    // Hanya supervisor, pj_lantai, dan admin
     // =============================================
-    Route::get('/laporan', [App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('/laporan/cetak-pdf', [App\Http\Controllers\LaporanController::class, 'cetakPdf'])->name('laporan.cetak-pdf');
-    Route::get('/laporan/cetak-excel', [App\Http\Controllers\LaporanController::class, 'cetakExcel'])->name('laporan.cetak-excel');
+    Route::middleware('peran:supervisor,pj_lantai,admin')->group(function () {
+        Route::get('/laporan', [App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/cetak-pdf', [App\Http\Controllers\LaporanController::class, 'cetakPdf'])->name('laporan.cetak-pdf');
+        Route::get('/laporan/cetak-excel', [App\Http\Controllers\LaporanController::class, 'cetakExcel'])->name('laporan.cetak-excel');
+    });
 
     // =============================================
     // MODUL ADMIN: CRUD MASTER DATA

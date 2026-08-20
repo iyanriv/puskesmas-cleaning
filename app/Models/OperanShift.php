@@ -16,12 +16,14 @@ class OperanShift extends Model
         'waktu',
         'tempat_tugas',
         'waktu_jaga',
+        'status_alat',    // JSON: array kondisi peralatan (FR-015)
         'catatan',
         'status_terima',
     ];
 
     protected $casts = [
-        'tanggal' => 'date',
+        'tanggal'     => 'date',
+        'status_alat' => 'array',   // otomatis encode/decode JSON
     ];
 
     public function pengirim(): BelongsTo

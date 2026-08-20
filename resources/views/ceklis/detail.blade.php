@@ -61,6 +61,35 @@
         font-size: 1rem; font-weight: 600;
         box-shadow: 0 4px 15px rgba(18,166,90,0.3);
     }
+    /* Form penilaian supervisor */
+    .nilai-card {
+        background: white; border-radius: 16px;
+        padding: 1.1rem 1.2rem; margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 2px solid #fef3c7;
+    }
+    .nilai-card h6 { font-weight: 700; font-size: 0.9rem; color: #92400e; margin-bottom: 0.75rem; }
+    .star-rating { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-direction: row-reverse; justify-content: flex-end; }
+    .star-rating input { display: none; }
+    .star-rating label {
+        font-size: 2rem; color: #d1d5db; cursor: pointer;
+        transition: color 0.15s; line-height: 1;
+    }
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label { color: #f59e0b; }
+    .alert-sukses-sm {
+        background: #d1fae5; color: #065f46; border: none;
+        border-radius: 12px; padding: 0.65rem 0.9rem;
+        font-size: 0.8rem; margin-bottom: 0.75rem;
+        display: flex; align-items: center; gap: 0.4rem;
+    }
+    .alert-gagal-sm {
+        background: #fee2e2; color: #991b1b; border: none;
+        border-radius: 12px; padding: 0.65rem 0.9rem;
+        font-size: 0.8rem; margin-bottom: 0.75rem;
+        display: flex; align-items: center; gap: 0.4rem;
+    }
     @media (min-width: 992px) { .content-area { max-width: 700px; margin: 0 auto; } }
 </style>
 
@@ -78,6 +107,18 @@
     </div>
 
     <div class="content-area">
+
+        {{-- Alert sukses/gagal (dari form penilaian) --}}
+        @if(session('sukses'))
+            <div class="alert-sukses-sm mb-3">
+                <i class="bi bi-check-circle-fill"></i> {{ session('sukses') }}
+            </div>
+        @endif
+        @if(session('gagal'))
+            <div class="alert-gagal-sm mb-3">
+                <i class="bi bi-x-circle-fill"></i> {{ session('gagal') }}
+            </div>
+        @endif
 
         {{-- Foto Before & After --}}
         <div class="foto-pair">
@@ -146,6 +187,43 @@
         <a href="{{ route('ceklis.index') }}" class="btn btn-kembali text-decoration-none d-block text-center">
             <i class="bi bi-arrow-left me-2"></i> Kembali ke Daftar Area
         </a>
+
+        {{-- ===== FORM PENILAIAN SUPERVISOR (FR-029) ===== --}}
+        @if(in_array(auth()->user()->peran?->nama_peran, ['supervisor', 'pj_lantai', 'admin']) && $ceklis->status === 'selesai')
+            <div class="nilai-card mt-3">
+                <h6><i class="bi bi-star-fill me-1 text-warning"></i> Nilai Ceklis Ini</h6>
+
+                <form action="{{ route('ceklis.nilai', $ceklis->id) }}" method="POST">
+                    @csrf @method('PATCH')
+
+                    {{-- Bintang --}}
+                    <div class="mb-2" style="font-size:0.8rem; color:#92400e; font-weight:600;">
+                        Skor Kebersihan (1–5 Bintang)
+                    </div>
+                    <div class="star-rating mb-1">
+                        @for($i = 5; $i >= 1; $i--)
+                            <input type="radio" name="skor" id="star{{ $i }}" value="{{ $i }}"
+                                {{ old('skor', $ceklis->skor) == $i ? 'checked' : '' }}>
+                            <label for="star{{ $i }}">★</label>
+                        @endfor
+                    </div>
+                    @error('skor')
+                        <div class="text-danger mb-2" style="font-size:0.75rem;">{{ $message }}</div>
+                    @enderror
+
+                    {{-- Catatan --}}
+                    <textarea name="catatan" class="form-control mb-3" rows="2"
+                        style="border-radius:12px; border:1.5px solid #e5e7eb; font-size:0.83rem; resize:none;"
+                        placeholder="Catatan evaluasi (opsional)...">{{ old('catatan', $ceklis->catatan) }}</textarea>
+
+                    <button type="submit" class="btn w-100 fw-bold"
+                        style="background:#f59e0b; color:white; border-radius:14px; padding:0.75rem; font-size:0.9rem;">
+                        <i class="bi bi-star-fill me-1"></i>
+                        {{ $ceklis->skor ? 'Perbarui Penilaian' : 'Simpan Penilaian' }}
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 </div>
 @endsection

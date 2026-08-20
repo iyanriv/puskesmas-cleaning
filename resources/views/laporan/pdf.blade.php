@@ -85,8 +85,8 @@
         <tr>
             <th>Permintaan Barang Disetujui</th>
             <td class="text-right">{{ $permintaanDisetujui }} dari {{ $totalPermintaan }}</td>
-            <th>Total Setoran Sampah</th>
-            <td class="text-right">{{ number_format($totalKgSampah, 1) }} kg ({{ $totalSetoran }} kali)</td>
+            <th>Total Laporan Sampah</th>
+            <td class="text-right">{{ $totalSetoran }} laporan</td>
         </tr>
         <tr>
             <th>Rata-rata Kinerja Petugas</th>

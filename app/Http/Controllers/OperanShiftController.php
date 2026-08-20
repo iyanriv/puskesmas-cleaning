@@ -8,6 +8,18 @@ use Illuminate\Http\Request;
 
 class OperanShiftController extends Controller
 {
+    // Daftar peralatan kebersihan yang dicek kondisinya (FR-015)
+    const DAFTAR_ALAT = [
+        'Sapu'          => 'bi-brush',
+        'Pel'           => 'bi-droplet-half',
+        'Ember'         => 'bi-bucket',
+        'Kain Lap'      => 'bi-moisture',
+        'Toilet Brush'  => 'bi-stars',
+        'Serok Sampah'  => 'bi-trash',
+        'Tangga'        => 'bi-ladder',
+        'Mesin Poles'   => 'bi-gear-fill',
+    ];
+
     /**
      * Tampilkan halaman utama operan shift:
      * - Form kirim operan
@@ -24,6 +36,9 @@ class OperanShiftController extends Controller
             ->where('id', '!=', $pengguna->id)
             ->orderBy('name')
             ->get();
+
+        // Daftar alat untuk form (FR-015)
+        $daftarAlat = self::DAFTAR_ALAT;
 
         // Operan MASUK yang belum diterima (penerima = user login)
         $operanMasuk = OperanShift::with('pengirim')
@@ -50,6 +65,7 @@ class OperanShiftController extends Controller
         return view('operan.index', compact(
             'pengguna',
             'daftarPenerima',
+            'daftarAlat',
             'operanMasuk',
             'operanDikirim',
             'operanDiterima'
@@ -66,6 +82,7 @@ class OperanShiftController extends Controller
             'tempat_tugas' => 'required|string',
             'waktu_jaga'   => 'required|string',
             'catatan'      => 'required|string|max:1000',
+            'status_alat'  => 'nullable|array',   // FR-015: array kondisi peralatan
         ], [
             'penerima_id.required' => 'Pilih rekan penerima operan.',
             'penerima_id.exists'   => 'Penerima tidak ditemukan.',
@@ -93,6 +110,7 @@ class OperanShiftController extends Controller
             'waktu'        => now()->format('H:i:s'),
             'tempat_tugas' => $request->tempat_tugas,
             'waktu_jaga'   => $request->waktu_jaga,
+            'status_alat'  => $request->status_alat ?? [],   // FR-015
             'catatan'      => $request->catatan,
             'status_terima'=> 'menunggu',
         ]);

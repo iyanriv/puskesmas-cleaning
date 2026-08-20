@@ -143,6 +143,7 @@
             font-size: 0.7rem; font-weight: 500;
             padding: 0.4rem 0; border-radius: 12px;
             transition: all 0.2s ease;
+            position: relative;
         }
         .bottom-nav .nav-item.active { color: #12a65a; background-color: #e8f6ef; }
         .bottom-nav .nav-item i { font-size: 1.3rem; margin-bottom: 0.2rem; }
@@ -317,8 +318,20 @@
                     <a href="{{ route('ceklis.index') }}" class="nav-item {{ request()->is('ceklis*') ? 'active' : '' }}">
                         <i class="bi bi-card-checklist"></i><span>Ceklis</span>
                     </a>
-                    <a href="{{ route('operan.index') }}" class="nav-item {{ request()->is('operan*') ? 'active' : '' }}">
-                        <i class="bi bi-arrow-left-right"></i><span>Operan</span>
+                    <a href="{{ route('operan.index') }}" class="nav-item {{ request()->is('operan*') ? 'active' : '' }}" style="position:relative;">
+                        <i class="bi bi-arrow-left-right"></i>
+                        @php
+                            $jumlahOperanNav = \App\Models\OperanShift::where('penerima_id', auth()->id())
+                                ->where('status_terima', 'menunggu')->count();
+                        @endphp
+                        @if($jumlahOperanNav > 0)
+                            <span style="position:absolute;top:4px;right:10px;background:#ef4444;color:white;
+                                         font-size:0.6rem;font-weight:700;width:16px;height:16px;border-radius:50%;
+                                         display:flex;align-items:center;justify-content:center;line-height:1;">
+                                {{ $jumlahOperanNav }}
+                            </span>
+                        @endif
+                        <span>Operan</span>
                     </a>
                     <a href="{{ route('barang.katalog') }}" class="nav-item {{ request()->is('barang*') ? 'active' : '' }}">
                         <i class="bi bi-box-seam"></i><span>Barang</span>

@@ -37,10 +37,6 @@
 
     .activity-section { padding: 1.5rem; }
 
-    @media (min-width: 992px) {
-        .activity-section { padding: 1.5rem 3rem; }
-    }
-
     .activity-card {
         background-color: white;
         border-radius: 16px;
@@ -57,8 +53,14 @@
     .dot-hijau { background-color: #12a65a; }
     .dot-kuning { background-color: #f5b041; }
 
-    /* Desktop: grid menu 2 kolom */
+    @keyframes pulse {
+        0%, 100% { opacity: 1; } 50% { opacity: 0.55; }
+    }
+
+    /* Desktop: grid menu & aktivitas */
     @media (min-width: 992px) {
+        .activity-section { padding: 1.5rem 3rem; }
+
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -68,7 +70,6 @@
             border: 1px solid #f0f0f0;
             border-radius: 16px;
             padding: 1.25rem;
-            border-bottom: 1px solid #f0f0f0;
         }
         .menu-grid .menu-item:hover {
             border-color: #12a65a;
@@ -127,13 +128,18 @@
                 </div>
                 <i class="bi bi-chevron-right text-secondary"></i>
             </a>
-            <a href="{{ route('operan.index') }}" class="menu-item">
+            <a href="{{ route('operan.index') }}" class="menu-item" style="position:relative;">
                 <div class="icon-circle"><i class="bi bi-arrow-left-right"></i></div>
                 <div class="flex-grow-1">
                     <h6 class="fw-bold mb-0 text-dark">Operan Shift</h6>
                     <small class="text-secondary">Koordinasi pergantian shift</small>
                 </div>
-                <i class="bi bi-chevron-right text-secondary"></i>
+                @if($operanMenunggu->count() > 0)
+                    <span class="badge rounded-pill bg-danger" style="font-size:0.68rem;">
+                        {{ $operanMenunggu->count() }}
+                    </span>
+                @endif
+                <i class="bi bi-chevron-right text-secondary ms-1"></i>
             </a>
             <a href="{{ route('barang.katalog') }}" class="menu-item">
                 <div class="icon-circle"><i class="bi bi-box-seam"></i></div>
@@ -153,6 +159,33 @@
             </a>
         </div>
     </div>
+
+    {{-- FR-017: Notifikasi operan masuk — muncul di dasbor jika ada operan menunggu --}}
+    @if($operanMenunggu->count() > 0)
+    <div style="padding: 0 1.25rem; margin-top: 0.75rem;">
+        @foreach($operanMenunggu as $op)
+        <a href="{{ route('operan.index') }}" class="d-flex align-items-center gap-3 text-decoration-none mb-2"
+           style="background:#fff8e1; border:1.5px solid #fbbf24; border-radius:16px; padding:0.85rem 1rem;">
+            <div style="width:40px;height:40px;border-radius:50%;background:#fef3c7;color:#d97706;
+                        display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">
+                <i class="bi bi-bell-fill"></i>
+            </div>
+            <div class="flex-grow-1">
+                <div class="fw-bold text-dark" style="font-size:0.88rem;">
+                    Operan dari {{ $op->pengirim->name }}
+                </div>
+                <div class="text-secondary" style="font-size:0.75rem;">
+                    Tap untuk melihat & konfirmasi penerimaan
+                </div>
+            </div>
+            <span style="background:#fbbf24;color:white;font-size:0.68rem;font-weight:700;
+                         padding:3px 8px;border-radius:20px;animation:pulse 1.5s infinite;flex-shrink:0;">
+                BARU
+            </span>
+        </a>
+        @endforeach
+    </div>
+    @endif
 
     <div class="activity-section">
         <h5 class="fw-bold text-dark mb-3">Aktivitas Terakhir</h5>

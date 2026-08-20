@@ -163,4 +163,33 @@ class CeklisKebersihanController extends Controller
 
         return view('ceklis.detail', compact('ceklis'));
     }
+
+    /**
+     * Supervisor memberikan skor & catatan pada ceklis (FR-029).
+     */
+    public function nilaiCeklis(Request $request, $id)
+    {
+        $request->validate([
+            'skor'    => 'required|integer|min:1|max:5',
+            'catatan' => 'nullable|string|max:500',
+        ], [
+            'skor.required' => 'Pilih skor penilaian (1–5 bintang).',
+            'skor.min'      => 'Skor minimal 1.',
+            'skor.max'      => 'Skor maksimal 5.',
+        ]);
+
+        $ceklis = CeklisKebersihan::findOrFail($id);
+
+        // Hanya ceklis yang sudah selesai bisa dinilai
+        if ($ceklis->status !== 'selesai') {
+            return back()->with('gagal', 'Hanya ceklis yang sudah selesai yang dapat dinilai.');
+        }
+
+        $ceklis->update([
+            'skor'    => $request->skor,
+            'catatan' => $request->catatan,
+        ]);
+
+        return back()->with('sukses', 'Penilaian ceklis berhasil disimpan! ⭐');
+    }
 }

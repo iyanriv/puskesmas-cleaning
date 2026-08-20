@@ -96,7 +96,7 @@ class SetoranSampahController extends Controller
     }
 
     // ================================================================
-    // SISI SUPERVISOR: Rekapan
+    // SISI SUPERVISOR: Rekapan & Validasi
     // ================================================================
 
     /**
@@ -147,6 +147,10 @@ class SetoranSampahController extends Controller
         // Total setoran keseluruhan
         $totalSetoran = $semuaSetoran->count();
 
+        // Statistik validasi
+        $totalValid    = $semuaSetoran->where('status_validasi', 'valid')->count();
+        $totalMenunggu = $semuaSetoran->whereIn('status_validasi', ['menunggu', null])->count();
+
         // Rekap per petugas
         $rekapPertugas = $semuaSetoran->groupBy('user_id')->map(function ($group) {
             return [
@@ -160,7 +164,54 @@ class SetoranSampahController extends Controller
 
         return view('sampah.rekapan', compact(
             'semuaSetoran', 'rekapJenis', 'totalSetoran',
+            'totalValid', 'totalMenunggu',
             'rekapPertugas', 'filter', 'bulan', 'judul', 'daftarBulan'
         ));
+    }
+
+    /**
+     * Supervisor memvalidasi setoran sampah (FR-027).
+     */
+    public function validasi($id)
+    {
+        $setoran = SetoranSampah::findOrFail($id);
+
+        if ($setoran->status_validasi !== 'menunggu') {
+            return back()->with('info', 'Setoran ini sudah divalidasi sebelumnya.');
+        }
+
+        $setoran->update([
+            'status_validasi' => 'valid',
+            'validator_id'    => auth()->id(),
+            'catatan_validasi' => null,
+        ]);
+
+        return back()->with('sukses', 'Setoran sampah dari ' . $setoran->pengguna->name . ' berhasil divalidasi! ✅');
+    }
+
+    /**
+     * Supervisor menolak setoran sampah dengan catatan (FR-027).
+     */
+    public function tolak(Request $request, $id)
+    {
+        $request->validate([
+            'catatan_validasi' => 'required|string|max:300',
+        ], [
+            'catatan_validasi.required' => 'Alasan penolakan wajib diisi.',
+        ]);
+
+        $setoran = SetoranSampah::findOrFail($id);
+
+        if ($setoran->status_validasi !== 'menunggu') {
+            return back()->with('info', 'Setoran ini sudah divalidasi sebelumnya.');
+        }
+
+        $setoran->update([
+            'status_validasi'  => 'ditolak',
+            'validator_id'     => auth()->id(),
+            'catatan_validasi' => $request->catatan_validasi,
+        ]);
+
+        return back()->with('sukses', 'Setoran sampah telah ditolak dengan catatan.');
     }
 }

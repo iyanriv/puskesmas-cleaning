@@ -128,6 +128,23 @@
         </div>
         @endif
 
+        {{-- FR-015: Status alat (jika ada) --}}
+        @if($operan->status_alat && count($operan->status_alat) > 0)
+        <div class="detail-card">
+            <div class="section-title"><i class="bi bi-tools me-1"></i> Kondisi Peralatan</div>
+            <p style="font-size:0.78rem; color:#6b7280; margin-bottom:0.6rem;">
+                Peralatan berikut dalam kondisi tersedia &amp; baik saat operan:
+            </p>
+            <div class="alat-grid">
+                @foreach($operan->status_alat as $alat)
+                    <span class="alat-badge">
+                        <i class="bi bi-check-circle-fill me-1 text-success"></i>{{ $alat }}
+                    </span>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         <a href="{{ route('operan.index') }}" class="btn btn-kembali text-decoration-none d-block text-center">
             <i class="bi bi-arrow-left me-2"></i> Kembali ke Operan Shift
         </a>

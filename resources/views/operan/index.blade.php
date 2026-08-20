@@ -203,6 +203,23 @@
                             {{ $masuk->catatan }}
                         </div>
                     @endif
+
+                    {{-- FR-015: Status alat --}}
+                    @if($masuk->status_alat && count($masuk->status_alat) > 0)
+                        <div class="mt-2">
+                            <div style="font-size:0.72rem; font-weight:600; color:#6b7280; margin-bottom:4px;">
+                                <i class="bi bi-tools me-1"></i>Alat Tersedia & Baik:
+                            </div>
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach($masuk->status_alat as $alat)
+                                    <span style="background:#d1fae5; color:#059669; border:1px solid #a7f3d0;
+                                                 padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:600;">
+                                        ✓ {{ $alat }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
             @endforeach
         @endif
@@ -268,6 +285,30 @@
                     @error('waktu_jaga')
                         <div class="text-danger mt-1" style="font-size:0.78rem;">{{ $message }}</div>
                     @enderror
+                </div>
+
+                {{-- FR-015: Status Peralatan --}}
+                <div class="mb-3">
+                    <label class="form-label">
+                        Kondisi Peralatan
+                        <span class="text-secondary fw-normal" style="font-size:0.75rem;">(centang yang tersedia & baik)</span>
+                    </label>
+                    <div class="alat-grid">
+                        @foreach($daftarAlat as $namaAlat => $ikonAlat)
+                            @php
+                                $oldAlat = old('status_alat', []);
+                                $diceklis = in_array($namaAlat, $oldAlat);
+                            @endphp
+                            <label class="alat-item">
+                                <input type="checkbox"
+                                       name="status_alat[]"
+                                       value="{{ $namaAlat }}"
+                                       {{ $diceklis ? 'checked' : '' }}>
+                                <i class="bi {{ $ikonAlat }} me-1" style="font-size:0.9rem;"></i>
+                                {{ $namaAlat }}
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
 
                 {{-- Catatan (Uraian Kegiatan) --}}

@@ -52,8 +52,8 @@ class LaporanController extends Controller
         ])->where('status_request', 'ditolak')->count();
 
         // ── Bank Sampah ───────────────────────────────────
-        $setoranList  = SetoranSampah::whereBetween('tanggal', [$dari, $sampai])->get();
-        $totalKgSampah = $setoranList->sum('berat_kg');
+        $setoranList   = SetoranSampah::whereBetween('tanggal', [$dari, $sampai])->get();
+        $totalKgSampah = 0; // kolom berat_kg sudah dihapus; gunakan jumlah setoran sebagai metrik
         $totalSetoran  = $setoranList->count();
 
         // ── Penilaian Kinerja ─────────────────────────────
@@ -112,8 +112,8 @@ class LaporanController extends Controller
         $permintaanDisetujui = PermintaanBarang::whereBetween('waktu_request', [$dari . ' 00:00:00', $sampai . ' 23:59:59'])->where('status_request', 'disetujui')->count();
         $permintaanDitolak   = PermintaanBarang::whereBetween('waktu_request', [$dari . ' 00:00:00', $sampai . ' 23:59:59'])->where('status_request', 'ditolak')->count();
 
-        $setoranList  = SetoranSampah::whereBetween('tanggal', [$dari, $sampai])->get();
-        $totalKgSampah = $setoranList->sum('berat_kg');
+        $setoranList   = SetoranSampah::whereBetween('tanggal', [$dari, $sampai])->get();
+        $totalKgSampah = 0; // kolom berat_kg sudah dihapus
         $totalSetoran  = $setoranList->count();
 
         $penilaianList   = PenilaianKinerja::whereBetween('tanggal', [$dari, $sampai])->with('dinilai')->get();

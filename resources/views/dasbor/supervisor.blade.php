@@ -31,6 +31,9 @@
                 <a href="{{ route('laporan.index') }}" class="btn btn-outline-success btn-sm rounded-pill w-100 text-start">
                     <i class="bi bi-graph-up me-2"></i> Dasbor Laporan
                 </a>
+                <a href="{{ route('sampah.rekapan') }}" class="btn btn-outline-success btn-sm rounded-pill w-100 text-start">
+                    <i class="bi bi-recycle me-2"></i> Validasi Bank Sampah
+                </a>
             </div>
         </div>
     </div>
@@ -71,8 +74,16 @@
                         <div>
                             <strong>{{ $setoran->pengguna->name }}</strong>
                             <div class="text-secondary small">{{ $setoran->jenisSampahTeks() }}</div>
+                            <div class="text-secondary" style="font-size:0.75rem;">
+                                {{ $setoran->tanggal->translatedFormat('d M Y') }}
+                            </div>
                         </div>
-                        <span class="fw-bold text-success">{{ number_format($setoran->berat_kg, 1) }} KG</span>
+                        @php $sv = $setoran->status_validasi ?? 'menunggu'; @endphp
+                        <span class="badge rounded-pill
+                            {{ $sv === 'valid' ? 'bg-success' : ($sv === 'ditolak' ? 'bg-danger' : 'bg-warning text-dark') }}"
+                            style="font-size:0.7rem;">
+                            {{ $sv === 'valid' ? 'Valid' : ($sv === 'ditolak' ? 'Ditolak' : 'Menunggu') }}
+                        </span>
                     </div>
                 @empty
                     <p class="text-secondary text-center py-3">Belum ada data setoran terbaru.</p>

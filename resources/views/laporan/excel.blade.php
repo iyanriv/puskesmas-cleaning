@@ -37,8 +37,8 @@
             <td colspan="3">{{ $permintaanDisetujui }} dari {{ $totalPermintaan }}</td>
         </tr>
         <tr>
-            <td colspan="2" style="font-weight: bold;">Total Setoran Sampah</td>
-            <td colspan="3">{{ number_format($totalKgSampah, 1) }} kg ({{ $totalSetoran }} kali)</td>
+            <td colspan="2" style="font-weight: bold;">Total Laporan Sampah</td>
+            <td colspan="3">{{ $totalSetoran }} laporan</td>
         </tr>
         <tr>
             <td colspan="2" style="font-weight: bold;">Rata-rata Kinerja Petugas</td>

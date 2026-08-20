@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dasbor;
 
 use App\Http\Controllers\Controller;
 use App\Models\CeklisKebersihan;
+use App\Models\OperanShift;
 use App\Models\PermintaanBarang;
 use App\Models\SetoranSampah;
 use Illuminate\Http\Request;
@@ -25,6 +26,13 @@ class DasborCsController extends Controller
             ->count();
 
         $persentase = $totalCeklis > 0 ? round(($selesaiCeklis / $totalCeklis) * 100) : 0;
+
+        // FR-017: Jumlah operan masuk yang belum diterima — untuk notifikasi di dasbor
+        $operanMenunggu = OperanShift::where('penerima_id', $pengguna->id)
+            ->where('status_terima', 'menunggu')
+            ->with('pengirim')
+            ->latest()
+            ->get();
 
         $aktivitasTerakhir = collect()
             ->merge(
@@ -57,7 +65,7 @@ class DasborCsController extends Controller
                     ->take(2)
                     ->get()
                     ->map(fn ($s) => [
-                        'teks' => 'Setor sampah: '.$s->berat_kg.' KG '.ucfirst($s->jenisSampahTeks()),
+                        'teks' => 'Setor sampah: '.$s->jenisSampahTeks(),
                         'waktu' => $s->created_at->format('H:i'),
                         'warna' => 'hijau',
                     ])
@@ -66,6 +74,9 @@ class DasborCsController extends Controller
             ->take(5)
             ->values();
 
-        return view('dasbor.cs', compact('pengguna', 'totalCeklis', 'selesaiCeklis', 'persentase', 'aktivitasTerakhir'));
+        return view('dasbor.cs', compact(
+            'pengguna', 'totalCeklis', 'selesaiCeklis', 'persentase',
+            'aktivitasTerakhir', 'operanMenunggu'
+        ));
     }
 }

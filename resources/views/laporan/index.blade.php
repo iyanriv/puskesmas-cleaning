@@ -209,8 +209,8 @@
                 </div>
                 <div class="kpi-card kuning">
                     <span class="kpi-ikon">♻️</span>
-                    <div class="kpi-angka">{{ number_format($totalKgSampah, 1) }}</div>
-                    <div class="kpi-label">Total Sampah (kg)</div>
+                    <div class="kpi-angka">{{ $totalSetoran }}</div>
+                    <div class="kpi-label">Total Laporan Sampah</div>
                     <div class="kpi-sub">{{ $totalSetoran }} kali setoran</div>
                 </div>
                 <div class="kpi-card ungu">
@@ -317,8 +317,8 @@
                         <span class="fw-bold text-warning">{{ $totalPermintaan - $permintaanDisetujui - $permintaanDitolak }}</span>
                     </div>
                     <div class="detail-row" style="background:#f0fdf4; border-radius:0 0 18px 18px;">
-                        <span class="text-secondary">♻️ Total Sampah Disetor</span>
-                        <span class="fw-bold text-success">{{ number_format($totalKgSampah, 1) }} kg</span>
+                        <span class="text-secondary">♻️ Total Laporan Sampah</span>
+                        <span class="fw-bold text-success">{{ $totalSetoran }} laporan</span>
                     </div>
                 </div>
             </div>
