@@ -27,20 +27,21 @@ class AreaController extends Controller
 
     public function create()
     {
-        $daftarUnit = ProdukKebersihan::$daftarUnit;
-        return view('admin.area.buat', compact('daftarUnit'));
+        return view('admin.area.buat');
     }
 
     public function store(Request $request)
     {
-        $daftarUnit = ProdukKebersihan::$daftarUnit;
-
         $request->validate([
-            'lantai' => 'required|in:' . implode(',', $daftarUnit),
+            'lantai' => 'required|string|max:100|unique:area,lantai',
+        ], [
+            'lantai.required' => 'Nama unit / lantai wajib diisi.',
+            'lantai.unique'   => 'Unit / lantai ini sudah terdaftar.',
+            'lantai.max'      => 'Nama unit / lantai maksimal 100 karakter.',
         ]);
 
         $area = new Area();
-        $area->lantai = $request->lantai;
+        $area->lantai = trim($request->lantai);
         $area->save();
 
         return redirect()->route('admin.area.index')->with('sukses', 'Area lantai/unit berhasil ditambahkan.');
@@ -49,21 +50,22 @@ class AreaController extends Controller
     public function edit($id)
     {
         $area = Area::findOrFail($id);
-        $daftarUnit = ProdukKebersihan::$daftarUnit;
-        return view('admin.area.ubah', compact('area', 'daftarUnit'));
+        return view('admin.area.ubah', compact('area'));
     }
 
     public function update(Request $request, $id)
     {
         $area = Area::findOrFail($id);
 
-        $daftarUnit = ProdukKebersihan::$daftarUnit;
-
         $request->validate([
-            'lantai' => 'required|in:' . implode(',', $daftarUnit),
+            'lantai' => 'required|string|max:100|unique:area,lantai,' . $id,
+        ], [
+            'lantai.required' => 'Nama unit / lantai wajib diisi.',
+            'lantai.unique'   => 'Unit / lantai ini sudah terdaftar.',
+            'lantai.max'      => 'Nama unit / lantai maksimal 100 karakter.',
         ]);
 
-        $area->lantai = $request->lantai;
+        $area->lantai = trim($request->lantai);
         $area->save();
 
         return redirect()->route('admin.area.index')->with('sukses', 'Area lantai/unit berhasil diperbarui.');
