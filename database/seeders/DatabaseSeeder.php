@@ -11,66 +11,99 @@ use App\Models\BarangInventori;
 use App\Models\CeklisKebersihan;
 use App\Models\PermintaanBarang;
 use App\Models\SetoranSampah;
-use App\Models\PenilaianKinerja;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Peran
-        $pAdmin = Peran::create(['nama_peran' => 'admin']);
-        $pSpv   = Peran::create(['nama_peran' => 'supervisor']);
-        $pPj    = Peran::create(['nama_peran' => 'pj_lantai']);
-        $pCs    = Peran::create(['nama_peran' => 'cs']);
-        $pGdg   = Peran::create(['nama_peran' => 'gudang']);
-
-        // 2. Area
-        $area1 = Area::create(['nama_ruangan' => 'Lobi Utama', 'lantai' => 1]);
-        $area2 = Area::create(['nama_ruangan' => 'Poli Umum', 'lantai' => 1]);
-
-        // 3. User
-        $admin = User::create([
-            'name' => 'Admin Sistem', 'nik' => '1111', 'password' => Hash::make('password'), 'peran_id' => $pAdmin->id
-        ]);
-        $spv = User::create([
-            'name' => 'Pak Supervisor', 'nik' => '2222', 'password' => Hash::make('password'), 'peran_id' => $pSpv->id
-        ]);
-        $cs = User::create([
-            'name' => 'Budi CS', 'nik' => '3333', 'password' => Hash::make('password'), 'peran_id' => $pCs->id, 'shift' => 'pagi', 'area_id' => $area1->id
-        ]);
-        $gudang = User::create([
-            'name' => 'Mas Gudang', 'nik' => '4444', 'password' => Hash::make('password'), 'peran_id' => $pGdg->id
+        // 1. Jalankan Master Seeders
+        $this->call([
+            PeranSeeder::class,
+            AreaSeeder::class,
+            PenggunaSeeder::class,
+            BarangInventoriSeeder::class,
         ]);
 
-        // 4. Barang Inventori
-        $brg = BarangInventori::create([
-            'nama_barang' => 'Sapu Ijuk', 'stok_saat_ini' => 10, 'satuan' => 'pcs', 'stok_minimum' => 2
-        ]);
-        BarangInventori::create([
-            'nama_barang' => 'Pembersih Kaca', 'stok_saat_ini' => 5, 'satuan' => 'botol', 'stok_minimum' => 5
-        ]);
+        // Ambil referensi yang sudah di-seed
+        $cs      = User::whereHas('peran', fn($q) => $q->where('nama_peran', 'cs'))->first();
+        $spv     = User::whereHas('peran', fn($q) => $q->where('nama_peran', 'supervisor'))->first();
+        $admin   = User::whereHas('peran', fn($q) => $q->where('nama_peran', 'admin'))->first();
+        $area1   = Area::first();
+        $brg     = BarangInventori::first();
 
-        // 5. Ceklis
-        CeklisKebersihan::create([
-            'user_id' => $cs->id, 'area_id' => $area1->id, 'tanggal' => now()->toDateString(), 'status' => 'selesai',
-            'foto_before' => 'dummy.jpg', 'foto_after' => 'dummy2.jpg'
-        ]);
+        // 2. Data Ceklis Kebersihan
+        if ($cs && $area1) {
+            CeklisKebersihan::create([
+                'user_id'     => $cs->id,
+                'area_id'     => $area1->id,
+                'tanggal'     => now()->toDateString(),
+                'status'      => 'selesai',
+                'foto_before' => 'dummy_before.jpg',
+                'foto_after'  => 'dummy_after.jpg',
+            ]);
+        }
 
-        // 6. Permintaan Barang
-        PermintaanBarang::create([
-            'user_id' => $cs->id, 'barang_id' => $brg->id, 'jumlah' => 2, 'status_request' => 'pending', 'waktu_request' => now()
-        ]);
+        // 3. Permintaan Barang
+        if ($cs && $brg) {
+            PermintaanBarang::create([
+                'user_id'        => $cs->id,
+                'barang_id'      => $brg->id,
+                'jumlah'         => 2,
+                'status_request' => 'pending',
+                'waktu_request'  => now(),
+            ]);
+        }
 
-        // 7. Sampah
-        SetoranSampah::create([
-            'user_id' => $cs->id, 'jenis_sampah' => ['Botol Plastik', 'Kardus'], 'lokasi_setor' => 'Lantai 1',
-            'berat_kg' => 2.5, 'tanggal' => now()->toDateString()
-        ]);
+        // 4. Setoran Bank Sampah
+        if ($cs) {
+            SetoranSampah::create([
+                'user_id'      => $cs->id,
+                'jenis_sampah' => ['Botol Plastik', 'Kardus'],
+                'lokasi_setor' => 'Lantai 1',
+                'catatan'      => 'Botol plastik dan kardus bekas',
+                'tanggal'      => now()->toDateString(),
+            ]);
+        }
 
-        // 8. Penilaian
-        PenilaianKinerja::create([
-            'penilai_id' => $spv->id, 'dinilai_id' => $cs->id, 'tanggal' => now()->toDateString(),
-            'nilai_kebersihan' => 4, 'nilai_kedisiplinan' => 4, 'nilai_kerjasama' => 5, 'nilai_inisiatif' => 4
-        ]);
+        // 5. Tugas Mingguan CS
+        if ($cs) {
+            \App\Models\TugasMingguan::create([
+                'user_id'          => $cs->id,
+                'tanggal'          => now()->toDateString(),
+                'waktu_pelaporan'  => now()->format('H:i'),
+                'rincian_kegiatan' => 'Pembersihan kaca luar dan polishing lantai ruang tunggu utama',
+                'status'           => 'selesai',
+            ]);
+        }
+
+        // 6. Penilaian PJ Lantai
+        if ($cs) {
+            \App\Models\PenilaianPjLantai::create([
+                'petugas_cs_id'              => $cs->id,
+                'nama_petugas_cs'            => $cs->name,
+                'lokasi_tugas'               => 'Lantai 1 - Rawat Jalan',
+                'nama_pj'                    => 'Bpk. Joko (PJ Lantai)',
+                'tanggal_penilaian'          => now()->toDateString(),
+                'skor_disiplin'              => 90,
+                'skor_komunikasi'            => 88,
+                'skor_sapu_pel'              => 92,
+                'skor_lap_kaca_perabot'      => 85,
+                'skor_tangga'                => 88,
+                'skor_kontrol_kebersihan'    => 90,
+                'skor_buang_sampah'          => 95,
+                'skor_koordinasi'            => 87,
+                'skor_tidak_tinggalkan_tugas' => 90,
+                'skor_toilet'                => 88,
+                'skor_pelihara_sarana'       => 85,
+                'skor_kerjasama'             => 90,
+                'skor_kesopanan'             => 92,
+                'skor_cekatan'               => 88,
+                'skor_sop'                   => 90,
+                'skor_kepuasan'              => 92,
+                'masukan_evaluasi'           => 'Pekerjaan sangat baik dan rapi, tingkatkan terus koordinasi.',
+                'rata_rata'                  => 89.38,
+                'kategori'                   => 'Sangat Baik',
+            ]);
+        }
     }
 }

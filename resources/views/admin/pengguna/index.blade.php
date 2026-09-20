@@ -41,7 +41,7 @@
                 </div>
             </form>
 
-            <div class="table-responsive">
+            <div class="table-responsive table-scroll-container">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
@@ -49,8 +49,6 @@
                             <th>Nama</th>
                             <th>NIK</th>
                             <th>Peran</th>
-                            <th>Shift</th>
-                            <th>Area</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -61,8 +59,6 @@
                                 <td>{{ $p->name }}</td>
                                 <td>{{ $p->nik }}</td>
                                 <td>{{ $p->peran ? $p->peran->nama_peran : '-' }}</td>
-                                <td>{{ ucfirst($p->shift) ?: '-' }}</td>
-                                <td>{{ $p->area ? $p->area->nama_ruangan : '-' }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('admin.pengguna.edit', $p->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3">Edit</a>
@@ -76,7 +72,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">Data pengguna tidak ditemukan.</td>
+                                <td colspan="5" class="text-center py-4">Data pengguna tidak ditemukan.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -18,8 +18,6 @@ class User extends Authenticatable
         'nik',
         'password',
         'peran_id',
-        'shift',
-        'area_id',
     ];
 
     protected $hidden = [
@@ -36,11 +34,6 @@ class User extends Authenticatable
         return $this->belongsTo(Peran::class, 'peran_id');
     }
 
-    public function area(): BelongsTo
-    {
-        return $this->belongsTo(Area::class, 'area_id');
-    }
-
     public function ceklis(): HasMany
     {
         return $this->hasMany(CeklisKebersihan::class, 'user_id');
@@ -54,6 +47,16 @@ class User extends Authenticatable
     public function setoranSampah(): HasMany
     {
         return $this->hasMany(SetoranSampah::class, 'user_id');
+    }
+
+    public function penilaianPj(): HasMany
+    {
+        return $this->hasMany(PenilaianPjLantai::class, 'petugas_cs_id');
+    }
+
+    public function tugasMingguan(): HasMany
+    {
+        return $this->hasMany(TugasMingguan::class, 'user_id');
     }
 
     public function ruteDasbor(): string

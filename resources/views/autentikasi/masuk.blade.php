@@ -2,328 +2,334 @@
 
 @section('content')
 <style>
-    body { background-color: #f0fdf4; }
+    /* =========================================================
+       SIM KEBERSIHAN - CLEAN GLASS TRANSPARENT LOGIN
+       ========================================================= */
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, rgba(6, 46, 26, 0.78) 0%, rgba(13, 85, 48, 0.72) 50%, rgba(15, 23, 42, 0.82) 100%),
+                    url('{{ asset('images/cleaning-illustration.jpg') }}') center center / cover no-repeat fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
     .login-wrapper {
         min-height: 100vh;
+        width: 100%;
         display: flex;
-        align-items: stretch;
-    }
-
-    /* ===== Panel Kiri: Branding ===== */
-    .login-branding {
-        flex: 1;
-        background: linear-gradient(135deg, #12a65a 0%, #0d8a4a 40%, #086838 100%);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
-        padding: 3rem;
-        color: white;
+        justify-content: center;
+        padding: 2rem 1rem;
         position: relative;
-        overflow: hidden;
     }
 
-    .login-branding::before {
-        content: '';
-        position: absolute;
-        top: -100px;
-        right: -100px;
-        width: 400px;
-        height: 400px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.05);
-    }
-
-    .login-branding::after {
-        content: '';
-        position: absolute;
-        bottom: -150px;
-        left: -100px;
-        width: 500px;
-        height: 500px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.03);
-    }
-
-    .branding-content {
+    /* Glassmorphic Transparent Card Box */
+    .glass-card {
+        width: 100%;
+        max-width: 440px;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1.5px solid rgba(255, 255, 255, 0.75);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35),
+                    0 0 0 1px rgba(255, 255, 255, 0.2);
+        padding: 2.75rem 2.25rem 2.25rem;
         position: relative;
         z-index: 2;
+    }
+
+    /* Header Logo & Branding */
+    .brand-header {
         text-align: center;
-        max-width: 450px;
-    }
-
-    .branding-icon {
-        width: 100px;
-        height: 100px;
-        border-radius: 28px;
-        background: rgba(255,255,255,0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 2rem;
-        font-size: 3rem;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-    }
-
-    .branding-content h1 {
-        font-size: 2.2rem;
-        font-weight: 800;
-        margin-bottom: 0.5rem;
-        letter-spacing: -0.5px;
-    }
-
-    .branding-content .subtitle {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        margin-bottom: 2.5rem;
-        font-weight: 300;
-    }
-
-    .feature-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        text-align: left;
-    }
-
-    .feature-list li {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 0;
-        font-size: 0.95rem;
-        opacity: 0.9;
-    }
-
-    .feature-list li i {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: rgba(255,255,255,0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 1rem;
-        font-size: 1rem;
-        flex-shrink: 0;
-    }
-
-    /* ===== Panel Kanan: Form Login ===== */
-    .login-form-panel {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 3rem;
-        background-color: #ffffff;
-        max-width: 600px;
-    }
-
-    .login-form-container {
-        width: 100%;
-        max-width: 420px;
-    }
-
-    .login-form-container h2 {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #1a1a2e;
-        margin-bottom: 0.5rem;
-    }
-
-    .login-form-container .lead-text {
-        color: #6b7280;
-        font-size: 0.95rem;
         margin-bottom: 2rem;
     }
 
-    .form-floating-custom {
+    .logo-container {
+        width: 82px;
+        height: 82px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        margin: 0 auto 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(18, 166, 90, 0.15);
+        padding: 10px;
+    }
+
+    .logo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .brand-header h1 {
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 0.25rem;
+        letter-spacing: -0.5px;
+    }
+
+    .brand-header .subtitle {
+        color: #0d8a4a;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin: 0 0 0.5rem;
+    }
+
+    .brand-header .desc {
+        color: #64748b;
+        font-size: 0.86rem;
+        margin: 0;
+    }
+
+    /* Input Styling */
+    .form-group-custom {
+        margin-bottom: 1.35rem;
+    }
+
+    .form-label-custom {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.45rem;
+    }
+
+    .input-box {
         position: relative;
-        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
     }
 
-    .form-floating-custom .form-control {
-        height: 56px;
-        padding: 1rem 1rem 1rem 3rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 14px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background-color: #f9fafb;
-    }
-
-    .form-floating-custom .form-control:focus {
-        border-color: #12a65a;
-        background-color: #fff;
-        box-shadow: 0 0 0 4px rgba(18, 166, 90, 0.1);
-    }
-
-    .form-floating-custom .input-icon {
+    .input-box i.input-icon {
         position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-        font-size: 1.1rem;
-        z-index: 5;
+        left: 1.1rem;
+        color: #94a3b8;
+        font-size: 1.15rem;
+        pointer-events: none;
+        transition: color 0.2s;
     }
 
-    .form-floating-custom .form-control:focus ~ .input-icon {
-        color: #12a65a;
-    }
-
-    .btn-login {
-        height: 52px;
+    .input-field {
+        width: 100%;
+        height: 50px;
+        padding: 0.65rem 2.8rem 0.65rem 2.85rem;
+        border: 1.5px solid #cbd5e1;
         border-radius: 14px;
+        font-size: 0.95rem;
+        background: rgba(255, 255, 255, 0.9);
+        color: #0f172a;
+        transition: all 0.25s ease;
+    }
+
+    .input-field:focus {
+        outline: none;
+        border-color: #0d8a4a;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(13, 138, 74, 0.15);
+    }
+
+    .input-field:focus ~ i.input-icon {
+        color: #0d8a4a;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 0.25rem;
+        font-size: 1.15rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+
+    .password-toggle:hover {
+        color: #0d8a4a;
+    }
+
+    /* Options & Button */
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    .form-options input[type="checkbox"] {
+        cursor: pointer;
+        accent-color: #0d8a4a;
+    }
+
+    .btn-submit {
+        width: 100%;
+        height: 50px;
+        background: linear-gradient(135deg, #12a65a 0%, #0d8a4a 100%);
+        border: none;
+        border-radius: 14px;
+        color: #ffffff;
+        font-weight: 700;
         font-size: 1rem;
-        font-weight: 600;
         letter-spacing: 0.3px;
-        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px -5px rgba(13, 138, 74, 0.4);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
     }
 
-    .btn-login:hover {
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #15b764 0%, #0e9651 100%);
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(18, 166, 90, 0.3);
+        box-shadow: 0 14px 25px -5px rgba(13, 138, 74, 0.48);
     }
 
-    .btn-login:active {
+    .btn-submit:active {
         transform: translateY(0);
     }
 
-    .login-footer {
+    /* Bottom Copyright */
+    .card-footer-meta {
         margin-top: 2rem;
         text-align: center;
-        color: #9ca3af;
-        font-size: 0.85rem;
+        font-size: 0.76rem;
+        color: #94a3b8;
     }
 
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 991.98px) {
-        .login-wrapper {
-            flex-direction: column;
-        }
-
-        .login-branding {
-            flex: none;
-            padding: 2.5rem 2rem 4rem;
-            min-height: auto;
-        }
-
-        .branding-content h1 { font-size: 1.6rem; }
-        .branding-content .subtitle { font-size: 0.95rem; margin-bottom: 1.5rem; }
-        .feature-list { display: none; }
-
-        .branding-icon {
-            width: 72px;
-            height: 72px;
-            font-size: 2.2rem;
-            margin-bottom: 1.2rem;
-            border-radius: 20px;
-        }
-
-        .login-form-panel {
-            flex: 1;
-            max-width: 100%;
+    @media (max-width: 576.98px) {
+        .glass-card {
             padding: 2rem 1.5rem;
-            margin-top: -2rem;
-            border-radius: 24px 24px 0 0;
-            position: relative;
-            z-index: 10;
         }
-
-        .login-form-container h2 { font-size: 1.4rem; }
-    }
-
-    @media (max-width: 575.98px) {
-        .login-branding {
-            padding: 2rem 1.5rem 3.5rem;
+        .logo-container {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 1rem;
         }
     }
 </style>
 
 <div class="login-wrapper">
-    {{-- Panel Kiri: Branding --}}
-    <div class="login-branding">
-        <div class="branding-content">
-            <div class="branding-icon bg-white">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo Puskesmas" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; border-radius: 28px;">
+    <!-- Transparent Glass Login Card Box -->
+    <div class="glass-card">
+        <!-- Logo & Branding -->
+        <div class="brand-header">
+            <div class="logo-container">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo Puskesmas" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Logo_Puskesmas.png/480px-Logo_Puskesmas.png'">
             </div>
             <h1>SIM Kebersihan</h1>
-            <p class="subtitle">Puskesmas Cempaka Putih</p>
-
-            <ul class="feature-list">
-                <li>
-                    <i class="bi bi-card-checklist"></i>
-                    <span>Monitoring kebersihan terintegrasi real-time</span>
-                </li>
-                <li>
-                    <i class="bi bi-camera"></i>
-                    <span>Bukti foto Before/After dengan timestamp & GPS</span>
-                </li>
-                <li>
-                    <i class="bi bi-arrow-left-right"></i>
-                    <span>Operan shift digital antar petugas</span>
-                </li>
-                <li>
-                    <i class="bi bi-box-seam"></i>
-                    <span>Manajemen inventori & permintaan barang</span>
-                </li>
-                <li>
-                    <i class="bi bi-graph-up"></i>
-                    <span>Laporan kinerja otomatis PDF & Excel</span>
-                </li>
-            </ul>
+            <div class="subtitle">Puskesmas Cempaka Putih</div>
+            <p class="desc">Sistem Informasi Pengelolaan & Pemantauan Sanitasi</p>
         </div>
-    </div>
 
-    {{-- Panel Kanan: Form Login --}}
-    <div class="login-form-panel">
-        <div class="login-form-container">
-            <h2>Masuk ke Sistem</h2>
-            <p class="lead-text">Gunakan NIK dan password yang diberikan oleh Administrator.</p>
-            
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
+        <!-- Form Login -->
+        <form method="POST" action="{{ route('login') }}" id="loginForm">
+            @csrf
 
-                <div class="form-floating-custom">
+            <!-- Field Nomor Pegawai -->
+            <div class="form-group-custom">
+                <label for="nik" class="form-label-custom">Nomor Pegawai</label>
+
+                <div class="input-box">
                     <i class="bi bi-person-badge input-icon"></i>
                     <input id="nik" type="text"
-                        class="form-control @error('nik') is-invalid @enderror"
+                        class="input-field @error('nik') is-invalid @enderror"
                         name="nik" value="{{ old('nik') }}"
-                        placeholder="NIK"
-                        required autofocus>
-                    @error('nik')
-                        <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
-                    @enderror
+                        placeholder="Masukkan nomor pegawai Anda..."
+                        required autofocus autocomplete="username">
                 </div>
+                @error('nik')
+                    <div class="text-danger mt-1 ms-1 fw-semibold" style="font-size: 0.8rem;">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i>{{ $message }}
+                    </div>
+                @enderror
+            </div>
 
-                <div class="form-floating-custom">
+            <!-- Field Kata Sandi -->
+            <div class="form-group-custom">
+                <label for="password" class="form-label-custom">Kata Sandi (Password)</label>
+                <div class="input-box">
                     <i class="bi bi-lock input-icon"></i>
                     <input id="password" type="password"
-                        class="form-control @error('password') is-invalid @enderror"
-                        name="password" placeholder="Password" required>
-                    @error('password')
-                        <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
-                    @enderror
+                        class="input-field @error('password') is-invalid @enderror"
+                        name="password"
+                        placeholder="Masukkan kata sandi..."
+                        required autocomplete="current-password">
+                    <button type="button" class="password-toggle" id="togglePasswordBtn" title="Lihat/Sembunyikan Kata Sandi">
+                        <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                    </button>
                 </div>
-
-                <div class="mb-4 form-check">
-                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                    <label class="form-check-label text-secondary" for="remember">Ingat saya</label>
-                </div>
-
-                <button type="submit" class="btn btn-success btn-login w-100 mb-3">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
-                </button>
-            </form>
-
-            <div class="login-footer">
-                <i class="bi bi-shield-lock me-1"></i>
-                Dilindungi dengan enkripsi SSL & CSRF protection
+                @error('password')
+                    <div class="text-danger mt-1 ms-1 fw-semibold" style="font-size: 0.8rem;">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i>{{ $message }}
+                    </div>
+                @enderror
             </div>
+
+            <!-- Remember Me -->
+            <div class="form-options">
+                <label class="d-flex align-items-center gap-2 user-select-none" style="cursor: pointer;">
+                    <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                    <span>Ingat saya</span>
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit" id="btnSubmit">
+                <i class="bi bi-box-arrow-in-right fs-5"></i>
+                <span>Masuk ke Sistem</span>
+            </button>
+        </form>
+
+        <!-- Footer Meta -->
+        <div class="card-footer-meta">
+            <span>&copy; {{ date('Y') }} Puskesmas Cempaka Putih &bull; SIM Kebersihan</span>
         </div>
     </div>
 </div>
+
+<script>
+    // Toggle Password Visibility
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+    const passwordField = document.getElementById('password');
+    const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+    if (togglePasswordBtn && passwordField && togglePasswordIcon) {
+        togglePasswordBtn.addEventListener('click', function () {
+            const isPassword = passwordField.type === 'password';
+            passwordField.type = isPassword ? 'text' : 'password';
+            togglePasswordIcon.className = isPassword ? 'bi bi-eye-slash text-success' : 'bi bi-eye';
+        });
+    }
+
+    // Form Submit Progress State
+    const loginForm = document.getElementById('loginForm');
+    const btnSubmit = document.getElementById('btnSubmit');
+    if (loginForm && btnSubmit) {
+        loginForm.addEventListener('submit', function () {
+            btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memverifikasi...`;
+            btnSubmit.disabled = true;
+            setTimeout(() => {
+                btnSubmit.disabled = false;
+            }, 4000);
+        });
+    }
+</script>
 @endsection

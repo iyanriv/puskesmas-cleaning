@@ -9,12 +9,16 @@ class Area extends Model
 {
     protected $table = 'area';
 
-    protected $fillable = ['nama_ruangan', 'lantai'];
+    protected $fillable = ['lantai'];
 
-    public function pengguna(): HasMany
+    /**
+     * Accessor fallback jika ada bagian kode yang masih mengakses nama_ruangan
+     */
+    public function getNamaRuanganAttribute(): string
     {
-        return $this->hasMany(User::class, 'area_id');
+        return $this->lantai ?? '';
     }
+
 
     public function ceklis(): HasMany
     {

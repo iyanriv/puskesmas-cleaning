@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 
+use App\Models\ProdukKebersihan;
+
 class AreaController extends Controller
 {
     public function index(Request $request)
@@ -15,8 +17,7 @@ class AreaController extends Controller
         $query = Area::query();
         
         if ($request->has('cari') && $request->cari != '') {
-            $query->where('nama_ruangan', 'like', '%' . $request->cari . '%')
-                  ->orWhere('lantai', 'like', '%' . $request->cari . '%');
+            $query->where('lantai', 'like', '%' . $request->cari . '%');
         }
 
         $area = $query->paginate(10);
@@ -26,53 +27,55 @@ class AreaController extends Controller
 
     public function create()
     {
-        return view('admin.area.buat');
+        $daftarUnit = ProdukKebersihan::$daftarUnit;
+        return view('admin.area.buat', compact('daftarUnit'));
     }
 
     public function store(Request $request)
     {
+        $daftarUnit = ProdukKebersihan::$daftarUnit;
+
         $request->validate([
-            'nama_ruangan' => 'required',
-            'lantai' => 'required|integer',
+            'lantai' => 'required|in:' . implode(',', $daftarUnit),
         ]);
 
         $area = new Area();
-        $area->nama_ruangan = $request->nama_ruangan;
         $area->lantai = $request->lantai;
         $area->save();
 
-        return redirect()->route('admin.area.index')->with('sukses', 'Area berhasil ditambahkan.');
+        return redirect()->route('admin.area.index')->with('sukses', 'Area lantai/unit berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
         $area = Area::findOrFail($id);
-        return view('admin.area.ubah', compact('area'));
+        $daftarUnit = ProdukKebersihan::$daftarUnit;
+        return view('admin.area.ubah', compact('area', 'daftarUnit'));
     }
 
     public function update(Request $request, $id)
     {
         $area = Area::findOrFail($id);
 
+        $daftarUnit = ProdukKebersihan::$daftarUnit;
+
         $request->validate([
-            'nama_ruangan' => 'required',
-            'lantai' => 'required|integer',
+            'lantai' => 'required|in:' . implode(',', $daftarUnit),
         ]);
 
-        $area->nama_ruangan = $request->nama_ruangan;
         $area->lantai = $request->lantai;
         $area->save();
 
-        return redirect()->route('admin.area.index')->with('sukses', 'Area berhasil diperbarui.');
+        return redirect()->route('admin.area.index')->with('sukses', 'Area lantai/unit berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $area = Area::findOrFail($id);
         
-        // Cek jika area digunakan oleh user
-        if (User::where('area_id', $id)->exists()) {
-            return redirect()->route('admin.area.index')->with('gagal', 'Area tidak dapat dihapus karena sedang digunakan oleh pengguna.');
+        // Cek jika area digunakan dalam data ceklis kebersihan
+        if (\App\Models\CeklisKebersihan::where('area_id', $id)->exists()) {
+            return redirect()->route('admin.area.index')->with('gagal', 'Area tidak dapat dihapus karena sudah memiliki riwayat ceklis kebersihan.');
         }
 
         try {

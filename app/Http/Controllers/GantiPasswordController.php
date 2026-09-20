@@ -26,7 +26,9 @@ class GantiPasswordController extends Controller
             return back()->withErrors(['password_lama' => 'Password lama tidak cocok.'])->withInput();
         }
 
-        $user->password = Hash::make($request->password_baru);
+        // User model sudah memiliki cast 'hashed' untuk kolom password,
+        // sehingga cukup assign plain password — model akan auto-hash via cast.
+        $user->password = $request->password_baru;
         $user->save();
 
         return redirect()->route('profil.ganti-password')->with('sukses', 'Password berhasil diubah.');

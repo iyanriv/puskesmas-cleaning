@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\KompresiFoto;
 use App\Models\SetoranSampah;
 use Illuminate\Http\Request;
 
@@ -76,10 +77,15 @@ class SetoranSampahController extends Controller
 
         $pengguna = auth()->user();
 
-        // Simpan foto timbangan jika ada
+        // Simpan & kompres foto timbangan (max 1280px, quality 80)
         $namaFoto = null;
         if ($request->hasFile('foto_timbangan')) {
-            $namaFoto = $request->file('foto_timbangan')->store('sampah', 'public');
+            $namaFoto = KompresiFoto::simpan(
+                $request->file('foto_timbangan'),
+                'sampah',
+                1280,
+                80
+            );
         }
 
         SetoranSampah::create([
@@ -142,7 +148,7 @@ class SetoranSampahController extends Controller
                 $rekapJenis[$jenis]['jumlah_setor'] += 1;
             }
         }
-        arsort($rekapJenis);
+        uasort($rekapJenis, fn($a, $b) => $b['jumlah_setor'] <=> $a['jumlah_setor']);
 
         // Total setoran keseluruhan
         $totalSetoran = $semuaSetoran->count();
@@ -154,7 +160,7 @@ class SetoranSampahController extends Controller
         // Rekap per petugas
         $rekapPertugas = $semuaSetoran->groupBy('user_id')->map(function ($group) {
             return [
-                'nama'         => $group->first()->pengguna->name,
+                'nama'         => $group->first()->pengguna?->name ?? 'Petugas (Dihapus)',
                 'jumlah_setor' => $group->count(),
             ];
         })->sortByDesc('jumlah_setor');
@@ -186,7 +192,8 @@ class SetoranSampahController extends Controller
             'catatan_validasi' => null,
         ]);
 
-        return back()->with('sukses', 'Setoran sampah dari ' . $setoran->pengguna->name . ' berhasil divalidasi! ✅');
+        $namaPetugas = $setoran->pengguna?->name ?? 'Petugas';
+        return back()->with('sukses', 'Setoran sampah dari ' . $namaPetugas . ' berhasil divalidasi! ✅');
     }
 
     /**
@@ -213,5 +220,66 @@ class SetoranSampahController extends Controller
         ]);
 
         return back()->with('sukses', 'Setoran sampah telah ditolak dengan catatan.');
+    }
+
+    /**
+     * Cetak laporan bank sampah — format formal.
+     */
+    public function cetakLaporan(Request $request)
+    {
+        $filter = $request->get('filter', 'minggu');
+        $bulan  = $request->get('bulan', now()->format('Y-m'));
+
+        switch ($filter) {
+            case 'hari':
+                $dari   = now()->startOfDay();
+                $sampai = now()->endOfDay();
+                $labelPeriode = 'Hari Ini (' . now()->translatedFormat('d F Y') . ')';
+                break;
+            case 'bulan':
+                $dari   = now()->parse($bulan . '-01')->startOfMonth();
+                $sampai = now()->parse($bulan . '-01')->endOfMonth();
+                $labelPeriode = 'Bulan ' . now()->parse($bulan . '-01')->translatedFormat('F Y');
+                break;
+            default: // minggu
+                $dari   = now()->startOfWeek();
+                $sampai = now()->endOfWeek();
+                $labelPeriode = 'Minggu Ini (' . $dari->format('d') . '–' . $sampai->translatedFormat('d F Y') . ')';
+        }
+
+        $semuaSetoran = SetoranSampah::with(['pengguna', 'validator'])
+            ->whereBetween('tanggal', [$dari->toDateString(), $sampai->toDateString()])
+            ->latest('tanggal')
+            ->get();
+
+        // Rekap per jenis
+        $rekapJenis = [];
+        foreach ($semuaSetoran as $setoran) {
+            foreach ((array) $setoran->jenis_sampah as $jenis) {
+                $rekapJenis[$jenis] = ($rekapJenis[$jenis] ?? 0) + 1;
+            }
+        }
+        arsort($rekapJenis);
+
+        // Rekap per petugas
+        $rekapPertugas = $semuaSetoran->groupBy('user_id')->map(fn($g) => [
+            'nama'   => $g->first()->pengguna?->name ?? '-',
+            'jumlah' => $g->count(),
+            'valid'  => $g->where('status_validasi', 'valid')->count(),
+        ])->sortByDesc('jumlah');
+
+        $totalSetoran  = $semuaSetoran->count();
+        $totalValid    = $semuaSetoran->where('status_validasi', 'valid')->count();
+        $totalMenunggu = $semuaSetoran->whereIn('status_validasi', ['menunggu', null])->count();
+        $totalDitolak  = $semuaSetoran->where('status_validasi', 'ditolak')->count();
+
+        $pengguna = auth()->user();
+
+        return view('sampah.cetak', compact(
+            'semuaSetoran', 'rekapJenis', 'rekapPertugas',
+            'totalSetoran', 'totalValid', 'totalMenunggu', 'totalDitolak',
+            'filter', 'bulan', 'labelPeriode',
+            'dari', 'sampai', 'pengguna'
+        ));
     }
 }

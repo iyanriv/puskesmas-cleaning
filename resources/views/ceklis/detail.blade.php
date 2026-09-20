@@ -24,16 +24,59 @@
     .foto-card {
         background: white; border-radius: 16px;
         overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        position: relative;
     }
     .foto-card img {
         width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
     }
-    .foto-label {
-        padding: 6px 10px; font-size: 0.72rem; font-weight: 700;
-        text-align: center; text-transform: uppercase; letter-spacing: 0.05em;
+    .foto-watermark {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
+        padding: 2.5rem 0.75rem 0.5rem 0.75rem;
+        color: white;
+        font-size: 0.7rem;
+        line-height: 1.4;
     }
-    .foto-label.before { background: #fef3c7; color: #d97706; }
-    .foto-label.after  { background: #d1fae5; color: #059669; }
+    .foto-watermark .timestamp {
+        font-weight: 700;
+        font-size: 0.75rem;
+        margin-bottom: 0.15rem;
+        color: #fbbf24;
+    }
+    .foto-watermark .petugas {
+        font-weight: 600;
+        margin-bottom: 0.1rem;
+    }
+    .foto-watermark .area-info {
+        font-size: 0.65rem;
+        color: #d1d5db;
+    }
+    .foto-label {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 4px 12px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-radius: 20px;
+        backdrop-filter: blur(8px);
+    }
+    .foto-label.before { 
+        background: rgba(254, 243, 199, 0.95);
+        color: #d97706;
+        border: 1.5px solid rgba(217, 119, 6, 0.3);
+    }
+    .foto-label.after  { 
+        background: rgba(209, 250, 229, 0.95);
+        color: #059669;
+        border: 1.5px solid rgba(5, 150, 105, 0.3);
+    }
     .info-card {
         background: white; border-radius: 16px;
         padding: 1rem 1.2rem; margin-bottom: 1rem;
@@ -101,7 +144,7 @@
             </a>
             <div>
                 <h5 class="fw-bold mb-0">Detail Ceklis</h5>
-                <p class="mb-0 text-white-50" style="font-size:0.82rem;">{{ $ceklis->area->nama_ruangan }}</p>
+                <p class="mb-0 text-white-50" style="font-size:0.82rem;">{{ $ceklis->area->lantai }}</p>
             </div>
         </div>
     </div>
@@ -125,6 +168,18 @@
             <div class="foto-card">
                 @if($ceklis->foto_before)
                     <img src="{{ Storage::url($ceklis->foto_before) }}" alt="Foto Before">
+                    <div class="foto-watermark">
+                        <div class="timestamp">
+                            <i class="bi bi-clock-fill"></i> 
+                            {{ \Carbon\Carbon::parse($ceklis->tanggal->format('Y-m-d') . ' ' . $ceklis->waktu_mulai)->format('d M Y • H:i') }} WIB
+                        </div>
+                        <div class="petugas">
+                            <i class="bi bi-person-fill"></i> {{ $ceklis->pengguna->name }}
+                        </div>
+                        <div class="area-info">
+                            <i class="bi bi-geo-alt-fill"></i> {{ $ceklis->area->lantai }} • Pembersihan Area
+                        </div>
+                    </div>
                 @else
                     <div class="d-flex align-items-center justify-content-center bg-light" style="aspect-ratio:4/3;"><i class="bi bi-image text-secondary fs-2"></i></div>
                 @endif
@@ -133,10 +188,22 @@
             <div class="foto-card">
                 @if($ceklis->foto_after)
                     <img src="{{ Storage::url($ceklis->foto_after) }}" alt="Foto After">
+                    <div class="foto-watermark">
+                        <div class="timestamp">
+                            <i class="bi bi-clock-fill"></i> 
+                            {{ \Carbon\Carbon::parse($ceklis->tanggal->format('Y-m-d') . ' ' . ($ceklis->waktu_selesai ?? $ceklis->waktu_mulai))->format('d M Y • H:i') }} WIB
+                        </div>
+                        <div class="petugas">
+                            <i class="bi bi-person-fill"></i> {{ $ceklis->pengguna->name }}
+                        </div>
+                        <div class="area-info">
+                            <i class="bi bi-geo-alt-fill"></i> {{ $ceklis->area->lantai }} • Selesai Dibersihkan
+                        </div>
+                    </div>
                 @else
                     <div class="d-flex align-items-center justify-content-center bg-light" style="aspect-ratio:4/3;"><i class="bi bi-image text-secondary fs-2"></i></div>
                 @endif
-                <div class="foto-label after">After</div>
+                <div class="foto-label after">After • Selesai</div>
             </div>
         </div>
 
@@ -144,7 +211,7 @@
         <div class="info-card">
             <div class="info-row">
                 <i class="bi bi-building"></i>
-                <span class="fw-semibold">{{ $ceklis->area->nama_ruangan }}</span>
+                <span class="fw-semibold">{{ $ceklis->area->lantai }}</span>
                 <span class="badge-selesai ms-auto">{{ ucfirst($ceklis->status) }}</span>
             </div>
             <div class="info-row">

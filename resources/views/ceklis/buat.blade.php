@@ -115,7 +115,7 @@
             <div>
                 <span class="step-badge">Langkah 1 dari 2</span>
                 <h5 class="fw-bold mb-0">Foto BEFORE</h5>
-                <p class="mb-0 text-white-50" style="font-size:0.82rem;">{{ $area->nama_ruangan }} — Lantai {{ $area->lantai }}</p>
+                <p class="mb-0 text-white-50" style="font-size:0.82rem;">{{ $area->lantai }}</p>
             </div>
         </div>
         <p class="text-white-50 small mb-0">Ambil foto kondisi ruangan <strong class="text-white">SEBELUM</strong> dibersihkan.</p>
@@ -145,8 +145,7 @@
 
         {{-- Info ruangan --}}
         <div class="info-card">
-            <div class="info-row"><i class="bi bi-building"></i> <span>{{ $area->nama_ruangan }}</span></div>
-            <div class="info-row"><i class="bi bi-layers"></i> <span>Lantai {{ $area->lantai }}</span></div>
+            <div class="info-row"><i class="bi bi-building"></i> <span>{{ $area->lantai }}</span></div>
             <div class="info-row"><i class="bi bi-person"></i> <span>{{ auth()->user()->name }}</span></div>
         </div>
 
@@ -235,36 +234,51 @@
     }
 
     // ============================================================
-    // AMBIL FOTO dari video stream
+    // AMBIL FOTO dari video stream + BURN WATERMARK GPS
     // ============================================================
     function ambilFoto() {
         if (!stream) {
             document.getElementById('input-file-asli').click();
             return;
         }
-        canvas.width  = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
+        canvas.width  = video.videoWidth  || 1280;
+        canvas.height = video.videoHeight || 960;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Burn watermark seperti tugas mingguan
+        const now      = new Date();
+        const dateStr  = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        const timeStr  = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) + ' WIB';
+        const barH     = 90;
+
+        ctx.fillStyle = 'rgba(0,0,0,0.72)';
+        ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
+
+        ctx.fillStyle = '#22c55e';
+        ctx.font      = 'bold 22px sans-serif';
+        ctx.fillText('● SIM KEBERSIHAN - PUSKESMAS CEMPAKA PUTIH', 22, canvas.height - 56);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font      = 'bold 20px sans-serif';
+        ctx.fillText('[BEFORE] ' + dateStr + ' • ' + timeStr, 22, canvas.height - 28);
+
+        if (koordinatSimpan) {
+            ctx.fillStyle = '#94a3b8';
+            ctx.font      = '15px sans-serif';
+            const gpsText = 'GPS: ' + koordinatSimpan;
+            const gpsW    = ctx.measureText(gpsText).width;
+            ctx.fillText(gpsText, canvas.width - gpsW - 18, canvas.height - 28);
+        }
 
         // Tampilkan preview
         preview.src = canvas.toDataURL('image/jpeg', 0.85);
         preview.style.display = 'block';
         video.style.display = 'none';
 
-        // Convert canvas ke Blob lalu taruh di form sebagai file
         canvas.toBlob(function(blob) {
             const namaFile = 'before_' + Date.now() + '.jpg';
-            const file = new File([blob], namaFile, { type: 'image/jpeg' });
-
-            // Buat DataTransfer untuk simulasi file input
-            const dt = new DataTransfer();
-            dt.items.add(file);
-
-            // Ganti target input dengan foto dari kamera
-            const formData = new FormData(document.getElementById('form-ceklis-before'));
-            // Kita akan mengirim via AJAX agar bisa attach blob
-            // Simpan blob untuk di-submit
-            window._fotoBefore = file;
+            window._fotoBefore = new File([blob], namaFile, { type: 'image/jpeg' });
         }, 'image/jpeg', 0.85);
 
         // Update UI

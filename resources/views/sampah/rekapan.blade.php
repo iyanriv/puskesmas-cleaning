@@ -113,6 +113,12 @@
                     <div class="text-end">
                         <div style="font-size: 2rem; font-weight: 800;">{{ $totalSetoran }}</div>
                         <div style="font-size: 0.8rem; opacity: 0.85;">Total Laporan</div>
+                        <a href="{{ route('sampah.cetak-laporan', ['filter' => $filter, 'bulan' => $bulan]) }}"
+                           target="_blank"
+                           class="btn btn-sm mt-2"
+                           style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:20px; font-size:0.78rem; padding: 4px 14px;">
+                            <i class="bi bi-printer me-1"></i> Cetak Laporan
+                        </a>
                     </div>
                 </div>
             </div>
@@ -130,7 +136,6 @@
                     </div>
                     @if($filter === 'bulan')
                         <select name="bulan" class="select-bulan" onchange="this.form.submit()">
-                            <input type="hidden" name="filter" value="bulan">
                             @foreach($daftarBulan as $b)
                                 <option value="{{ $b }}" {{ $bulan === $b ? 'selected' : '' }}>
                                     {{ \Carbon\Carbon::parse($b . '-01')->translatedFormat('F Y') }}
@@ -196,31 +201,33 @@
                             <div class="rekap-card-header">
                                 <i class="bi bi-people-fill text-success"></i> Rekap per Petugas
                             </div>
-                            <table class="tabel">
-                                <thead>
-                                    <tr>
-                                        <th>Petugas</th>
-                                        <th class="text-end">Jumlah Laporan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($rekapPertugas as $data)
+                            <div class="table-responsive table-scroll-container">
+                                <table class="tabel">
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <div class="avatar-circle">
-                                                        {{ strtoupper(substr($data['nama'], 0, 1)) }}
-                                                    </div>
-                                                    <span class="fw-semibold">{{ $data['nama'] }}</span>
-                                                </div>
-                                            </td>
-                                            <td class="text-end fw-bold text-success">
-                                                {{ $data['jumlah_setor'] }} kali
-                                            </td>
+                                            <th>Petugas</th>
+                                            <th class="text-end">Jumlah Laporan</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($rekapPertugas as $data)
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="avatar-circle">
+                                                            {{ strtoupper(substr($data['nama'], 0, 1)) }}
+                                                        </div>
+                                                        <span class="fw-semibold">{{ $data['nama'] }}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-end fw-bold text-success">
+                                                    {{ $data['jumlah_setor'] }} kali
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 

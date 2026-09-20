@@ -4,9 +4,14 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0">Kelola Barang</h3>
-        <a href="{{ route('admin.barang.create') }}" class="btn btn-success rounded-pill px-4">
-            <i class="bi bi-plus-circle me-1"></i> Tambah Barang
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('stok-barang.index') }}" class="btn btn-outline-success rounded-pill px-3">
+                <i class="bi bi-clipboard2-data me-1"></i> Laporan Stok
+            </a>
+            <a href="{{ route('admin.barang.create') }}" class="btn btn-success rounded-pill px-4">
+                <i class="bi bi-plus-circle me-1"></i> Tambah Barang
+            </a>
+        </div>
     </div>
 
     @if(session('sukses'))
@@ -33,7 +38,7 @@
                 </div>
             </form>
 
-            <div class="table-responsive">
+            <div class="table-responsive table-scroll-container">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>

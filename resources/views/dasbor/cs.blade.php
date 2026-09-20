@@ -99,17 +99,41 @@
             <div>
                 <p class="mb-1 text-white-50" style="font-size: 0.85rem;">Puskesmas Cempaka Putih</p>
                 <h2 class="fw-bold mb-1" style="font-size: 1.6rem;">Halo, {{ explode(' ', $pengguna->name)[0] }}! 👋</h2>
-                <p class="mb-0 text-white-50" style="font-size: 0.9rem;">Shift {{ ucfirst($pengguna->shift ?? '-') }} — Semangat bersih!</p>
+                <p class="mb-0 text-white-50" style="font-size: 0.9rem;">Petugas Kebersihan — Semangat bersih!</p>
             </div>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-sm btn-light rounded-pill"><i class="bi bi-box-arrow-right"></i></button>
-            </form>
+            <button type="button" class="btn btn-sm btn-light rounded-pill"
+                    data-bs-toggle="modal" data-bs-target="#modalKeluarCs">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
         </div>
+
+        {{-- Modal Konfirmasi Logout CS --}}
+        <div class="modal fade" id="modalKeluarCs" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content rounded-4 border-0 shadow">
+                    <div class="modal-body text-center px-4 pt-4 pb-3">
+                        <div class="mb-3" style="font-size:2.5rem;">👋</div>
+                        <h6 class="fw-bold mb-1">Yakin ingin keluar?</h6>
+                        <p class="text-muted mb-0" style="font-size:0.85rem;">Sesi Anda akan diakhiri.</p>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 px-4 pb-4" style="gap:0.5rem;">
+                        <button type="button" class="btn btn-light rounded-3"
+                                style="flex:1;" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger rounded-3 fw-semibold"
+                                style="flex:1;" onclick="document.getElementById('formLogoutCs').submit()">
+                            Ya, Keluar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form id="formLogoutCs" action="{{ route('logout') }}" method="POST" style="display:none;">
+            @csrf
+        </form>
         <div class="d-flex gap-3 mt-3">
             <div class="stat-box">
-                <div class="fw-bold" style="font-size: 1.5rem;">{{ $selesaiCeklis }}/{{ max($totalCeklis, 1) }}</div>
-                <div style="font-size: 0.8rem; opacity: 0.9;">tugas hari ini</div>
+                <div class="fw-bold" style="font-size: 1.5rem;">{{ $selesaiTugasMingguan }}/{{ max($totalTugasMingguan, 1) }}</div>
+                <div style="font-size: 0.8rem; opacity: 0.9;">tugas mingguan</div>
             </div>
             <div class="stat-box">
                 <div class="fw-bold" style="font-size: 1.5rem;">{{ $persentase }}%</div>
@@ -120,11 +144,11 @@
 
     <div class="overlap-menu">
         <div class="menu-grid">
-            <a href="{{ route('ceklis.index') }}" class="menu-item">
-                <div class="icon-circle"><i class="bi bi-card-checklist"></i></div>
+            <a href="{{ route('tugas-mingguan.index') }}" class="menu-item">
+                <div class="icon-circle"><i class="bi bi-calendar-check"></i></div>
                 <div class="flex-grow-1">
-                    <h6 class="fw-bold mb-0 text-dark">Ceklis Kebersihan</h6>
-                    <small class="text-secondary">Catat aktivitas kebersihan</small>
+                    <h6 class="fw-bold mb-0 text-dark">Tugas Mingguan</h6>
+                    <small class="text-secondary">Pekerjaan berkala di luar tugas rutin</small>
                 </div>
                 <i class="bi bi-chevron-right text-secondary"></i>
             </a>
@@ -134,11 +158,10 @@
                     <h6 class="fw-bold mb-0 text-dark">Operan Shift</h6>
                     <small class="text-secondary">Koordinasi pergantian shift</small>
                 </div>
-                @if($operanMenunggu->count() > 0)
-                    <span class="badge rounded-pill bg-danger" style="font-size:0.68rem;">
-                        {{ $operanMenunggu->count() }}
-                    </span>
-                @endif
+                <span id="badge-operan-card" class="badge rounded-pill bg-danger me-1"
+                      style="font-size:0.68rem; display:{{ $operanMenunggu->count() > 0 ? 'inline-flex' : 'none' }};">
+                    {{ $operanMenunggu->count() }}
+                </span>
                 <i class="bi bi-chevron-right text-secondary ms-1"></i>
             </a>
             <a href="{{ route('barang.katalog') }}" class="menu-item">
@@ -161,8 +184,7 @@
     </div>
 
     {{-- FR-017: Notifikasi operan masuk — muncul di dasbor jika ada operan menunggu --}}
-    @if($operanMenunggu->count() > 0)
-    <div style="padding: 0 1.25rem; margin-top: 0.75rem;">
+    <div id="banner-operan" style="padding: 0 1.25rem; margin-top: 0.75rem; display: {{ $operanMenunggu->count() > 0 ? 'block' : 'none' }};">
         @foreach($operanMenunggu as $op)
         <a href="{{ route('operan.index') }}" class="d-flex align-items-center gap-3 text-decoration-none mb-2"
            style="background:#fff8e1; border:1.5px solid #fbbf24; border-radius:16px; padding:0.85rem 1rem;">
@@ -185,7 +207,6 @@
         </a>
         @endforeach
     </div>
-    @endif
 
     <div class="activity-section">
         <h5 class="fw-bold text-dark mb-3">Aktivitas Terakhir</h5>
@@ -204,4 +225,60 @@
         </div>
     </div>
 </div>
+
+<script>
+// ── Polling notifikasi operan masuk setiap 30 detik ───────────
+(function() {
+    const URL_POLL = '{{ route('api.notifikasi.operan') }}';
+
+    function perbarui(jumlah) {
+        // Badge di bottom nav
+        const badgeNav = document.getElementById('badge-operan-nav');
+        if (badgeNav) {
+            if (jumlah > 0) {
+                badgeNav.textContent = jumlah;
+                badgeNav.style.display = 'flex';
+            } else {
+                badgeNav.style.display = 'none';
+            }
+        }
+
+        // Badge di menu card
+        const badgeCard = document.getElementById('badge-operan-card');
+        if (badgeCard) {
+            if (jumlah > 0) {
+                badgeCard.textContent = jumlah;
+                badgeCard.style.display = 'inline-flex';
+            } else {
+                badgeCard.style.display = 'none';
+            }
+        }
+
+        // Banner notifikasi di halaman
+        const banner = document.getElementById('banner-operan');
+        if (banner) {
+            banner.style.display = jumlah > 0 ? 'block' : 'none';
+        }
+
+        // Update judul tab browser
+        if (jumlah > 0) {
+            document.title = '(' + jumlah + ') SIM Kebersihan - Dasbor';
+        } else {
+            document.title = 'SIM Kebersihan - Dasbor';
+        }
+    }
+
+    function poll() {
+        fetch(URL_POLL, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => { if (data) perbarui(data.jumlah); })
+        .catch(() => {}); // silent fail
+    }
+
+    // Poll pertama setelah 5 detik, lalu setiap 30 detik
+    setTimeout(() => { poll(); setInterval(poll, 30000); }, 5000);
+})();
+</script>
 @endsection

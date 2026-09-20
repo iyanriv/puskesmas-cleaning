@@ -5,7 +5,7 @@ namespace App\Exports;
 use App\Models\CeklisKebersihan;
 use App\Models\PermintaanBarang;
 use App\Models\SetoranSampah;
-use App\Models\PenilaianKinerja;
+use App\Models\PenilaianPjLantai;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -34,7 +34,7 @@ class LaporanExport implements FromView, ShouldAutoSize
         $ceklisPersen  = $totalCeklis > 0 ? round(($ceklisSelesai / $totalCeklis) * 100) : 0;
         
         $ceklisPerArea = CeklisKebersihan::with('area')->whereBetween('tanggal', [$dari, $sampai])->get()->groupBy('area_id')->map(fn($g) => [
-            'nama'    => $g->first()->area?->nama_ruangan ?? '-',
+            'nama'    => $g->first()->area?->lantai ?? '-',
             'total'   => $g->count(),
             'selesai' => $g->where('status', 'selesai')->count(),
         ]);
@@ -43,16 +43,24 @@ class LaporanExport implements FromView, ShouldAutoSize
         $permintaanDisetujui = PermintaanBarang::whereBetween('waktu_request', [$dari . ' 00:00:00', $sampai . ' 23:59:59'])->where('status_request', 'disetujui')->count();
         $permintaanDitolak   = PermintaanBarang::whereBetween('waktu_request', [$dari . ' 00:00:00', $sampai . ' 23:59:59'])->where('status_request', 'ditolak')->count();
 
-        $setoranList  = SetoranSampah::whereBetween('tanggal', [$dari, $sampai])->get();
-        $totalKgSampah = $setoranList->sum('berat_kg');
+        $setoranList   = SetoranSampah::whereBetween('tanggal', [$dari, $sampai])->get();
+        $totalKgSampah = 0; // kolom berat_kg sudah dihapus; gunakan jumlah setoran sebagai metrik
         $totalSetoran  = $setoranList->count();
 
-        $penilaianList   = PenilaianKinerja::whereBetween('tanggal', [$dari, $sampai])->with('dinilai')->get();
-        $rataKinerja     = $penilaianList->count() > 0 ? round($penilaianList->avg(fn($p) => $p->rataRata()), 1) : null;
-        $topPerformer = $penilaianList->groupBy('dinilai_id')->map(fn($g) => [
-            'nama'     => $g->first()->dinilai->name,
-            'rata'     => round($g->avg(fn($p) => $p->rataRata()), 1),
-        ])->sortByDesc('rata')->first();
+        $penilaianList = PenilaianPjLantai::whereBetween('tanggal_penilaian', [$dari, $sampai])->with('petugasCs')->get();
+        if ($penilaianList->count() > 0) {
+            $rataKinerja = round($penilaianList->avg('rata_rata'), 1);
+            $topPerformer = $penilaianList->groupBy(function ($p) {
+                return $p->petugas_cs_id ?: $p->nama_petugas_cs;
+            })->map(function ($g) {
+                $first = $g->first();
+                $nama  = $first->petugasCs?->name ?? $first->nama_petugas_cs ?? 'Petugas';
+                return ['nama' => $nama, 'rata' => round($g->avg('rata_rata'), 1)];
+            })->sortByDesc('rata')->first();
+        } else {
+            $rataKinerja  = null;
+            $topPerformer = null;
+        }
 
         return view('laporan.excel', compact(
             'judul', 'dari', 'sampai',

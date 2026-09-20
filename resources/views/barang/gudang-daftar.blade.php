@@ -36,6 +36,7 @@
         font-weight: 700; color: #6b7280;
         text-transform: uppercase; letter-spacing: 0.04em;
         text-align: left; border-bottom: 1px solid #f3f4f6;
+        background-color: #f9fafb;
     }
     .tabel-permintaan td {
         padding: 0.85rem 1rem; font-size: 0.85rem;
@@ -71,6 +72,14 @@
         transition: all 0.2s; cursor: pointer; margin-left: 4px;
     }
     .btn-tolak:hover { background: #fecaca; }
+    .btn-bukti {
+        background: #eff6ff; color: #1d4ed8; border: none;
+        border-radius: 10px; padding: 6px 14px;
+        font-size: 0.78rem; font-weight: 700;
+        transition: all 0.2s; cursor: pointer; text-decoration: none;
+        display: inline-block;
+    }
+    .btn-bukti:hover { background: #dbeafe; color: #1e40af; }
 
     /* Modal tolak */
     .modal-konten {
@@ -111,7 +120,7 @@
     .waktu-cs { font-size: 0.72rem; color: #9ca3af; }
 </style>
 
-<div class="container-fluid py-4">
+<div class="container py-4">
 
     {{-- Page title --}}
     <div class="d-flex align-items-center mb-4">
@@ -179,7 +188,7 @@
                     @endif
                 </div>
                 @if($permintaanPending->count() > 0)
-                <div class="table-responsive">
+                <div class="table-responsive table-scroll-container">
                     <table class="tabel-permintaan">
                         <thead>
                             <tr>
@@ -249,7 +258,7 @@
                     <h6><i class="bi bi-clock-history text-secondary me-2"></i>Diproses Hari Ini</h6>
                 </div>
                 @if($sudahDiproses->count() > 0)
-                <div class="table-responsive">
+                <div class="table-responsive table-scroll-container">
                     <table class="tabel-permintaan">
                         <thead>
                             <tr>
@@ -258,6 +267,7 @@
                                 <th>Jumlah</th>
                                 <th>Status</th>
                                 <th>Waktu</th>
+                                <th>Bukti</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -275,6 +285,13 @@
                                     @endif
                                 </td>
                                 <td class="waktu-cs">{{ $p->waktu_approve?->format('H:i') }}</td>
+                                <td>
+                                    <a href="{{ route('barang.bukti', $p->id) }}"
+                                       target="_blank"
+                                       class="btn-bukti">
+                                        <i class="bi bi-file-earmark-pdf me-1"></i> Bukti
+                                    </a>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>

@@ -13,11 +13,14 @@ class PenggunaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with(['peran', 'area']);
+        $query = User::with('peran');
         
         if ($request->has('cari') && $request->cari != '') {
-            $query->where('name', 'like', '%' . $request->cari . '%')
-                  ->orWhere('nik', 'like', '%' . $request->cari . '%');
+            $cari = $request->cari;
+            $query->where(function ($q) use ($cari) {
+                $q->where('name', 'like', '%' . $cari . '%')
+                  ->orWhere('nik', 'like', '%' . $cari . '%');
+            });
         }
 
         if ($request->has('peran_id') && $request->peran_id != '') {
@@ -33,8 +36,7 @@ class PenggunaController extends Controller
     public function create()
     {
         $peran = Peran::all();
-        $area = Area::all();
-        return view('admin.pengguna.buat', compact('peran', 'area'));
+        return view('admin.pengguna.buat', compact('peran'));
     }
 
     public function store(Request $request)
@@ -44,8 +46,6 @@ class PenggunaController extends Controller
             'nik' => 'required|unique:users',
             'password' => 'required|min:6',
             'peran_id' => 'required|exists:peran,id',
-            'shift' => 'nullable|in:pagi,siang,malam',
-            'area_id' => 'nullable|exists:area,id',
         ]);
 
         $user = new User();
@@ -53,8 +53,6 @@ class PenggunaController extends Controller
         $user->nik = $request->nik;
         $user->password = Hash::make($request->password);
         $user->peran_id = $request->peran_id;
-        $user->shift = $request->shift;
-        $user->area_id = $request->area_id;
         $user->save();
 
         return redirect()->route('admin.pengguna.index')->with('sukses', 'Pengguna berhasil ditambahkan.');
@@ -64,8 +62,7 @@ class PenggunaController extends Controller
     {
         $pengguna = User::findOrFail($id);
         $peran = Peran::all();
-        $area = Area::all();
-        return view('admin.pengguna.ubah', compact('pengguna', 'peran', 'area'));
+        return view('admin.pengguna.ubah', compact('pengguna', 'peran'));
     }
 
     public function update(Request $request, $id)
@@ -77,8 +74,6 @@ class PenggunaController extends Controller
             'nik' => 'required|unique:users,nik,' . $user->id,
             'password' => 'nullable|min:6',
             'peran_id' => 'required|exists:peran,id',
-            'shift' => 'nullable|in:pagi,siang,malam',
-            'area_id' => 'nullable|exists:area,id',
         ]);
 
         $user->name = $request->name;
@@ -87,8 +82,6 @@ class PenggunaController extends Controller
             $user->password = Hash::make($request->password);
         }
         $user->peran_id = $request->peran_id;
-        $user->shift = $request->shift;
-        $user->area_id = $request->area_id;
         $user->save();
 
         return redirect()->route('admin.pengguna.index')->with('sukses', 'Pengguna berhasil diperbarui.');

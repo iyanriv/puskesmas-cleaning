@@ -26,29 +26,29 @@
         <div class="card-body p-4">
             <form action="{{ route('admin.area.index') }}" method="GET" class="row g-3 mb-4">
                 <div class="col-md-9">
-                    <input type="text" name="cari" class="form-control rounded-pill" placeholder="Cari Nama Ruangan atau Lantai..." value="{{ request('cari') }}">
+                    <input type="text" name="cari" class="form-control rounded-pill" placeholder="Cari Unit atau Lantai..." value="{{ request('cari') }}">
                 </div>
                 <div class="col-md-3">
                     <button type="submit" class="btn btn-outline-success rounded-pill w-100">Cari</button>
                 </div>
             </form>
 
-            <div class="table-responsive">
+            <div class="table-responsive table-scroll-container">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>No</th>
-                            <th>Nama Ruangan</th>
-                            <th>Lantai</th>
-                            <th>Aksi</th>
+                            <th style="width: 80px;">No</th>
+                            <th>Unit / Lantai</th>
+                            <th style="width: 180px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($area as $key => $a)
                             <tr>
                                 <td>{{ $area->firstItem() + $key }}</td>
-                                <td>{{ $a->nama_ruangan }}</td>
-                                <td>{{ $a->lantai }}</td>
+                                <td>
+                                    <span class="fw-semibold text-dark">{{ $a->lantai }}</span>
+                                </td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('admin.area.edit', $a->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3">Edit</a>
@@ -62,7 +62,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center py-4">Data area tidak ditemukan.</td>
+                                <td colspan="3" class="text-center py-4">Data area tidak ditemukan.</td>
                             </tr>
                         @endforelse
                     </tbody>

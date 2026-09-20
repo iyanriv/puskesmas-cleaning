@@ -182,8 +182,7 @@
                     <i class="bi {{ $status === 'selesai' ? 'bi-check2-circle' : ($status === 'proses' ? 'bi-camera' : 'bi-door-open') }}"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <div class="fw-semibold text-dark" style="font-size:0.92rem;">{{ $area->nama_ruangan }}</div>
-                    <div class="text-secondary" style="font-size:0.77rem;">Lantai {{ $area->lantai }}</div>
+                    <div class="fw-semibold text-dark" style="font-size:0.95rem;">{{ $area->lantai }}</div>
                 </div>
                 <span class="badge-status badge-{{ $status }}">{{ $labelStatus }}</span>
             </a>

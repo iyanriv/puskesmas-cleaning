@@ -61,6 +61,10 @@
             padding: 0.75rem 1rem;
             align-items: center;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            background-color: white;
         }
         
         .avatar-sm { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background-color: #e8f6ef; color: #12a65a; flex-shrink: 0; }
@@ -73,6 +77,81 @@
             .sidebar-overlay.show { display: block; }
             .main-content-wrapper { margin-left: 0; }
             .mobile-header { display: flex !important; }
+        }
+
+        /* ================================================
+           CONTAINER TABEL & STICKY HEADER
+           ================================================ */
+        .table-scroll-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            overflow-x: auto;
+            position: relative;
+        }
+        .table-scroll-container thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background-color: #f8f9fa;
+            box-shadow: inset 0 -1px 0 #dee2e6;
+        }
+        .table-scroll-container::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .table-scroll-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .table-scroll-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .table-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* ================================================
+           CONTRAST & ICON BUBBLE UTILITIES
+           ================================================ */
+        .bg-white.bg-opacity-10, 
+        .bg-white.bg-opacity-15, 
+        .bg-white.bg-opacity-20, 
+        .bg-white.bg-opacity-25 {
+            background-color: rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.28) !important;
+        }
+
+        .bg-warning.bg-opacity-10, 
+        .bg-warning.bg-opacity-15, 
+        .bg-warning.bg-opacity-20 {
+            background-color: rgba(245, 158, 11, 0.15) !important;
+            color: #d97706 !important;
+        }
+
+        .bg-danger.bg-opacity-10, 
+        .bg-danger.bg-opacity-15 {
+            background-color: rgba(239, 68, 68, 0.12) !important;
+            color: #dc2626 !important;
+        }
+
+        .bg-success.bg-opacity-10, 
+        .bg-success.bg-opacity-15 {
+            background-color: rgba(16, 185, 129, 0.12) !important;
+            color: #059669 !important;
+        }
+
+        .bg-primary.bg-opacity-10, 
+        .bg-primary.bg-opacity-15 {
+            background-color: rgba(59, 130, 246, 0.12) !important;
+            color: #2563eb !important;
+        }
+
+        .bg-info.bg-opacity-10, 
+        .bg-info.bg-opacity-15 {
+            background-color: rgba(6, 182, 212, 0.12) !important;
+            color: #0891b2 !important;
         }
 
         /* ================================================
@@ -156,8 +235,10 @@
     <div id="app">
         @php
             $isLoginPage = request()->routeIs('login');
-            $isMobileUI = request()->routeIs('dasbor.cs', 'ceklis.*', 'operan.*', 'barang.katalog', 'barang.ajukan', 'sampah.buat');
-            $showBottomNav = auth()->check() && in_array(auth()->user()->peran->nama_peran ?? '', ['cs', 'pj_lantai']) && $isMobileUI;
+            $isCsUser = auth()->check() && in_array(auth()->user()->peran->nama_peran ?? '', ['cs', 'pj_lantai']);
+            $isMobileUI = request()->routeIs('dasbor.cs', 'ceklis.*', 'barang.katalog', 'barang.keranjang', 'barang.ajukan', 'sampah.buat')
+                || ($isCsUser && request()->routeIs('tugas-mingguan.*', 'operan.*', 'sampah.rekapan'));
+            $showBottomNav = $isCsUser && $isMobileUI;
             $useSidebar = auth()->check() && !$isMobileUI && !$isLoginPage;
         @endphp
 
@@ -201,9 +282,29 @@
                                         <i class="bi bi-box"></i> Kelola Barang
                                     </a>
                                 </li>
-                                <li class="nav-item mt-3">
-                                    <a class="nav-link {{ request()->routeIs('penilaian.*') ? 'active' : '' }}" href="{{ route('penilaian.index') }}">
-                                        <i class="bi bi-star"></i> Penilaian Kinerja
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('stok-barang.*') ? 'active' : '' }}" href="{{ route('stok-barang.index') }}">
+                                        <i class="bi bi-clipboard2-data"></i> Laporan Stok Barang
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.penilaian-pj.*') ? 'active' : '' }}" href="{{ route('admin.penilaian-pj.index') }}">
+                                        <i class="bi bi-clipboard-check"></i> Penilaian PJ Lantai
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('tugas-mingguan.*') ? 'active' : '' }}" href="{{ route('tugas-mingguan.index') }}">
+                                        <i class="bi bi-calendar-check"></i> Tugas Mingguan CS
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('sampah.rekapan') ? 'active' : '' }}" href="{{ route('sampah.rekapan') }}">
+                                        <i class="bi bi-recycle"></i> Bank Sampah
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('operan.*') ? 'active' : '' }}" href="{{ route('operan.index') }}">
+                                        <i class="bi bi-arrow-left-right"></i> Operan Shift
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -218,8 +319,8 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('penilaian.*') ? 'active' : '' }}" href="{{ route('penilaian.index') }}">
-                                        <i class="bi bi-star"></i> Penilaian Kinerja
+                                    <a class="nav-link {{ request()->routeIs('tugas-mingguan.*') ? 'active' : '' }}" href="{{ route('tugas-mingguan.index') }}">
+                                        <i class="bi bi-calendar-check"></i> Tugas Mingguan CS
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -248,6 +349,11 @@
                                         <i class="bi bi-box"></i> Master Barang
                                     </a>
                                 </li>
+                                <li class="nav-item mt-2">
+                                    <a class="nav-link {{ request()->routeIs('stok-barang.*') ? 'active' : '' }}" href="{{ route('stok-barang.index') }}">
+                                        <i class="bi bi-clipboard2-data"></i> Laporan Stok
+                                    </a>
+                                </li>
                             @endif
                         </ul>
                     </div>
@@ -263,14 +369,38 @@
                         <a href="{{ route('profil.ganti-password') }}" class="btn btn-light btn-sm w-100 text-start rounded-3 mb-2 text-dark">
                             <i class="bi bi-key me-2 text-secondary"></i> Ganti Password
                         </a>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger btn-sm w-100 text-start rounded-3">
-                                <i class="bi bi-box-arrow-right me-2"></i> Keluar
-                            </button>
-                        </form>
+                        <button type="button" class="btn btn-outline-danger btn-sm w-100 text-start rounded-3"
+                                data-bs-toggle="modal" data-bs-target="#modalKonfirmasiKeluar">
+                            <i class="bi bi-box-arrow-right me-2"></i> Keluar
+                        </button>
                     </div>
                 </nav>
+
+                {{-- Modal Konfirmasi Logout — di LUAR sidebar agar tidak terhalang --}}
+                <div class="modal fade" id="modalKonfirmasiKeluar" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-sm">
+                        <div class="modal-content rounded-4 border-0 shadow">
+                            <div class="modal-body text-center px-4 pt-4 pb-3">
+                                <div class="mb-3" style="font-size:2.5rem;">👋</div>
+                                <h6 class="fw-bold mb-1">Yakin ingin keluar?</h6>
+                                <p class="text-muted mb-0" style="font-size:0.85rem;">
+                                    Sesi Anda akan diakhiri dan perlu login kembali.
+                                </p>
+                            </div>
+                            <div class="modal-footer border-0 pt-0 px-4 pb-4" style="gap:0.5rem;">
+                                <button type="button" class="btn btn-light rounded-3"
+                                        style="flex:1;" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-danger rounded-3 fw-semibold"
+                                        style="flex:1;" onclick="document.getElementById('formLogoutSidebar').submit()">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Ya, Keluar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form id="formLogoutSidebar" action="{{ route('logout') }}" method="POST" style="display:none;">
+                    @csrf
+                </form>
 
                 <!-- Main Content -->
                 <div class="main-content-wrapper flex-grow-1">
@@ -315,8 +445,8 @@
                     <a href="{{ route('dasbor.cs') }}" class="nav-item {{ request()->routeIs('dasbor.cs') ? 'active' : '' }}">
                         <i class="bi bi-house-door"></i><span>Beranda</span>
                     </a>
-                    <a href="{{ route('ceklis.index') }}" class="nav-item {{ request()->is('ceklis*') ? 'active' : '' }}">
-                        <i class="bi bi-card-checklist"></i><span>Ceklis</span>
+                    <a href="{{ route('tugas-mingguan.index') }}" class="nav-item {{ request()->is('tugas-mingguan*') ? 'active' : '' }}">
+                        <i class="bi bi-calendar-check"></i><span>Tugas</span>
                     </a>
                     <a href="{{ route('operan.index') }}" class="nav-item {{ request()->is('operan*') ? 'active' : '' }}" style="position:relative;">
                         <i class="bi bi-arrow-left-right"></i>
@@ -324,13 +454,13 @@
                             $jumlahOperanNav = \App\Models\OperanShift::where('penerima_id', auth()->id())
                                 ->where('status_terima', 'menunggu')->count();
                         @endphp
-                        @if($jumlahOperanNav > 0)
-                            <span style="position:absolute;top:4px;right:10px;background:#ef4444;color:white;
-                                         font-size:0.6rem;font-weight:700;width:16px;height:16px;border-radius:50%;
-                                         display:flex;align-items:center;justify-content:center;line-height:1;">
-                                {{ $jumlahOperanNav }}
-                            </span>
-                        @endif
+                        <span id="badge-operan-nav"
+                              style="position:absolute;top:4px;right:10px;background:#ef4444;color:white;
+                                     font-size:0.6rem;font-weight:700;width:16px;height:16px;border-radius:50%;
+                                     display:{{ $jumlahOperanNav > 0 ? 'flex' : 'none' }};
+                                     align-items:center;justify-content:center;line-height:1;">
+                            {{ $jumlahOperanNav }}
+                        </span>
                         <span>Operan</span>
                     </a>
                     <a href="{{ route('barang.katalog') }}" class="nav-item {{ request()->is('barang*') ? 'active' : '' }}">

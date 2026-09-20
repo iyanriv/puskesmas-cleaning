@@ -134,7 +134,7 @@
     }
 
     /* Link laporan modul */
-    .modul-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .modul-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
     .modul-link-card {
         background: white; border-radius: 16px; padding: 1rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.04); text-decoration: none; color: inherit;
@@ -217,23 +217,27 @@
                     <span class="kpi-ikon">⭐</span>
                     <div class="kpi-angka">{{ $rataKinerja ?? '—' }}</div>
                     <div class="kpi-label">Rata-rata Kinerja</div>
-                    <div class="kpi-sub">dari 5 nilai maksimal</div>
+                    <div class="kpi-sub">{{ ($rataKinerja && $rataKinerja > 5) ? 'skor maksimal 100' : 'dari 5 nilai maksimal' }}</div>
                 </div>
             </div>
 
             {{-- Top Performer --}}
             @if($topPerformer)
+                @php
+                    $isSkor100 = $topPerformer['rata'] > 5;
+                    $persen = $isSkor100 ? min(100, max(0, $topPerformer['rata'])) : min(100, max(0, ($topPerformer['rata'] / 5) * 100));
+                    $skorMax = $isSkor100 ? 100 : 5;
+                @endphp
                 <div class="top-card">
                     <span style="font-size:2rem;">🏆</span>
                     <div class="top-avatar">{{ strtoupper(substr($topPerformer['nama'], 0, 1)) }}</div>
                     <div class="flex-grow-1">
                         <div style="font-size:0.72rem; opacity:0.8; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Top Performer Periode Ini</div>
                         <div class="fw-bold" style="font-size:1rem;">{{ $topPerformer['nama'] }}</div>
-                        <div style="font-size:0.8rem; opacity:0.85;">Rata-rata: ⭐ {{ $topPerformer['rata'] }}/5</div>
+                        <div style="font-size:0.8rem; opacity:0.85;">Rata-rata: ⭐ {{ $topPerformer['rata'] }}/{{ $skorMax }}</div>
                     </div>
-                    @php $persen = ($topPerformer['rata'] / 5) * 100; @endphp
                     <div class="progress-ring" style="--persen:{{ $persen }}">
-                        <div class="progress-ring-inner">{{ $topPerformer['rata'] }}</div>
+                        <div class="progress-ring-inner">{{ round($topPerformer['rata']) }}</div>
                     </div>
                 </div>
             @endif
@@ -335,13 +339,7 @@
                         <div class="modul-link-sub">Rekap per jenis & petugas</div>
                     </div>
                 </a>
-                <a href="{{ route('penilaian.rekap') }}" class="modul-link-card">
-                    <div class="modul-link-icon" style="background:#ede9fe; color:#7c3aed;">⭐</div>
-                    <div>
-                        <div class="modul-link-nama">Penilaian Kinerja</div>
-                        <div class="modul-link-sub">Peringkat & detail aspek</div>
-                    </div>
-                </a>
+
                 <a href="{{ route('barang.gudang') }}" class="modul-link-card">
                     <div class="modul-link-icon" style="background:#dbeafe; color:#12a65a;">📦</div>
                     <div>
@@ -349,13 +347,32 @@
                         <div class="modul-link-sub">Stok & riwayat permintaan</div>
                     </div>
                 </a>
-                <a href="{{ route('penilaian.index') }}" class="modul-link-card">
-                    <div class="modul-link-icon" style="background:#fef3c7; color:#d97706;">📋</div>
+                @if(in_array(auth()->user()->peran->nama_peran ?? '', ['admin', 'gudang']))
+                <a href="{{ route('stok-barang.index') }}" class="modul-link-card">
+                    <div class="modul-link-icon" style="background:#ecfdf5; color:#059669;">📊</div>
                     <div>
-                        <div class="modul-link-nama">Input Penilaian</div>
-                        <div class="modul-link-sub">Nilai petugas bulan ini</div>
+                        <div class="modul-link-nama">Laporan Stok Barang</div>
+                        <div class="modul-link-sub">Stok masuk, pemakaian & sisa</div>
                     </div>
                 </a>
+                @endif
+                @if((auth()->user()->peran->nama_peran ?? '') === 'admin')
+                <a href="{{ route('admin.penilaian-pj.index') }}" class="modul-link-card">
+                    <div class="modul-link-icon" style="background:#fef3c7; color:#d97706;">📋</div>
+                    <div>
+                        <div class="modul-link-nama">Data Penilaian PJ</div>
+                        <div class="modul-link-sub">Rekapitulasi penilaian lantai</div>
+                    </div>
+                </a>
+                @else
+                <a href="{{ route('penilaian-pj.form') }}" class="modul-link-card">
+                    <div class="modul-link-icon" style="background:#fef3c7; color:#d97706;">📋</div>
+                    <div>
+                        <div class="modul-link-nama">Form Penilaian PJ</div>
+                        <div class="modul-link-sub">Evaluasi kebersihan ruangan</div>
+                    </div>
+                </a>
+                @endif
             </div>
 
         </div>

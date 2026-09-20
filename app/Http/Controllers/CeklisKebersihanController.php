@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\KompresiFoto;
 use App\Models\Area;
 use App\Models\CeklisKebersihan;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class CeklisKebersihanController extends Controller
         $hariIni  = now()->toDateString();
 
         // Ambil semua area beserta status ceklis hari ini milik CS ini
-        $daftarArea = Area::orderBy('lantai')->orderBy('nama_ruangan')->get()->map(function ($area) use ($pengguna, $hariIni) {
+        $daftarArea = Area::orderBy('lantai')->get()->map(function ($area) use ($pengguna, $hariIni) {
             $ceklis = CeklisKebersihan::where('user_id', $pengguna->id)
                 ->where('area_id', $area->id)
                 ->where('tanggal', $hariIni)
@@ -52,7 +53,7 @@ class CeklisKebersihanController extends Controller
         // Jika sudah ada dan statusnya selesai, arahkan kembali
         if ($ceklisAda && $ceklisAda->status === 'selesai') {
             return redirect()->route('ceklis.index')
-                ->with('info', 'Ceklis area ' . $area->nama_ruangan . ' sudah selesai hari ini.');
+                ->with('info', 'Ceklis area ' . $area->lantai . ' sudah selesai hari ini.');
         }
 
         // Jika ceklis sedang proses (foto before sudah ada), lanjut ke foto after
@@ -81,8 +82,13 @@ class CeklisKebersihanController extends Controller
         $pengguna = auth()->user();
         $hariIni  = now()->toDateString();
 
-        // Simpan foto ke storage/app/public/ceklis/
-        $namaFoto = $request->file('foto_before')->store('ceklis', 'public');
+        // Simpan foto ke storage dengan kompresi (max 1280px, quality 80)
+        $namaFoto = KompresiFoto::simpan(
+            $request->file('foto_before'),
+            'ceklis',
+            1280,
+            80
+        );
 
         $ceklis = CeklisKebersihan::create([
             'user_id'     => $pengguna->id,
@@ -140,8 +146,13 @@ class CeklisKebersihanController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
-        // Simpan foto after
-        $namaFoto = $request->file('foto_after')->store('ceklis', 'public');
+        // Simpan foto after dengan kompresi (max 1280px, quality 80)
+        $namaFoto = KompresiFoto::simpan(
+            $request->file('foto_after'),
+            'ceklis',
+            1280,
+            80
+        );
 
         $ceklis->update([
             'foto_after'    => $namaFoto,
@@ -150,8 +161,9 @@ class CeklisKebersihanController extends Controller
             'status'        => 'selesai',
         ]);
 
+        $namaArea = $ceklis->area?->lantai ?? 'Area';
         return redirect()->route('dasbor.cs')
-            ->with('sukses', 'Ceklis area ' . $ceklis->area->nama_ruangan . ' berhasil diselesaikan! ✅');
+            ->with('sukses', 'Ceklis area ' . $namaArea . ' berhasil diselesaikan! ✅');
     }
 
     /**

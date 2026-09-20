@@ -14,14 +14,18 @@
                 @method('PUT')
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="nama_ruangan" class="form-label">Nama Ruangan</label>
-                        <input type="text" class="form-control rounded-pill @error('nama_ruangan') is-invalid @enderror" id="nama_ruangan" name="nama_ruangan" value="{{ old('nama_ruangan', $area->nama_ruangan) }}" required>
-                        @error('nama_ruangan') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="lantai" class="form-label">Lantai</label>
-                        <input type="number" class="form-control rounded-pill @error('lantai') is-invalid @enderror" id="lantai" name="lantai" value="{{ old('lantai', $area->lantai) }}" required>
+                        <label for="lantai" class="form-label fw-semibold">Unit / Lantai</label>
+                        <select class="form-select rounded-pill @error('lantai') is-invalid @enderror" id="lantai" name="lantai" required>
+                            <option value="" disabled>-- Pilih Unit / Lantai --</option>
+                            @php
+                                $units = $daftarUnit ?? ['Lantai 1','Lantai 2','Lantai 3','Lantai 4','Lantai 5','Lantai 6','CSSD','CPB','CPT','RWS'];
+                            @endphp
+                            @foreach($units as $unit)
+                                <option value="{{ $unit }}" {{ old('lantai', $area->lantai) == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                            @endforeach
+                        </select>
                         @error('lantai') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <div class="form-text text-muted small mt-2">Pilih unit kerja atau lantai yang baru.</div>
                     </div>
                     <div class="col-12 mt-4 text-end">
                         <button type="submit" class="btn btn-success rounded-pill px-4">Perbarui Area</button>

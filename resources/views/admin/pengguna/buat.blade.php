@@ -37,26 +37,6 @@
                         </select>
                         @error('peran_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                    <div class="col-md-6">
-                        <label for="shift" class="form-label">Shift (Opsional)</label>
-                        <select class="form-select rounded-pill @error('shift') is-invalid @enderror" id="shift" name="shift">
-                            <option value="">Pilih Shift</option>
-                            <option value="pagi" {{ old('shift') == 'pagi' ? 'selected' : '' }}>Pagi</option>
-                            <option value="siang" {{ old('shift') == 'siang' ? 'selected' : '' }}>Siang</option>
-                            <option value="malam" {{ old('shift') == 'malam' ? 'selected' : '' }}>Malam</option>
-                        </select>
-                        @error('shift') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="area_id" class="form-label">Area (Opsional)</label>
-                        <select class="form-select rounded-pill @error('area_id') is-invalid @enderror" id="area_id" name="area_id">
-                            <option value="">Pilih Area</option>
-                            @foreach($area as $a)
-                                <option value="{{ $a->id }}" {{ old('area_id') == $a->id ? 'selected' : '' }}>{{ $a->nama_ruangan }}</option>
-                            @endforeach
-                        </select>
-                        @error('area_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
                     <div class="col-12 mt-4 text-end">
                         <button type="submit" class="btn btn-success rounded-pill px-4">Simpan Pengguna</button>
                     </div>

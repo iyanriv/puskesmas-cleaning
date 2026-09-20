@@ -12,11 +12,13 @@ class PeranSeeder extends Seeder
         $peran = ['admin', 'supervisor', 'pj_lantai', 'cs', 'gudang'];
 
         foreach ($peran as $nama) {
-            DB::table('peran')->insert([
-                'nama_peran' => $nama,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::table('peran')->updateOrInsert(
+                ['nama_peran' => $nama],
+                [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
     }
 }

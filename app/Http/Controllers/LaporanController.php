@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CeklisKebersihan;
 use App\Models\PermintaanBarang;
 use App\Models\SetoranSampah;
-use App\Models\PenilaianKinerja;
+use App\Models\PenilaianPjLantai;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -35,7 +35,7 @@ class LaporanController extends Controller
             ->get()
             ->groupBy('area_id')
             ->map(fn($g) => [
-                'nama'    => $g->first()->area?->nama_ruangan ?? '-',
+                'nama'    => $g->first()->area?->lantai ?? '-',
                 'total'   => $g->count(),
                 'selesai' => $g->where('status', 'selesai')->count(),
             ]);
@@ -56,18 +56,26 @@ class LaporanController extends Controller
         $totalKgSampah = 0; // kolom berat_kg sudah dihapus; gunakan jumlah setoran sebagai metrik
         $totalSetoran  = $setoranList->count();
 
-        // ── Penilaian Kinerja ─────────────────────────────
-        $penilaianList   = PenilaianKinerja::whereBetween('tanggal', [$dari, $sampai])
-            ->with('dinilai')->get();
-        $rataKinerja     = $penilaianList->count() > 0
-            ? round($penilaianList->avg(fn($p) => $p->rataRata()), 1)
-            : null;
+        // ── Penilaian PJ Lantai ───────────────────────────
+        $penilaianList = PenilaianPjLantai::whereBetween('tanggal_penilaian', [$dari, $sampai])
+            ->with('petugasCs')->get();
 
-        // Top performer bulan ini
-        $topPerformer = $penilaianList->groupBy('dinilai_id')->map(fn($g) => [
-            'nama'     => $g->first()->dinilai->name,
-            'rata'     => round($g->avg(fn($p) => $p->rataRata()), 1),
-        ])->sortByDesc('rata')->first();
+        if ($penilaianList->count() > 0) {
+            $rataKinerja = round($penilaianList->avg('rata_rata'), 1);
+            $topPerformer = $penilaianList->groupBy(function ($p) {
+                return $p->petugas_cs_id ?: $p->nama_petugas_cs;
+            })->map(function ($g) {
+                $first = $g->first();
+                $nama  = $first->petugasCs?->name ?? $first->nama_petugas_cs ?? 'Petugas';
+                return [
+                    'nama' => $nama,
+                    'rata' => round($g->avg('rata_rata'), 1),
+                ];
+            })->sortByDesc('rata')->first();
+        } else {
+            $rataKinerja  = null;
+            $topPerformer = null;
+        }
 
         // ── Grafik ceklis 7 hari terakhir ─────────────────
         $grafikCeklis = collect(range(6, 0))->map(function($i) {
@@ -103,7 +111,7 @@ class LaporanController extends Controller
         $ceklisPersen  = $totalCeklis > 0 ? round(($ceklisSelesai / $totalCeklis) * 100) : 0;
         
         $ceklisPerArea = CeklisKebersihan::with('area')->whereBetween('tanggal', [$dari, $sampai])->get()->groupBy('area_id')->map(fn($g) => [
-            'nama'    => $g->first()->area?->nama_ruangan ?? '-',
+            'nama'    => $g->first()->area?->lantai ?? '-',
             'total'   => $g->count(),
             'selesai' => $g->where('status', 'selesai')->count(),
         ]);
@@ -116,22 +124,30 @@ class LaporanController extends Controller
         $totalKgSampah = 0; // kolom berat_kg sudah dihapus
         $totalSetoran  = $setoranList->count();
 
-        $penilaianList   = PenilaianKinerja::whereBetween('tanggal', [$dari, $sampai])->with('dinilai')->get();
-        $rataKinerja     = $penilaianList->count() > 0 ? round($penilaianList->avg(fn($p) => $p->rataRata()), 1) : null;
-        $topPerformer = $penilaianList->groupBy('dinilai_id')->map(fn($g) => [
-            'nama'     => $g->first()->dinilai->name,
-            'rata'     => round($g->avg(fn($p) => $p->rataRata()), 1),
-        ])->sortByDesc('rata')->first();
+        $penilaianList = PenilaianPjLantai::whereBetween('tanggal_penilaian', [$dari, $sampai])->with('petugasCs')->get();
+        if ($penilaianList->count() > 0) {
+            $rataKinerja = round($penilaianList->avg('rata_rata'), 1);
+            $topPerformer = $penilaianList->groupBy(function ($p) {
+                return $p->petugas_cs_id ?: $p->nama_petugas_cs;
+            })->map(function ($g) {
+                $first = $g->first();
+                $nama  = $first->petugasCs?->name ?? $first->nama_petugas_cs ?? 'Petugas';
+                return ['nama' => $nama, 'rata' => round($g->avg('rata_rata'), 1)];
+            })->sortByDesc('rata')->first();
+        } else {
+            $rataKinerja  = null;
+            $topPerformer = null;
+        }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('laporan.pdf', compact(
+        // Tampilkan preview HTML (bukan DomPDF stream)
+        // agar user bisa review dulu sebelum cetak via browser
+        return view('laporan.pdf', compact(
             'judul', 'dari', 'sampai',
             'totalCeklis', 'ceklisSelesai', 'ceklisPersen', 'ceklisPerArea',
             'totalPermintaan', 'permintaanDisetujui', 'permintaanDitolak',
             'totalKgSampah', 'totalSetoran',
             'rataKinerja', 'topPerformer'
         ));
-
-        return $pdf->stream('Laporan_Kebersihan_'.$judul.'.pdf');
     }
 
     public function cetakExcel(Request $request)

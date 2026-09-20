@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Dasbor;
 
 use App\Http\Controllers\Controller;
 use App\Models\CeklisKebersihan;
+use App\Models\TugasMingguan;
 use App\Models\OperanShift;
 use App\Models\PermintaanBarang;
 use App\Models\SetoranSampah;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class DasborCsController extends Controller
 {
@@ -16,16 +18,12 @@ class DasborCsController extends Controller
         $pengguna = $request->user();
         $hariIni = now()->toDateString();
 
-        $totalCeklis = CeklisKebersihan::where('user_id', $pengguna->id)
-            ->where('tanggal', $hariIni)
+        $totalTugasMingguan = TugasMingguan::where('user_id', $pengguna->id)->count();
+        $selesaiTugasMingguan = TugasMingguan::where('user_id', $pengguna->id)
+            ->whereIn('status', ['selesai', 'disetujui'])
             ->count();
 
-        $selesaiCeklis = CeklisKebersihan::where('user_id', $pengguna->id)
-            ->where('tanggal', $hariIni)
-            ->where('status', 'selesai')
-            ->count();
-
-        $persentase = $totalCeklis > 0 ? round(($selesaiCeklis / $totalCeklis) * 100) : 0;
+        $persentase = $totalTugasMingguan > 0 ? round(($selesaiTugasMingguan / $totalTugasMingguan) * 100) : 100;
 
         // FR-017: Jumlah operan masuk yang belum diterima — untuk notifikasi di dasbor
         $operanMenunggu = OperanShift::where('penerima_id', $pengguna->id)
@@ -36,15 +34,14 @@ class DasborCsController extends Controller
 
         $aktivitasTerakhir = collect()
             ->merge(
-                CeklisKebersihan::with('area')
-                    ->where('user_id', $pengguna->id)
+                TugasMingguan::where('user_id', $pengguna->id)
                     ->latest()
                     ->take(3)
                     ->get()
-                    ->map(fn ($c) => [
-                        'teks' => 'Ceklis '.$c->area->nama_ruangan.' '.($c->status === 'selesai' ? 'selesai' : 'proses'),
-                        'waktu' => $c->updated_at->format('H:i'),
-                        'warna' => $c->status === 'selesai' ? 'hijau' : 'kuning',
+                    ->map(fn ($t) => [
+                        'teks' => 'Tugas Mingguan: ' . Str::limit($t->rincian_kegiatan, 25) . ' (' . ucfirst($t->status) . ')',
+                        'waktu' => $t->updated_at->format('H:i'),
+                        'warna' => $t->status === 'disetujui' || $t->status === 'selesai' ? 'hijau' : 'kuning',
                     ])
             )
             ->merge(
@@ -54,7 +51,7 @@ class DasborCsController extends Controller
                     ->take(2)
                     ->get()
                     ->map(fn ($p) => [
-                        'teks' => 'Minta barang: '.$p->barang->nama_barang.' x'.$p->jumlah,
+                        'teks' => 'Minta barang: ' . ($p->barang?->nama_barang ?? 'Barang') . ' x' . $p->jumlah,
                         'waktu' => $p->created_at->format('H:i'),
                         'warna' => 'kuning',
                     ])
@@ -75,7 +72,7 @@ class DasborCsController extends Controller
             ->values();
 
         return view('dasbor.cs', compact(
-            'pengguna', 'totalCeklis', 'selesaiCeklis', 'persentase',
+            'pengguna', 'totalTugasMingguan', 'selesaiTugasMingguan', 'persentase',
             'aktivitasTerakhir', 'operanMenunggu'
         ));
     }
