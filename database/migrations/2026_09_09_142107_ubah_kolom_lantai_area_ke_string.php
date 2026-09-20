@@ -14,6 +14,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         // Ubah tipe kolom dulu ke string, baru bisa update data
         Schema::table('area', function (Blueprint $table) {
             $table->string('lantai', 20)->change();
@@ -28,6 +32,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         // Kembalikan ke integer (hanya ambil angka jika bisa)
         Schema::table('area', function (Blueprint $table) {
             $table->unsignedTinyInteger('lantai')->change();

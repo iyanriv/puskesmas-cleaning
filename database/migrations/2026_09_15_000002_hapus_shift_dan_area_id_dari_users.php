@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (Schema::hasColumn('users', 'area_id')) {
-                $table->dropForeign(['area_id']);
+                if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+                    $table->dropForeign(['area_id']);
+                }
                 $table->dropColumn('area_id');
             }
             if (Schema::hasColumn('users', 'shift')) {

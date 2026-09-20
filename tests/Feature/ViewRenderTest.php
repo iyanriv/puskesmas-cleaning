@@ -10,6 +10,7 @@ use App\Models\Peran;
 
 class ViewRenderTest extends TestCase
 {
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
