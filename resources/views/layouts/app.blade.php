@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>SIKAP Bersih | Sistem Informasi Kebersihan dan Penilaian</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-sikapbersih.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo-sikapbersih.png') }}">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
