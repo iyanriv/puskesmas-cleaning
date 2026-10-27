@@ -162,7 +162,7 @@
         <div>Konten ini dibuat untuk sistem monitoring internal Puskesmas Kecamatan Cempaka Putih.</div>
         <div>
             <a href="{{ route('penilaian-pj.form') }}">Isi Formulir Baru</a> &bull;
-            <span>SIM Kebersihan &copy; {{ date('Y') }}</span>
+            <span>SIKAP Bersih &copy; {{ date('Y') }}</span>
         </div>
     </div>
 

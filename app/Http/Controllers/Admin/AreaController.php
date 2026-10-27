@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 
-use App\Models\ProdukKebersihan;
 
 class AreaController extends Controller
 {
@@ -74,17 +73,12 @@ class AreaController extends Controller
     public function destroy($id)
     {
         $area = Area::findOrFail($id);
-        
-        // Cek jika area digunakan dalam data ceklis kebersihan
-        if (\App\Models\CeklisKebersihan::where('area_id', $id)->exists()) {
-            return redirect()->route('admin.area.index')->with('gagal', 'Area tidak dapat dihapus karena sudah memiliki riwayat ceklis kebersihan.');
-        }
 
         try {
             $area->delete();
             return redirect()->route('admin.area.index')->with('sukses', 'Area berhasil dihapus.');
         } catch (QueryException $e) {
-            return redirect()->route('admin.area.index')->with('gagal', 'Area tidak dapat dihapus karena sedang digunakan dalam data lain (misal checklist).');
+            return redirect()->route('admin.area.index')->with('gagal', 'Area tidak dapat dihapus karena sedang digunakan dalam data lain.');
         }
     }
 }

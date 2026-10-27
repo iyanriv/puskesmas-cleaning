@@ -25,27 +25,33 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
 
-        /* ── Tombol cetak (hanya tampil di layar) ── */
-        .tombol-cetak {
+        /* ── Toolbar Aksi (hanya tampil di layar) ── */
+        .toolbar-aksi {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #10b981;
-            color: white;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .tombol-aksi {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 11pt;
+            font-size: 10.5pt;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(16,185,129,0.35);
-            z-index: 1000;
             font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: filter 0.15s;
         }
-        .tombol-cetak:hover { background: #059669; }
+        .tombol-aksi:hover { filter: brightness(0.9); }
+        .tombol-cetak  { background: #10b981; color: white; }
+        .tombol-unduh  { background: #3b82f6; color: white; }
 
         /* ── Kop Surat ── */
         .kop-surat {
@@ -140,7 +146,7 @@
                 padding: 0 !important;
                 box-shadow: none !important;
             }
-            .tombol-cetak { display: none !important; }
+            .toolbar-aksi { display: none !important; }
 
             @page {
                 size: A4;
@@ -151,10 +157,25 @@
 </head>
 <body>
 
-    {{-- Tombol Cetak --}}
-    <button onclick="window.print()" class="tombol-cetak">
-        🖨️ Cetak Laporan
-    </button>
+    {{-- Toolbar Aksi (hanya tampil saat preview HTML di browser, bukan saat DomPDF render) --}}
+    @isset($urlDownload)
+    <div class="toolbar-aksi">
+        <a href="{{ $urlDownload }}" class="tombol-aksi tombol-unduh" id="btn-unduh-pdf">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            Unduh PDF
+        </a>
+        <button onclick="window.print()" class="tombol-aksi tombol-cetak" id="btn-cetak-laporan">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+            </svg>
+            Cetak Laporan
+        </button>
+    </div>
+    @endisset
 
     <div class="halaman">
 
@@ -229,11 +250,11 @@
             <h3>I. RINGKASAN EKSEKUTIF</h3>
             <table>
                 <tr>
-                    <td class="label">Total Ceklis Area Dibuat</td>
+                    <td class="label">Total Tugas CS Dibuat</td>
                     <td class="value">{{ $totalCeklis }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Ceklis Area Diselesaikan</td>
+                    <td class="label">Tugas CS Diselesaikan</td>
                     <td class="value">{{ $ceklisSelesai }} ({{ $ceklisPersen }}%)</td>
                 </tr>
                 <tr>
@@ -273,14 +294,14 @@
 
         {{-- II. Ceklis per Area --}}
         <div class="tabel-detail">
-            <h3>II. RINCIAN CEKLIS KEBERSIHAN PER AREA</h3>
+        <h3>II. RINCIAN TUGAS MINGGUAN CS PER PETUGAS</h3>
             @if($ceklisPerArea->count() > 0)
                 <table class="tabel-formal">
                     <thead>
                         <tr>
                             <th style="width:30px;">No.</th>
-                            <th>Nama Ruangan / Area</th>
-                            <th style="width:75px;">Total Ceklis</th>
+                            <th>Nama Petugas CS</th>
+                            <th style="width:75px;">Total Tugas</th>
                             <th style="width:75px;">Diselesaikan</th>
                             <th style="width:75px;">Belum Selesai</th>
                             <th style="width:75px;">Persentase</th>
@@ -309,7 +330,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">Tidak terdapat data ceklis kebersihan pada periode ini.</div>
+                <div class="empty-state">Tidak terdapat data tugas mingguan CS pada periode ini.</div>
             @endif
         </div>
 
@@ -365,29 +386,38 @@
             kerjasamanya, kami ucapkan terima kasih.
         </div>
 
-        {{-- TTD --}}
-        <div class="ttd-section">
+        {{-- TTD (4 Pihak) --}}
+        <div class="ttd-section" style="margin-top: 25px;">
             <table class="ttd-table">
                 <tr>
-                    <td>
-                        <div class="ttd-tempat">Mengetahui,</div>
-                        <div class="ttd-jabatan">
-                            Kepala Puskesmas<br>
-                            Kecamatan Cempaka Putih
-                        </div>
-                        <div class="ttd-nama">(...........................)</div>
-                        <div class="ttd-nip">NIP. -</div>
+                    <td style="width: 50%; padding-right: 10px;">
+                        <div class="ttd-tempat">&nbsp;</div>
+                        <div class="ttd-jabatan" style="margin-bottom: 50px;">PJ Petugas Kebersihan</div>
+                        <div class="ttd-nama">Reniwita Sinaga, AMK.</div>
+                        <div class="ttd-nip">NIP: ____________________</div>
                     </td>
-                    <td>
-                        <div class="ttd-tempat">
-                            Jakarta, {{ now()->translatedFormat('d F Y') }}
-                        </div>
-                        <div class="ttd-jabatan">
-                            Supervisor / Admin<br>
-                            Puskesmas Kecamatan Cempaka Putih
-                        </div>
-                        <div class="ttd-nama">(...........................)</div>
-                        <div class="ttd-nip">NIP. -</div>
+                    <td style="width: 50%; padding-left: 10px;">
+                        <div class="ttd-tempat">Jakarta, {{ now()->translatedFormat('d F Y') }}</div>
+                        <div class="ttd-jabatan" style="margin-bottom: 50px;">Pejabat Pelaksana Teknis Kegiatan (PPTK)</div>
+                        <div class="ttd-nama">Ely Nofiyanti, SKM</div>
+                        <div class="ttd-nip">NIP. 198411012011012020</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center; font-weight: bold; padding-top: 18px; padding-bottom: 6px;">
+                        Mengetahui,
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding-right: 10px;">
+                        <div class="ttd-jabatan" style="margin-bottom: 50px;">Pejabat Pembuat Komitmen (PPK)</div>
+                        <div class="ttd-nama">Ns. Anggasari Sinar Novianingrum, S.Kep</div>
+                        <div class="ttd-nip">NIP. 198611052020122010</div>
+                    </td>
+                    <td style="width: 50%; padding-left: 10px;">
+                        <div class="ttd-jabatan" style="margin-bottom: 50px;">Kasubbag Tata Usaha</div>
+                        <div class="ttd-nama">Nurmala Meilasari, SKM., MKM</div>
+                        <div class="ttd-nip">NIP. 198505242010012038</div>
                     </td>
                 </tr>
             </table>

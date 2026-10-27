@@ -11,6 +11,7 @@ class PemakaianStok extends Model
 
     protected $fillable = [
         'laporan_stok_id',
+        'barang_id',
         'produk_id',
         'unit',
         'minggu',
@@ -27,8 +28,16 @@ class PemakaianStok extends Model
         return $this->belongsTo(LaporanStok::class, 'laporan_stok_id');
     }
 
+    public function barang(): BelongsTo
+    {
+        return $this->belongsTo(BarangInventori::class, 'barang_id');
+    }
+
+    /**
+     * Alias relasi untuk kompatibilitas.
+     */
     public function produk(): BelongsTo
     {
-        return $this->belongsTo(ProdukKebersihan::class, 'produk_id');
+        return $this->barang();
     }
 }

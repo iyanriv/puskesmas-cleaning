@@ -36,7 +36,7 @@
         }
     ],
     "env": {
-        "APP_NAME": "SIM Kebersihan",
+        "APP_NAME": "SIKAP Bersih",
         "APP_ENV": "production",
         "APP_KEY": "base64:d1KEcxHRhqSG9IIEXKKURuKOo+5Q2xcgTBvEhfRyv88=",
         "APP_DEBUG": "false",

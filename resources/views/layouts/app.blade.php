@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>SIM Kebersihan - Puskesmas Cempaka Putih</title>
+    <title>SIKAP Bersih | Sistem Informasi Kebersihan dan Penilaian</title>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -29,8 +29,8 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm mb-4">
             <div class="container">
-                <a class="navbar-brand fw-bold text-success" href="{{ url('/') }}">
-                    <i class="bi bi-hospital"></i> SIM Kebersihan
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ url('/') }}" style="color: #31999E;">
+                    <img src="{{ asset('images/logo-sikapbersih.png') }}" alt="Logo SIKAP Bersih" style="height: 34px; margin-right: 8px; object-fit: contain;"> SIKAP Bersih
                 </a>
                 
                 <div class="d-flex align-items-center">

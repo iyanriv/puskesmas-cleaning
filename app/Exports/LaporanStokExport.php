@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
+use App\Models\BarangInventori;
 use App\Models\LaporanStok;
-use App\Models\ProdukKebersihan;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -37,7 +37,7 @@ class LaporanStokExport implements FromArray, WithTitle, WithColumnWidths, WithS
         $this->tahun        = $tahun;
         $this->filterUnit   = $filterUnit;
         $this->filterMinggu = $filterMinggu;
-        $allUnits           = ProdukKebersihan::$daftarUnit;
+        $allUnits           = BarangInventori::$daftarUnit;
         $this->isFilteredUnit = $filterUnit && in_array($filterUnit, $allUnits);
 
         $this->daftarUnit   = $this->isFilteredUnit ? [$filterUnit] : $allUnits;

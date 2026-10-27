@@ -310,7 +310,7 @@
 
         ctx.fillStyle = '#22c55e';
         ctx.font = 'bold 22px sans-serif';
-        ctx.fillText('● SIM KEBERSIHAN - PUSKESMAS CEMPAKA PUTIH', 25, canvas.height - 52);
+        ctx.fillText('● SIKAP BERSIH - PUSKESMAS CEMPAKA PUTIH', 25, canvas.height - 52);
 
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 20px sans-serif';
@@ -359,7 +359,7 @@
             ctx.fillRect(0, canvas.height - 85, canvas.width, 85);
             ctx.fillStyle = '#22c55e';
             ctx.font = 'bold 22px sans-serif';
-            ctx.fillText('● SIM KEBERSIHAN - PUSKESMAS CEMPAKA PUTIH', 25, canvas.height - 52);
+            ctx.fillText('● SIKAP BERSIH - PUSKESMAS CEMPAKA PUTIH', 25, canvas.height - 52);
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 20px sans-serif';
             ctx.fillText(`[AFTER - SELESAI] ${dateStr} • ${timeStr}`, 25, canvas.height - 24);

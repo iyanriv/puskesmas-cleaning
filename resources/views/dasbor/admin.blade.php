@@ -4,7 +4,7 @@
 <style>
     /* ── Hero Banner ── */
     .admin-hero {
-        background: linear-gradient(135deg, #064e2b 0%, #086838 55%, #0f9353 100%);
+        background: linear-gradient(135deg, #205F63 0%, #267A7E 55%, #31999E 100%);
         border-radius: 24px;
         position: relative;
         overflow: hidden;
@@ -76,18 +76,18 @@
         height: 100%;
     }
     .action-hub-card:hover {
-        background: #f0fdf4;
-        border-color: #10b981;
-        color: #064e2b;
+        background: var(--brand-pale, #F3FAF9);
+        border-color: var(--brand-primary, #31999E);
+        color: var(--brand-primary-dark, #205F63);
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(16,185,129,0.12);
+        box-shadow: 0 8px 20px rgba(49,153,158,0.14);
     }
     .action-hub-icon {
         width: 52px;
         height: 52px;
         border-radius: 16px;
-        background: #f0fdf4;
-        color: #059669;
+        background: var(--brand-light, #E6F4F3);
+        color: var(--brand-primary, #31999E);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -96,7 +96,7 @@
         transition: all 0.2s ease;
     }
     .action-hub-card:hover .action-hub-icon {
-        background: #059669;
+        background: var(--brand-primary, #31999E);
         color: white;
         transform: scale(1.08);
     }
@@ -148,7 +148,7 @@
                         <i class="bi bi-calendar-event"></i>
                         <span>{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
                     </div>
-                    <a href="{{ route('stok-barang.index') }}" class="btn btn-light text-success fw-bold rounded-3 shadow-sm px-3 py-2">
+                    <a href="{{ route('stok-barang.index') }}" class="btn btn-light fw-bold rounded-3 shadow-sm px-3 py-2" style="color: var(--brand-primary, #31999E);">
                         <i class="bi bi-clipboard2-data me-1"></i> Laporan Stok Barang
                     </a>
                     <a href="{{ route('laporan.index') }}" class="btn btn-outline-light fw-bold rounded-3 px-3 py-2">
@@ -354,9 +354,14 @@
                         </h5>
                         <p class="text-muted small mb-0">Barang logistik kebersihan dengan volume permintaan atau pemakaian tertinggi</p>
                     </div>
-                    <a href="{{ route('stok-barang.index') }}" class="btn btn-outline-success btn-sm rounded-pill px-3">
-                        Lihat Laporan Stok Lengkap <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ route('stok-keluar.index') }}" class="btn btn-outline-teal btn-sm rounded-pill px-3" style="border-color: var(--brand-primary); color: var(--brand-primary);">
+                            <i class="bi bi-box-arrow-up-right me-1"></i> Laporan Barang Keluar
+                        </a>
+                        <a href="{{ route('stok-barang.index') }}" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                            Lihat Laporan Stok <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
                 </div>
                 @if(empty($labelTopBarang) || count($labelTopBarang) === 0)
                     <div class="text-center py-4 text-muted">
@@ -414,7 +419,7 @@
                                                 </div>
                                                 <div>
                                                     <div class="fw-semibold text-dark">{{ $item->pengguna->name ?? 'Petugas CS' }}</div>
-                                                    <div class="text-muted" style="font-size:0.75rem;">NIK: {{ $item->pengguna->nik ?? '-' }}</div>
+                                                    <div class="text-muted" style="font-size:0.75rem;">Nomor Karyawan: {{ $item->pengguna->nik ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -488,83 +493,6 @@
         </div>
     </div>
 
-    {{-- ================================================================
-         5. JALAN PINTAS MANAJEMEN (MODERN QUICK ACTION HUB)
-         ================================================================ --}}
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
-            <h5 class="fw-bold mb-1 text-dark"><i class="bi bi-grid-fill text-success me-2"></i>Jalan Pintas Manajemen</h5>
-            <p class="text-muted small mb-0">Akses cepat ke modul administrasi, master data, dan pelaporan</p>
-        </div>
-        <div class="card-body p-4">
-            <div class="row g-3">
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('admin.pengguna.index') }}" class="action-hub-card">
-                        <div class="action-hub-icon"><i class="bi bi-people"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Kelola Pengguna</div>
-                        <div class="text-muted small">Akun CS, Spv & Staf</div>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('admin.area.index') }}" class="action-hub-card">
-                        <div class="action-hub-icon"><i class="bi bi-building"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Kelola Area</div>
-                        <div class="text-muted small">Ruangan & Lantai</div>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('admin.barang.index') }}" class="action-hub-card">
-                        <div class="action-hub-icon"><i class="bi bi-box"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Kelola Barang</div>
-                        <div class="text-muted small">Master Alat & Bahan</div>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('stok-barang.index') }}" class="action-hub-card">
-                        <div class="action-hub-icon"><i class="bi bi-clipboard2-data"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Laporan Stok</div>
-                        <div class="text-muted small">Pemakaian & Sisa</div>
-                    </a>
-                </div>
-
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('admin.penilaian-pj.index') }}" class="action-hub-card">
-                        <div class="action-hub-icon" style="background:#ecfdf5; color:#059669;"><i class="bi bi-clipboard-check"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Penilaian PJ Lantai</div>
-                        <div class="text-muted small">Respon Kuesioner Ruangan</div>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('tugas-mingguan.index') }}" class="action-hub-card">
-                        <div class="action-hub-icon" style="background:#dbeafe; color:#2563eb;"><i class="bi bi-calendar-check"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Tugas Mingguan CS</div>
-                        <div class="text-muted small">Monitoring Kegiatan</div>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('sampah.rekapan') }}" class="action-hub-card">
-                        <div class="action-hub-icon" style="background:#d1fae5; color:#059669;"><i class="bi bi-recycle"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Bank Sampah</div>
-                        <div class="text-muted small">Setoran & Validasi</div>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('operan.index') }}" class="action-hub-card">
-                        <div class="action-hub-icon" style="background:#fef3c7; color:#d97706;"><i class="bi bi-arrow-left-right"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Operan Shift</div>
-                        <div class="text-muted small">Serah Terima Tugas</div>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{{ route('laporan.index') }}" class="action-hub-card">
-                        <div class="action-hub-icon"><i class="bi bi-graph-up"></i></div>
-                        <div class="fw-bold" style="font-size: 0.88rem;">Laporan Terpadu</div>
-                        <div class="text-muted small">Analitik & PDF/Excel</div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
 </div>
 

@@ -1,7 +1,7 @@
 @extends('tata-letak.aplikasi')
 
 @section('content')
-<div class="container py-4">
+<div class="container-fluid py-3 px-lg-4">
 
     {{-- ================================================================
          HERO BANNER — PORTAL GUDANG
@@ -32,6 +32,9 @@
                             @endforeach
                         </select>
                     </form>
+                    <a href="{{ route('stok-keluar.index') }}" class="btn btn-light fw-bold rounded-3 shadow-sm px-3" style="color: var(--brand-primary-dark);">
+                        <i class="bi bi-box-arrow-up-right me-1"></i> Laporan Barang Keluar
+                    </a>
                     <a href="{{ route('stok-barang.index') }}" class="btn btn-light text-success fw-bold rounded-3 shadow-sm px-3">
                         <i class="bi bi-clipboard2-data me-1"></i> Laporan Stok
                     </a>
@@ -501,7 +504,7 @@
 {{-- Styles Custom untuk Dasbor Gudang --}}
 <style>
     .gudang-hero {
-        background: linear-gradient(135deg, #0d5c3a 0%, #12a65a 50%, #17c964 100%);
+        background: linear-gradient(135deg, #205F63 0%, #267A7E 50%, #31999E 100%);
     }
     .hero-decoration-circle {
         position: absolute;
@@ -642,12 +645,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         label: 'Total Diajukan',
                         data: totals,
-                        borderColor: '#12a65a',
-                        backgroundColor: 'rgba(18, 166, 90, 0.12)',
+                        borderColor: '#31999E',
+                        backgroundColor: 'rgba(49, 153, 158, 0.12)',
                         fill: true,
                         tension: 0.4,
                         borderWidth: 3,
-                        pointBackgroundColor: '#12a65a',
+                        pointBackgroundColor: '#31999E',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2,
                         pointRadius: 4,
@@ -713,7 +716,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const ctxUnit = document.getElementById('chartPemakaianUnit');
     if (ctxUnit && unitData.length > 0) {
         const palette = [
-            '#12a65a', '#3b82f6', '#f59e0b', '#8b5cf6',
+            '#31999E', '#3b82f6', '#f59e0b', '#8b5cf6',
             '#ec4899', '#06b6d4', '#10b981', '#f97316',
             '#6366f1', '#14b8a6'
         ];
@@ -785,8 +788,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Total Pemakaian',
                     data: topValues,
-                    backgroundColor: 'rgba(18, 166, 90, 0.85)',
-                    hoverBackgroundColor: '#0d8a4a',
+                    backgroundColor: 'rgba(49, 153, 158, 0.85)',
+                    hoverBackgroundColor: '#205F63',
                     borderRadius: 6,
                     barPercentage: 0.65,
                 }]

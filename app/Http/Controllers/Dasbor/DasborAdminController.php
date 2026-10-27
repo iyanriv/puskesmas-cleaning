@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Dasbor;
 use App\Http\Controllers\Controller;
 use App\Models\Area;
 use App\Models\BarangInventori;
-use App\Models\CeklisKebersihan;
+use App\Models\PemakaianStok;
 use App\Models\PermintaanBarang;
+use App\Models\TugasMingguan;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -25,16 +26,14 @@ class DasborAdminController extends Controller
         $totalBarang   = BarangInventori::count();
         $totalStokFisik = (int) BarangInventori::sum('stok_saat_ini');
 
-        // 2. Status Ceklis Hari Ini
-        $ceklisHariIni = CeklisKebersihan::where('tanggal', $today)->get();
-        $totalCeklisHariIni = $ceklisHariIni->count();
-        $ceklisSelesaiHariIni = $ceklisHariIni->where('status', 'selesai')->count();
+        // 2. Status Tugas Kebersihan Hari Ini (Menggunakan modul Tugas Mingguan)
+        $tugasHariIni = TugasMingguan::where('tanggal', $today)->get();
+        $totalCeklisHariIni = $tugasHariIni->count();
+        $ceklisSelesaiHariIni = $tugasHariIni->whereIn('status', ['selesai', 'disetujui'])->count();
 
-        // Area yang sudah selesai dibersihkan hari ini
-        $areaSelesaiIds = $ceklisHariIni->where('status', 'selesai')->pluck('area_id')->unique()->toArray();
-        $areaBersihCount = count($areaSelesaiIds);
-        $areaBelumBersih = max(0, $totalArea - $areaBersihCount);
-        $persenKebersihan = $totalArea > 0 ? round(($areaBersihCount / $totalArea) * 100) : 0;
+        $areaBersihCount = $ceklisSelesaiHariIni;
+        $areaBelumBersih = max(0, $totalCeklisHariIni - $ceklisSelesaiHariIni);
+        $persenKebersihan = $totalCeklisHariIni > 0 ? round(($ceklisSelesaiHariIni / $totalCeklisHariIni) * 100) : 0;
 
         // 3. Stok Kritis & Permintaan Pending
         $stokKritisList = BarangInventori::whereColumn('stok_saat_ini', '<=', 'stok_minimum')
@@ -45,7 +44,7 @@ class DasborAdminController extends Controller
 
         $permintaanPending = PermintaanBarang::where('status_request', 'pending')->count();
 
-        // 4. Tren Ceklis 7 Hari Terakhir (Line Chart)
+        // 4. Tren Tugas Kebersihan 7 Hari Terakhir (Line Chart)
         $labelHari = [];
         $dataCeklisSelesai = [];
         $dataCeklisTotal = [];
@@ -54,10 +53,10 @@ class DasborAdminController extends Controller
             $tgl = now()->subDays($i)->toDateString();
             $namaHari = Carbon::parse($tgl)->locale('id')->isoFormat('ddd, D MMM');
             
-            $ceklisTgl = CeklisKebersihan::where('tanggal', $tgl)->get();
+            $tugasTgl = TugasMingguan::where('tanggal', $tgl)->get();
             $labelHari[] = $namaHari;
-            $dataCeklisSelesai[] = $ceklisTgl->where('status', 'selesai')->count();
-            $dataCeklisTotal[] = $ceklisTgl->count();
+            $dataCeklisSelesai[] = $tugasTgl->whereIn('status', ['selesai', 'disetujui'])->count();
+            $dataCeklisTotal[] = $tugasTgl->count();
         }
 
         // 5. Top 5 Barang yang Paling Sering Diminta / Dipakai (Bar Chart)
@@ -72,27 +71,29 @@ class DasborAdminController extends Controller
 
         if ($topBarang->isEmpty()) {
             // Fallback ke PemakaianStok
-            $topPemakaian = \App\Models\PemakaianStok::select('produk_id', DB::raw('SUM(jumlah) as total_jumlah'))
-                ->groupBy('produk_id')
+            $topPemakaian = PemakaianStok::select('barang_id', DB::raw('SUM(jumlah) as total_jumlah'))
+                ->groupBy('barang_id')
                 ->orderByDesc('total_jumlah')
-                ->with('produk')
+                ->with('barang')
                 ->take(5)
                 ->get()
-                ->filter(fn($p) => $p->produk !== null && $p->total_jumlah > 0);
+                ->filter(fn($p) => $p->barang !== null && $p->total_jumlah > 0);
 
-            $labelTopBarang = $topPemakaian->pluck('produk.nama_barang')->values()->toArray();
+            $labelTopBarang = $topPemakaian->pluck('barang.nama_barang')->values()->toArray();
             $dataTopBarang  = $topPemakaian->pluck('total_jumlah')->values()->toArray();
         } else {
             $labelTopBarang = $topBarang->pluck('barang.nama_barang')->values()->toArray();
             $dataTopBarang  = $topBarang->pluck('total_jumlah')->values()->toArray();
         }
 
-        // 6. Ceklis Aktivitas Terbaru Hari Ini
-        $ceklisTerbaru = CeklisKebersihan::with(['pengguna', 'area'])
+        // 6. Tugas Aktivitas Terbaru Hari Ini
+        $tugasTerbaru = TugasMingguan::with(['user', 'verifikator'])
             ->where('tanggal', $today)
-            ->latest('waktu_mulai')
+            ->latest()
             ->take(6)
             ->get();
+
+        $ceklisTerbaru = $tugasTerbaru;
 
         return view('dasbor.admin', compact(
             'totalPengguna',
@@ -113,7 +114,8 @@ class DasborAdminController extends Controller
             'dataCeklisTotal',
             'labelTopBarang',
             'dataTopBarang',
-            'ceklisTerbaru'
+            'ceklisTerbaru',
+            'tugasTerbaru'
         ));
     }
 }

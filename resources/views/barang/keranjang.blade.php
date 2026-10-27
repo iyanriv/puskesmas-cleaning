@@ -11,7 +11,7 @@
 
     /* ── Header ── */
     .header-section {
-        background: linear-gradient(135deg, #12a65a 0%, #0d8a4a 50%, #0a7040 100%);
+        background: linear-gradient(135deg, #31999E 0%, #267A7E 50%, #205F63 100%);
         border-radius: 0 0 30px 30px;
         padding: 1.25rem 1.5rem 3.5rem 1.5rem;
         color: white;
@@ -38,7 +38,7 @@
     /* ── Ikon barang ── */
     .icon-barang {
         width: 48px; height: 48px; border-radius: 12px;
-        background: #e8f6ef; color: #12a65a;
+        background: var(--brand-light,#E6F4F3); color: var(--brand-primary,#31999E);
         display: flex; align-items: center; justify-content: center;
         font-size: 1.4rem; flex-shrink: 0;
     }
@@ -55,14 +55,14 @@
         cursor: pointer; transition: all 0.15s; flex-shrink: 0;
         padding: 0;
     }
-    .btn-k:hover, .btn-t:hover { border-color: #12a65a; background: #e8f6ef; color: #12a65a; }
+    .btn-k:hover, .btn-t:hover { border-color: var(--brand-primary,#31999E); background: var(--brand-light,#E6F4F3); color: var(--brand-primary,#31999E); }
     .field-jumlah {
         width: 46px; text-align: center;
         border: 1.5px solid #e5e7eb; border-radius: 8px;
         padding: 4px 2px; font-size: 0.88rem; font-weight: 700;
         color: #1f2937;
     }
-    .field-jumlah:focus { outline: none; border-color: #12a65a; }
+    .field-jumlah:focus { outline: none; border-color: var(--brand-primary,#31999E); }
 
     /* ── Tombol hapus ── */
     .btn-hapus {
@@ -75,7 +75,7 @@
     /* ── Tombol simpan perubahan jumlah ── */
     .btn-simpan-jumlah {
         display: none; /* muncul saat jumlah berubah */
-        background: #12a65a; color: white;
+        background: var(--brand-primary,#31999E); color: white;
         border: none; border-radius: 8px;
         padding: 4px 12px; font-size: 0.75rem;
         font-weight: 700; cursor: pointer;
@@ -96,21 +96,21 @@
     .ringkasan-baris + .ringkasan-baris { border-top: 1px solid #f3f4f6; }
     .ringkasan-baris .nama { font-weight: 600; }
     .ringkasan-baris .jumlah-val {
-        font-weight: 700; color: #12a65a;
-        background: #e8f6ef; padding: 2px 10px;
+        font-weight: 700; color: var(--brand-primary,#31999E);
+        background: var(--brand-light,#E6F4F3); padding: 2px 10px;
         border-radius: 20px; font-size: 0.78rem;
     }
 
     /* ── Tombol kirim ── */
     .btn-kirim {
-        width: 100%; background: #12a65a; color: white;
+        width: 100%; background: var(--brand-primary,#31999E); color: white;
         border: none; border-radius: 16px;
         padding: 1rem; font-size: 0.95rem; font-weight: 800;
-        box-shadow: 0 6px 20px rgba(18,166,90,0.35);
+        box-shadow: 0 6px 20px rgba(49,153,158,0.35);
         cursor: pointer; transition: all 0.2s;
         display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     }
-    .btn-kirim:hover  { background: #0d8a4a; transform: translateY(-1px); }
+    .btn-kirim:hover  { background: var(--brand-primary-hover,#267A7E); transform: translateY(-1px); }
     .btn-kirim:active { transform: scale(0.98); }
     .btn-kirim:disabled {
         background: #9ca3af; box-shadow: none;
@@ -119,14 +119,14 @@
 
     /* ── Tombol kembali ke katalog ── */
     .btn-lanjut-belanja {
-        width: 100%; background: white; color: #12a65a;
-        border: 1.5px solid #12a65a; border-radius: 16px;
+        width: 100%; background: white; color: var(--brand-primary,#31999E);
+        border: 1.5px solid var(--brand-primary,#31999E); border-radius: 16px;
         padding: 0.8rem; font-size: 0.88rem; font-weight: 700;
         cursor: pointer; transition: all 0.2s; text-decoration: none;
         display: flex; align-items: center; justify-content: center; gap: 0.4rem;
         margin-bottom: 0.75rem;
     }
-    .btn-lanjut-belanja:hover { background: #e8f6ef; color: #12a65a; }
+    .btn-lanjut-belanja:hover { background: var(--brand-light,#E6F4F3); color: var(--brand-primary,#31999E); }
 
     /* ── State kosong ── */
     .empty-state {
@@ -142,19 +142,10 @@
         border-radius: 6px; display: inline-block; margin-top: 2px;
     }
 
-    /* ── Sticky footer kirim di mobile ── */
-    .sticky-footer {
-        position: fixed; bottom: 0; left: 0; right: 0;
-        background: white; padding: 0.85rem 1.2rem;
-        border-top: 1px solid #f0f0f0;
-        box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
-        z-index: 1000;
+    /* ── Form kirim permintaan ── */
+    .form-kirim-wrapper {
+        margin-top: 0.5rem;
     }
-    @media (min-width: 992px) {
-        .sticky-footer { display: none !important; }
-        .btn-kirim-desktop { display: block !important; }
-    }
-    .btn-kirim-desktop { display: none; }
 
     @media (min-width: 992px) {
         .grid-keranjang {
@@ -199,6 +190,66 @@
                 <i class="bi bi-exclamation-circle-fill me-1"></i> {{ session('gagal') }}
                 <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
             </div>
+        @endif
+        @if(session('sukses_area'))
+            <div class="alert alert-success rounded-3 py-2 px-3 mb-3 alert-dismissible fade show border-0 shadow-sm"
+                 style="font-size:0.84rem;" role="alert">
+                <i class="bi bi-geo-alt-fill me-1"></i> {{ session('sukses_area') }}
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        {{-- ── PILIH AREA / LANTAI ── --}}
+        @if(!empty($keranjang))
+        <div class="item-card mb-3"
+             style="border: 2px solid {{ $areaIdSesi ? '#10b981' : '#f59e0b' }};">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div style="width:40px;height:40px;border-radius:12px;
+                            background:{{ $areaIdSesi ? '#d1fae5' : '#fef3c7' }};
+                            color:{{ $areaIdSesi ? '#059669' : '#d97706' }};
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:1.2rem;flex-shrink:0;">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="fw-bold" style="font-size:0.88rem; color:#1f2937;">
+                        Area / Lantai Tempat Bertugas
+                    </div>
+                    @if($areaTerpilih)
+                        <div style="font-size:0.78rem; color:#059669; font-weight:600;">
+                            <i class="bi bi-check-circle-fill me-1"></i>{{ $areaTerpilih->lantai }}
+                        </div>
+                    @else
+                        <div style="font-size:0.78rem; color:#d97706; font-weight:600;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>Wajib dipilih sebelum kirim
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <form action="{{ route('barang.keranjang.area') }}" method="POST">
+                @csrf
+                <div class="d-flex gap-2 align-items-center">
+                    <select name="area_id" class="form-select form-select-sm rounded-3 flex-grow-1"
+                            style="border-color:{{ $areaIdSesi ? '#10b981' : '#f59e0b' }}; font-size:0.85rem;">
+                        <option value="">-- Pilih Area / Lantai --</option>
+                        @foreach($daftarArea as $area)
+                            <option value="{{ $area->id }}"
+                                {{ $areaIdSesi == $area->id ? 'selected' : '' }}>
+                                {{ $area->lantai }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-sm fw-semibold rounded-3 px-3"
+                            style="background:{{ $areaIdSesi ? '#10b981' : '#f59e0b' }};
+                                   color:white; white-space:nowrap;">
+                        {{ $areaIdSesi ? 'Ubah' : 'Pilih' }}
+                    </button>
+                </div>
+                @error('area_id')
+                    <div class="text-danger mt-1" style="font-size:0.75rem;">{{ $message }}</div>
+                @enderror
+            </form>
+        </div>
         @endif
 
         @if(empty($keranjang))
@@ -344,6 +395,17 @@
                         </div>
                     @endforeach
 
+                    {{-- Area terpilih --}}
+                    <div class="ringkasan-baris" style="border-top: 2px solid #f0f0f0; margin-top:0.5rem; padding-top:0.5rem;">
+                        <span style="font-size:0.82rem; color:#6b7280;">
+                            <i class="bi bi-geo-alt-fill me-1"></i>Area Bertugas
+                        </span>
+                        <span style="font-size:0.82rem; font-weight:700;
+                                     color:{{ $areaTerpilih ? '#059669' : '#d97706' }};">
+                            {{ $areaTerpilih ? $areaTerpilih->lantai : '⚠ Belum dipilih' }}
+                        </span>
+                    </div>
+
                     {{-- Total jenis --}}
                     <div class="d-flex justify-content-between align-items-center mt-3 pt-3"
                          style="border-top:2px solid #f0f0f0;">
@@ -365,13 +427,22 @@
                 </a>
 
                 <form action="{{ route('barang.keranjang.kirim') }}" method="POST"
-                      class="btn-kirim-desktop" id="formKirimDesktop"
+                      class="form-kirim-wrapper" id="formKirim"
                       onsubmit="return konfirmasiKirim(this)">
                     @csrf
-                    <button type="submit" class="btn-kirim">
+                    <button type="submit" class="btn-kirim" {{ !$areaIdSesi ? 'disabled' : '' }}>
                         <i class="bi bi-send-fill"></i>
                         Kirim Permintaan ke Gudang
+                        <span style="background:rgba(255,255,255,0.22);border-radius:20px;padding:2px 10px;font-size:0.8rem;margin-left:0.25rem;">
+                            {{ count($keranjang) }} jenis
+                        </span>
                     </button>
+                    @if(!$areaIdSesi)
+                        <div class="text-center mt-2" style="font-size:0.75rem; color:#d97706;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            Pilih area bertugas di atas untuk mengaktifkan tombol kirim
+                        </div>
+                    @endif
                 </form>
             </div>
 
@@ -380,24 +451,6 @@
 
     </div>{{-- /overlap-cards --}}
 </div>{{-- /mobile-container --}}
-
-{{-- ── Sticky footer (mobile only) ── --}}
-@if(!empty($keranjang))
-<div class="sticky-footer">
-    <form action="{{ route('barang.keranjang.kirim') }}" method="POST"
-          id="formKirimMobile"
-          onsubmit="return konfirmasiKirim(this)">
-        @csrf
-        <button type="submit" class="btn-kirim">
-            <i class="bi bi-send-fill"></i>
-            Kirim Permintaan ke Gudang
-            <span style="background:rgba(255,255,255,0.25);border-radius:20px;padding:1px 10px;font-size:0.8rem;">
-                {{ count($keranjang) }} item
-            </span>
-        </button>
-    </form>
-</div>
-@endif
 
 {{-- ── Modal konfirmasi kirim ── --}}
 <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-hidden="true">
@@ -413,8 +466,13 @@
                 <p class="text-muted mb-0" style="font-size:0.88rem;">
                     <strong>{{ count($keranjang ?? []) }} jenis barang</strong> akan dikirim
                     ke gudang untuk mendapat persetujuan.
+                    @if($areaTerpilih)
+                        <br><br>
+                        <i class="bi bi-geo-alt-fill text-success me-1"></i>
+                        Area bertugas: <strong>{{ $areaTerpilih->lantai }}</strong>
+                    @endif
                     <br><br>
-                    Pastikan jumlah sudah sesuai sebelum mengirim.
+                    Pastikan jumlah dan area sudah sesuai sebelum mengirim.
                 </p>
             </div>
             <div class="modal-footer border-0 pt-0 gap-2">

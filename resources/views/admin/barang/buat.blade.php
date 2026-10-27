@@ -1,24 +1,39 @@
 @extends('tata-letak.aplikasi')
 
 @section('content')
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid px-3 px-lg-4 py-4">
+
+    {{-- HEADER --}}
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
         <div>
-            <h3 class="mb-0 fw-bold">Tambah Barang</h3>
-            <p class="text-muted mb-0" style="font-size:0.85rem;">
-                Barang baru akan otomatis dicatat ke Laporan Stok bulan berjalan jika terhubung ke produk kebersihan.
+            <h4 class="fw-bold text-dark mb-1">
+                <i class="bi bi-box-seam-fill text-success me-2"></i>Tambah Barang
+            </h4>
+            <p class="text-muted mb-0" style="font-size:0.84rem;">
+                PUSKESMAS CEMPAKA PUTIH &mdash;
+                <span class="fw-semibold text-dark">INPUT INVENTORI & STOK MASUK BULAN BERJALAN</span>
             </p>
         </div>
-        <a href="{{ route('admin.barang.index') }}" class="btn btn-outline-secondary rounded-pill px-4">Kembali</a>
+        <div>
+            <a href="{{ route('admin.barang.index') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3">
+                <i class="bi bi-arrow-left me-1"></i> Kembali
+            </a>
+        </div>
     </div>
 
     @if($errors->any())
-        <div class="alert alert-danger rounded-4 border-0 shadow-sm mb-3">
+        <div class="alert alert-danger rounded-3 border-0 shadow-sm mb-3">
             <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
         </div>
     @endif
 
-    <div class="card border-0 shadow-sm rounded-4">
+    {{-- FORM CARD --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-bottom py-3 px-4 rounded-top-4">
+            <h6 class="fw-bold mb-0 text-success">
+                <i class="bi bi-pencil-square me-2"></i>FORMULIR DATA BARANG
+            </h6>
+        </div>
         <div class="card-body p-4">
             <form action="{{ route('admin.barang.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -26,19 +41,21 @@
 
                     {{-- Nama Barang --}}
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Nama Barang <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control rounded-3 @error('nama_barang') is-invalid @enderror"
-                               name="nama_barang" value="{{ old('nama_barang') }}" required maxlength="150">
+                        <label class="form-label fw-semibold mb-1" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px;">
+                            Nama Barang <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control form-control-sm rounded-3 @error('nama_barang') is-invalid @enderror"
+                               name="nama_barang" id="inputNamaBarang" value="{{ old('nama_barang') }}" placeholder="Contoh: Pembersih Lantai 5L" required maxlength="150">
                         @error('nama_barang') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     {{-- Kode Barang --}}
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">
+                        <label class="form-label fw-semibold mb-1" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px;">
                             Kode Barang
-                            <span class="text-muted fw-normal" style="font-size:0.8rem;">(disamakan dengan laporan stok)</span>
+                            <span class="text-muted fw-normal font-monospace" style="font-size:0.75rem;">(disamakan dengan laporan stok)</span>
                         </label>
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <input type="text" class="form-control rounded-start-3 @error('kode_barang') is-invalid @enderror"
                                    name="kode_barang" id="inputKodeBarang" value="{{ old('kode_barang') }}"
                                    maxlength="30" placeholder="Pilih dari daftar atau isi manual">
@@ -48,55 +65,82 @@
                             </button>
                         </div>
                         @error('kode_barang') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                        <div class="form-text">Klik <i class="bi bi-search"></i> untuk pilih dari master produk kebersihan.</div>
+                        <div class="form-text" style="font-size:0.75rem;">Klik <i class="bi bi-search"></i> untuk memilih dari master produk kebersihan.</div>
                         <div id="infoNamaProduk" class="text-success fw-semibold mt-1" style="font-size:0.8rem; display:none;"></div>
                     </div>
 
                     {{-- Satuan --}}
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Satuan <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control rounded-3 @error('satuan') is-invalid @enderror"
+                        <label class="form-label fw-semibold mb-1" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px;">
+                            Satuan <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control form-control-sm rounded-3 @error('satuan') is-invalid @enderror"
                                name="satuan" id="inputSatuan" value="{{ old('satuan') }}"
                                placeholder="pcs, botol, galon ..." required maxlength="30">
                         @error('satuan') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    {{-- Stok --}}
+                    {{-- Kategori --}}
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Stok / Masuk <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control rounded-3 @error('stok_saat_ini') is-invalid @enderror"
+                        <label class="form-label fw-semibold mb-1" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px;">
+                            Kategori
+                        </label>
+                        <select name="kategori" class="form-select form-select-sm rounded-3">
+                            <option value="">— Pilih Kategori —</option>
+                            @foreach(\App\Models\BarangInventori::$daftarKategori as $k)
+                                <option value="{{ $k }}" {{ old('kategori') === $k ? 'selected' : '' }}>{{ $k }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Stok Awal --}}
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold mb-1" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px;">
+                            Stok Awal <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" class="form-control form-control-sm rounded-3 @error('stok_saat_ini') is-invalid @enderror"
                                name="stok_saat_ini" value="{{ old('stok_saat_ini', 0) }}" min="0" required>
                         @error('stok_saat_ini') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        <div class="form-text text-success"><i class="bi bi-info-circle"></i> Otomatis dicatat ke laporan stok bulan ini.</div>
+                        <div class="form-text" style="font-size:0.75rem;">
+                            <i class="bi bi-info-circle text-success"></i>
+                            Isi stok awal barang. Untuk tambah stok berikutnya gunakan menu <strong>Stok Masuk / Restok</strong>.
+                        </div>
                     </div>
 
                     {{-- Stok Minimum --}}
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Stok Minimum Alert</label>
-                        <input type="number" class="form-control rounded-3 @error('stok_minimum') is-invalid @enderror"
+                        <label class="form-label fw-semibold mb-1" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px;">
+                            Stok Minimum Alert
+                        </label>
+                        <input type="number" class="form-control form-control-sm rounded-3 @error('stok_minimum') is-invalid @enderror"
                                name="stok_minimum" value="{{ old('stok_minimum', 5) }}" min="0">
                         @error('stok_minimum') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     {{-- Foto --}}
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Foto Barang</label>
-                        <input type="file" class="form-control rounded-3 @error('foto_barang') is-invalid @enderror"
+                        <label class="form-label fw-semibold mb-1" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px;">
+                            Foto Barang
+                        </label>
+                        <input type="file" class="form-control form-control-sm rounded-3 @error('foto_barang') is-invalid @enderror"
                                name="foto_barang" accept="image/*">
                         @error('foto_barang') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     {{-- Deskripsi --}}
                     <div class="col-12">
-                        <label class="form-label fw-semibold">Deskripsi</label>
-                        <textarea class="form-control rounded-3 @error('deskripsi') is-invalid @enderror"
-                                  name="deskripsi" rows="3">{{ old('deskripsi') }}</textarea>
+                        <label class="form-label fw-semibold mb-1" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px;">
+                            Deskripsi / Catatan
+                        </label>
+                        <textarea class="form-control form-control-sm rounded-3 @error('deskripsi') is-invalid @enderror"
+                                  name="deskripsi" rows="3" placeholder="Informasi tambahan terkait barang...">{{ old('deskripsi') }}</textarea>
                         @error('deskripsi') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-12 mt-2 text-end">
-                        <button type="submit" class="btn btn-success rounded-3 px-4">
-                            <i class="bi bi-check-lg me-1"></i> Simpan Barang
+                    <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                        <a href="{{ route('admin.barang.index') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3">Batal</a>
+                        <button type="submit" class="btn btn-success btn-sm rounded-3 px-4">
+                            <i class="bi bi-check2-circle me-1"></i> Simpan Barang
                         </button>
                     </div>
                 </div>
@@ -109,34 +153,38 @@
 <div class="modal fade" id="modalPilihProduk" tabindex="-1" aria-labelledby="labelPilihProduk" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content rounded-4 border-0 shadow">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold" id="labelPilihProduk">
-                    <i class="bi bi-search text-success me-2"></i>Pilih Produk Kebersihan
-                </h5>
+            <div class="modal-header border-bottom py-3 px-4">
+                <h6 class="modal-title fw-bold text-success mb-0" id="labelPilihProduk">
+                    <i class="bi bi-search me-2"></i>PILIH PRODUK KEBERSIHAN
+                </h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body pt-0">
-                <input type="text" class="form-control rounded-3 mb-3" id="cariProdukModal"
+            <div class="modal-body p-4">
+                <input type="text" class="form-control form-control-sm rounded-3 mb-3" id="cariProdukModal"
                        placeholder="Cari nama barang...">
                 <div class="table-responsive table-scroll-container">
-                    <table class="table table-hover align-middle" style="font-size:0.85rem;">
+                    <table class="table table-hover align-middle mb-0" style="font-size:0.85rem;">
                         <thead class="table-light">
                             <tr>
-                                <th>Kode</th>
+                                <th style="width:100px;">Kode</th>
                                 <th>Nama Barang</th>
-                                <th>Satuan</th>
-                                <th></th>
+                                <th style="width:100px;">Satuan</th>
+                                <th class="text-center" style="width:80px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tabelProdukModal">
-                            @foreach($daftarProduk as $produk)
+                            @foreach($daftarProduk ?? [] as $produk)
                                 <tr class="baris-produk" data-kode="{{ $produk->kode_barang }}"
                                     data-nama="{{ $produk->nama_barang }}" data-satuan="{{ $produk->satuan }}">
-                                    <td class="text-muted">{{ $produk->kode_barang }}</td>
-                                    <td class="fw-semibold">{{ $produk->nama_barang }}</td>
-                                    <td>{{ $produk->satuan }}</td>
+                                    <td class="text-muted font-monospace">{{ $produk->kode_barang }}</td>
+                                    <td class="fw-semibold text-dark">{{ $produk->nama_barang }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-success btn-sm rounded-2 pilih-produk-btn">
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1">
+                                            {{ $produk->satuan }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-success btn-sm rounded-2 px-2 pilih-produk-btn" style="font-size:0.75rem;">
                                             Pilih
                                         </button>
                                     </td>
@@ -163,12 +211,18 @@ document.getElementById('cariProdukModal').addEventListener('input', function() 
 document.querySelectorAll('.pilih-produk-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const row = this.closest('tr');
+        const inputNama = document.getElementById('inputNamaBarang');
+        if (inputNama && (!inputNama.value || inputNama.value.trim() === '')) {
+            inputNama.value = row.dataset.nama;
+        }
         document.getElementById('inputKodeBarang').value = row.dataset.kode;
         document.getElementById('inputSatuan').value = row.dataset.satuan;
         const info = document.getElementById('infoNamaProduk');
-        info.textContent = '✓ Terhubung ke: ' + row.dataset.nama;
-        info.style.display = 'block';
-        bootstrap.Modal.getInstance(document.getElementById('modalPilihProduk')).hide();
+        if (info) {
+            info.textContent = '✓ Terhubung ke: ' + row.dataset.nama;
+            info.style.display = 'block';
+        }
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalPilihProduk')).hide();
     });
 });
 </script>

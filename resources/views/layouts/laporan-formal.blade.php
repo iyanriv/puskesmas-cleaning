@@ -21,6 +21,17 @@
             font-size: 12pt;
             line-height: 1.5;
             color: #000;
+            background: #e5e7eb; /* abu-abu di luar kertas saat preview */
+        }
+
+        /* ── Wrapper kertas A4 saat preview di browser ── */
+        .halaman-wrapper {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20mm auto;
+            padding: 2cm 2.5cm;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
         
         /* Header Kop Surat */
@@ -266,6 +277,22 @@
             margin-top: 2px;
         }
         
+        /* TTD 4 Pihak (2 Baris) */
+        .ttd-table-4 {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+            margin-top: 10px;
+        }
+        .ttd-table-4 td {
+            border: none !important;
+            padding: 4px 10px;
+            vertical-align: top;
+        }
+        .ttd-table-4 .ttd-space {
+            height: 55px;
+        }
+        
         /* Tembusan */
         .tembusan {
             margin-top: 30px;
@@ -286,36 +313,47 @@
             margin-bottom: 3px;
         }
         
-        /* Print Button */
-        .no-print {
+        /* ── Toolbar Aksi (hanya tampil di layar, bukan saat print) ── */
+        .toolbar-aksi {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #10b981;
-            color: white;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .tombol-aksi {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 11pt;
+            font-size: 10.5pt;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-            z-index: 1000;
             font-family: Arial, sans-serif;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: filter 0.15s;
         }
-        
-        .no-print:hover {
-            background: #059669;
-        }
-        
+        .tombol-aksi:hover { filter: brightness(0.9); }
+        .tombol-cetak { background: #10b981; color: white; }
+        .tombol-unduh { background: #3b82f6; color: white; }
+
         @media print {
-            .no-print {
-                display: none;
+            body    { background: white !important; }
+            .halaman-wrapper {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
             }
-            
-            body {
-                margin: 0;
-                padding: 0;
+            .toolbar-aksi { display: none !important; }
+
+            @page {
+                size: A4;
+                margin: 2cm 2.5cm;
             }
         }
         
@@ -330,33 +368,62 @@
     </style>
 </head>
 <body>
-    {{-- Tombol Print --}}
-    <button onclick="window.print()" class="no-print">
-        🖨️ Cetak Laporan
-    </button>
 
-    {{-- Kop Surat --}}
-    <div class="kop-surat">
-        <div class="kop-surat-inner">
-            @if(file_exists(public_path('images/logo.png')))
-                <div class="logo-instansi">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo Puskesmas">
-                </div>
-            @endif
-            <div class="info-instansi">
-                <h2>Pemerintah Provinsi DKI Jakarta</h2>
-                <h3>Puskesmas Kecamatan Cempaka Putih</h3>
-                <div class="alamat">
-                    Jl. Cempaka Putih Tengah No. 1, Jakarta Pusat 10510<br>
-                    Telepon: (021) 4244624 | Email: info@puskesmas-cempaka.id
+    {{-- Toolbar Aksi --}}
+    <div class="toolbar-aksi">
+        @if(isset($urlDownload) && $urlDownload)
+            <a href="{{ $urlDownload }}" class="tombol-aksi tombol-unduh" id="btn-unduh-pdf">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Unduh PDF
+            </a>
+        @else
+            <button onclick="window.print()" class="tombol-aksi tombol-unduh" id="btn-unduh-pdf" title="Unduh / Simpan sebagai PDF">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Unduh PDF
+            </button>
+        @endif
+        <button onclick="window.print()" class="tombol-aksi tombol-cetak" id="btn-cetak">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+            </svg>
+            Cetak Laporan
+        </button>
+    </div>
+
+    {{-- Kertas A4 --}}
+    <div class="halaman-wrapper">
+
+        {{-- Kop Surat --}}
+        <div class="kop-surat">
+            <div class="kop-surat-inner">
+                @if(file_exists(public_path('images/logo.png')))
+                    <div class="logo-instansi">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Puskesmas">
+                    </div>
+                @endif
+                <div class="info-instansi">
+                    <h2>Pemerintah Provinsi DKI Jakarta</h2>
+                    <h3>Puskesmas Kecamatan Cempaka Putih</h3>
+                    <div class="alamat">
+                        Jl. Cempaka Putih Tengah No. 1, Jakarta Pusat 10510<br>
+                        Telepon: (021) 4244624 | Email: info@puskesmas-cempaka.id
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="garis-tebal"></div>
+        <div class="garis-tebal"></div>
 
-    {{-- Content --}}
-    @yield('content')
+        {{-- Content --}}
+        @yield('content')
+
+    </div>{{-- /halaman-wrapper --}}
 
 </body>
 </html>

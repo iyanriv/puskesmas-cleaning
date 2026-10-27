@@ -27,8 +27,8 @@
     .icon-circle {
         width: 45px; height: 45px;
         border-radius: 50%;
-        background-color: #e8f6ef;
-        color: #12a65a;
+        background-color: var(--brand-light, #E6F4F3);
+        color: var(--brand-primary, #31999E);
         display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem;
         margin-right: 1rem;
@@ -50,7 +50,7 @@
     .activity-card:hover { transform: translateX(4px); }
 
     .dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 1rem; flex-shrink: 0; }
-    .dot-hijau { background-color: #12a65a; }
+    .dot-hijau { background-color: var(--brand-primary, #31999E); }
     .dot-kuning { background-color: #f5b041; }
 
     @keyframes pulse {
@@ -72,8 +72,8 @@
             padding: 1.25rem;
         }
         .menu-grid .menu-item:hover {
-            border-color: #12a65a;
-            background-color: #f0fdf4;
+            border-color: var(--brand-primary, #31999E);
+            background-color: var(--brand-pale, #F3FAF9);
         }
 
         .activity-grid {
@@ -262,9 +262,9 @@
 
         // Update judul tab browser
         if (jumlah > 0) {
-            document.title = '(' + jumlah + ') SIM Kebersihan - Dasbor';
+            document.title = '(' + jumlah + ') SIKAP Bersih - Dasbor';
         } else {
-            document.title = 'SIM Kebersihan - Dasbor';
+            document.title = 'SIKAP Bersih - Dasbor';
         }
     }
 

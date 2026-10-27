@@ -1,19 +1,27 @@
 @extends('tata-letak.aplikasi')
 
 @section('content')
-<div class="container-fluid py-4 px-lg-4" style="max-width: 1000px;">
+<div class="container-fluid px-3 px-lg-4 py-4" style="max-width: 1080px;">
 
-    {{-- Breadcrumb & Back --}}
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    {{-- HEADER --}}
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
         <div>
-            <a href="{{ route('admin.penilaian-pj.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 mb-2">
+            <h4 class="fw-bold text-dark mb-1">
+                <i class="bi bi-file-earmark-text-fill text-success me-2"></i>Rincian Lembar Penilaian PJ Lantai
+            </h4>
+            <p class="text-muted mb-0" style="font-size:0.84rem;">
+                PUSKESMAS CEMPAKA PUTIH &mdash;
+                <span class="fw-semibold text-dark">EVALUASI KINERJA KEBERSIHAN UNIT</span>
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.penilaian-pj.index') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3">
                 <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
             </a>
-            <h4 class="fw-bold text-dark mb-0">Rincian Lembar Penilaian PJ Lantai</h4>
+            <a href="{{ route('admin.penilaian-pj.cetak', $penilaian->id) }}" target="_blank" class="btn btn-outline-success btn-sm rounded-3 px-3">
+                <i class="bi bi-printer me-1"></i> Cetak Dokumen
+            </a>
         </div>
-        <a href="{{ route('admin.penilaian-pj.cetak', $penilaian->id) }}" target="_blank" class="btn btn-outline-success btn-sm rounded-pill px-3">
-            <i class="bi bi-printer me-1"></i> Cetak Dokumen
-        </a>
     </div>
 
     {{-- ================================================================
@@ -51,11 +59,10 @@
          RINCIAN 16 INDIKATOR PENILAIAN
          ================================================================ --}}
     <div class="card border-0 rounded-4 shadow-sm mb-4">
-        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
-            <h5 class="fw-bold text-dark mb-1">
-                <i class="bi bi-list-check text-success me-2"></i>Rincian Nilai per Indikator
-            </h5>
-            <p class="text-muted small mb-0">Rincian skor yang diberikan oleh PJ Kebersihan berdasarkan kuesioner resmi</p>
+        <div class="card-header bg-white border-bottom py-3 px-4 d-flex align-items-center justify-content-between rounded-top-4">
+            <h6 class="fw-bold mb-0 text-success">
+                <i class="bi bi-list-check me-2"></i>RINCIAN NILAI PER INDIKATOR
+            </h6>
         </div>
         <div class="card-body p-4">
 
@@ -66,10 +73,10 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 40px;">No</th>
+                                    <th class="ps-3 text-center" style="width: 45px;">No</th>
                                     <th>Indikator Penilaian</th>
                                     <th class="text-center" style="width: 100px;">Skor</th>
                                     <th class="text-center" style="width: 130px;">Kategori</th>
@@ -90,13 +97,13 @@
                                         };
                                     @endphp
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
+                                        <td class="ps-3 text-center text-muted">{{ $loop->iteration }}</td>
                                         <td>
                                             <div class="fw-semibold text-dark">{{ $info['label'] }}</div>
                                             <div class="text-muted small">{{ $info['deskripsi'] }}</div>
                                         </td>
                                         <td class="text-center">
-                                            <span class="fs-6 fw-bold text-dark">{{ $skor }}</span>
+                                            <span class="fw-bold text-dark">{{ $skor }}</span>
                                         </td>
                                         <td class="text-center">
                                             <span class="badge {{ $badgeClass }} rounded-pill px-2 py-1" style="font-size: 0.72rem;">
@@ -118,14 +125,14 @@
          MASUKAN / EVALUASI DARI PJ KEBERSIHAN
          ================================================================ --}}
     <div class="card border-0 rounded-4 shadow-sm mb-4">
-        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
-            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
-                <i class="bi bi-chat-left-quote text-success"></i> Masukan / Evaluasi dari PJ Kebersihan
-            </h5>
+        <div class="card-header bg-white border-bottom py-3 px-4 rounded-top-4">
+            <h6 class="fw-bold mb-0 text-success">
+                <i class="bi bi-chat-left-quote me-2"></i>MASUKAN & EVALUASI DARI PJ KEBERSIHAN
+            </h6>
         </div>
         <div class="card-body p-4">
             <div class="p-3 bg-light rounded-3 border-start border-4 border-success">
-                <p class="mb-0 text-dark" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6;">{{ $penilaian->masukan_evaluasi }}</p>
+                <p class="mb-0 text-dark" style="white-space: pre-wrap; font-size: 0.92rem; line-height: 1.6;">{{ $penilaian->masukan_evaluasi ?: 'Tidak ada masukan/evaluasi tambahan.' }}</p>
             </div>
         </div>
     </div>
@@ -134,11 +141,10 @@
          BUKTI DOKUMENTASI KETIDAKSESUAIAN
          ================================================================ --}}
     <div class="card border-0 rounded-4 shadow-sm mb-4">
-        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
-            <h5 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
-                <i class="bi bi-images text-success"></i> Bukti Dokumentasi Ketidaksesuaian
-            </h5>
-            <p class="text-muted small mb-0">Lampiran foto atau dokumen pendukung yang diunggah oleh penilai</p>
+        <div class="card-header bg-white border-bottom py-3 px-4 rounded-top-4">
+            <h6 class="fw-bold mb-0 text-success">
+                <i class="bi bi-images me-2"></i>BUKTI DOKUMENTASI KETIDAKSESUAIAN
+            </h6>
         </div>
         <div class="card-body p-4">
             @if(empty($penilaian->bukti_dokumentasi) || count($penilaian->bukti_dokumentasi) === 0)

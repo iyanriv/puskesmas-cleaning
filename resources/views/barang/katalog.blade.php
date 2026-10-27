@@ -11,7 +11,7 @@
 
     /* ── Header ── */
     .header-section {
-        background: linear-gradient(135deg, #12a65a 0%, #0d8a4a 50%, #0a7040 100%);
+        background: linear-gradient(135deg, #31999E 0%, #267A7E 50%, #205F63 100%);
         border-radius: 0 0 30px 30px;
         padding: 1.25rem 1.5rem 3.5rem 1.5rem; color: white;
     }
@@ -19,18 +19,18 @@
     /* ── Keranjang FAB (floating action button) ── */
     .fab-keranjang {
         position: fixed; bottom: 80px; right: 20px;
-        background: #12a65a; color: white;
+        background: var(--brand-primary,#31999E); color: white;
         border: none; border-radius: 50px;
         padding: 0.7rem 1.2rem;
-        box-shadow: 0 6px 20px rgba(18,166,90,0.4);
+        box-shadow: 0 6px 20px rgba(49,153,158,0.40);
         font-size: 0.85rem; font-weight: 700;
         display: flex; align-items: center; gap: 0.5rem;
         text-decoration: none; z-index: 1000;
         transition: all 0.2s;
     }
-    .fab-keranjang:hover { background: #0d8a4a; color: white; transform: translateY(-2px); }
+    .fab-keranjang:hover { background: var(--brand-primary-hover,#267A7E); color: white; transform: translateY(-2px); }
     .fab-keranjang .badge-count {
-        background: white; color: #12a65a;
+        background: white; color: var(--brand-primary,#31999E);
         border-radius: 20px; padding: 1px 8px;
         font-size: 0.78rem; font-weight: 800;
     }
@@ -59,7 +59,7 @@
         font-weight: 600; color: #6b7280; cursor: pointer;
         transition: all 0.2s;
     }
-    .tab-btn.active { background: #12a65a; color: white; }
+    .tab-btn.active { background: var(--brand-primary,#31999E); color: white; }
 
     /* ── Kartu barang ── */
     .barang-card {
@@ -74,28 +74,28 @@
         padding: 3px 10px; border-radius: 20px;
         font-size: 0.72rem; font-weight: 700;
     }
-    .stok-aman    { background: #d1fae5; color: #059669; }
+    .stok-aman    { background: var(--brand-light,#E6F4F3); color: var(--brand-primary-dark,#205F63); }
     .stok-menipis { background: #fef3c7; color: #d97706; }
     .stok-habis   { background: #fee2e2; color: #dc2626; }
 
     /* ── Ikon barang ── */
     .icon-barang {
         width: 44px; height: 44px; border-radius: 12px;
-        background: #e8f6ef; color: #12a65a;
+        background: var(--brand-light,#E6F4F3); color: var(--brand-primary,#31999E);
         display: flex; align-items: center; justify-content: center;
         font-size: 1.3rem; flex-shrink: 0; margin-right: 0.85rem;
     }
 
     /* ── Tombol tambah ke keranjang ── */
     .btn-keranjang-toggle {
-        background: none; border: 1.5px solid #12a65a;
-        color: #12a65a; border-radius: 10px; padding: 5px 13px;
+        background: none; border: 1.5px solid var(--brand-primary,#31999E);
+        color: var(--brand-primary,#31999E); border-radius: 10px; padding: 5px 13px;
         font-size: 0.78rem; font-weight: 700; cursor: pointer;
         transition: all 0.2s; flex-shrink: 0; white-space: nowrap;
     }
-    .btn-keranjang-toggle:hover  { background: #e8f6ef; }
+    .btn-keranjang-toggle:hover  { background: var(--brand-light,#E6F4F3); }
     .btn-keranjang-toggle.sudah  {
-        background: #12a65a; color: white; border-color: #12a65a;
+        background: var(--brand-primary,#31999E); color: white; border-color: var(--brand-primary,#31999E);
     }
 
     /* ── Form input jumlah (expand di bawah kartu) ── */
@@ -116,14 +116,14 @@
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; transition: all 0.15s; flex-shrink: 0;
     }
-    .btn-kurang:active, .btn-tambah:active { background: #e8f6ef; border-color: #12a65a; }
+    .btn-kurang:active, .btn-tambah:active { background: #e6f4f5; border-color: #31999E; }
     .field-jumlah {
         flex: 1; text-align: center; border: 1.5px solid #e5e7eb;
         border-radius: 10px; padding: 0.45rem; font-size: 0.92rem; font-weight: 700;
     }
-    .field-jumlah:focus { outline: none; border-color: #12a65a; }
+    .field-jumlah:focus { outline: none; border-color: #31999E; }
     .btn-masuk-keranjang {
-        width: 100%; background: #12a65a; color: white; border: none;
+        width: 100%; background: #31999E; color: white; border: none;
         border-radius: 12px; padding: 0.65rem;
         font-size: 0.85rem; font-weight: 700; transition: all 0.2s;
     }
@@ -139,10 +139,13 @@
         padding: 3px 10px; border-radius: 20px;
         font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
     }
-    .status-pending   { background: #fef3c7; color: #d97706; }
-    .status-disetujui { background: #d1fae5; color: #059669; }
-    .status-ditolak   { background: #fee2e2; color: #dc2626; }
-    .status-keranjang { background: #e8f6ef; color: #059669; }
+    .status-pending       { background: #fef3c7; color: #d97706; }
+    .status-menunggu_spv  { background: #fef3c7; color: #d97706; }
+    .status-disetujui_spv { background: #dbeafe; color: #1d4ed8; }
+    .status-disetujui     { background: #d1fae5; color: #059669; }
+    .status-ditolak_spv   { background: #fee2e2; color: #dc2626; }
+    .status-ditolak       { background: #fee2e2; color: #dc2626; }
+    .status-keranjang     { background: #e6f4f5; color: #267A7E; }
 
     /* ── Riwayat ── */
     .riwayat-item {
@@ -230,9 +233,9 @@
         @if($jumlahKeranjang > 0)
             <a href="{{ route('barang.keranjang') }}"
                class="d-flex align-items-center justify-content-between bg-white rounded-3 p-3 mb-3 shadow-sm text-decoration-none"
-               style="border: 1.5px solid #12a65a;">
+               style="border: 1.5px solid #31999E;">
                 <div class="d-flex align-items-center gap-2">
-                    <div style="width:36px;height:36px;border-radius:10px;background:#e8f6ef;display:flex;align-items:center;justify-content:center;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:#e6f4f5;display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-cart-check text-success" style="font-size:1.1rem;"></i>
                     </div>
                     <div>
@@ -251,7 +254,7 @@
             </button>
             <button class="tab-btn" id="tab-riwayat" onclick="gantiTab('riwayat')">
                 <i class="bi bi-clock-history me-1"></i> Riwayat
-                @php $pending = $riwayatPermintaan->where('status_request','pending')->count(); @endphp
+                @php $pending = $riwayatPermintaan->whereIn('status_request', ['menunggu_spv', 'disetujui_spv', 'pending'])->count(); @endphp
                 @if($pending > 0)
                     <span class="badge bg-warning text-dark ms-1" style="font-size:0.62rem;">{{ $pending }}</span>
                 @endif
@@ -291,7 +294,8 @@
                     } else {
                         $stokClass = 'stok-aman'; $stokTeks = 'Tersedia';
                     }
-                    $sudahPending   = $riwayatPermintaan->where('barang_id', $barang->id)->where('status_request','pending')->count() > 0;
+                    $permintaanAktif = $riwayatPermintaan->first(fn($p) => $p->barang_id == $barang->id && in_array($p->status_request, ['menunggu_spv', 'disetujui_spv', 'pending']));
+                    $sudahPending   = !is_null($permintaanAktif);
                     $sudahDiKeranjang = in_array($barang->id, $idDiKeranjang);
                     $jumlahDiKeranjang = $keranjang[$barang->id]['jumlah'] ?? 0;
                 @endphp
@@ -319,7 +323,7 @@
                                     {{ $barang->stok_saat_ini }} {{ $barang->satuan }} — {{ $stokTeks }}
                                 </span>
                                 @if($sudahDiKeranjang)
-                                    <span class="stok-badge" style="background:#e8f6ef;color:#059669;">
+                                    <span class="stok-badge" style="background:#e6f4f5;color:#267A7E;">
                                         <i class="bi bi-cart-check me-1"></i>{{ $jumlahDiKeranjang }} di keranjang
                                     </span>
                                 @endif
@@ -328,7 +332,11 @@
 
                         {{-- Tombol aksi --}}
                         @if($sudahPending)
-                            <span class="status-pill status-pending ms-2">Menunggu</span>
+                            @if($permintaanAktif->status_request === 'disetujui_spv')
+                                <span class="status-pill status-disetujui_spv ms-2" title="Sudah disetujui Supervisor, menunggu gudang">Menunggu Gudang</span>
+                            @else
+                                <span class="status-pill status-menunggu_spv ms-2" title="Menunggu persetujuan Supervisor">Menunggu SPV</span>
+                            @endif
                         @elseif($barang->stok_saat_ini == 0)
                             <span class="status-pill status-ditolak ms-2">Habis</span>
                         @else
@@ -420,18 +428,30 @@
                             {{ $p->jumlah }} {{ $p->barang->satuan }}
                             &bull; {{ $p->waktu_request->diffForHumans() }}
                         </div>
-                        @if($p->status_request === 'ditolak' && $p->alasan_penolakan)
+                        @if(in_array($p->status_request, ['ditolak', 'ditolak_spv']) && ($p->alasan_penolakan || $p->catatan_spv))
                             <div class="text-danger mt-1" style="font-size:0.73rem;">
-                                <i class="bi bi-x-circle me-1"></i>{{ $p->alasan_penolakan }}
+                                <i class="bi bi-x-circle me-1"></i>
+                                @if($p->status_request === 'ditolak_spv')
+                                    Catatan SPV: {{ $p->catatan_spv }}
+                                @else
+                                    Alasan Gudang: {{ $p->alasan_penolakan }}
+                                @endif
+                            </div>
+                        @elseif($p->status_request === 'disetujui_spv')
+                            <div class="text-primary mt-1" style="font-size:0.73rem;">
+                                <i class="bi bi-check2 me-1"></i> Disetujui SPV{{ $p->supervisor ? ' (' . $p->supervisor->name . ')' : '' }}, menunggu gudang
                             </div>
                         @endif
                     </div>
                     <span class="status-pill status-{{ $p->status_request }}">
                         {{ match($p->status_request) {
-                            'pending'   => 'Menunggu',
-                            'disetujui' => 'Disetujui ✓',
-                            'ditolak'   => 'Ditolak ✗',
-                            default     => ucfirst($p->status_request),
+                            'menunggu_spv'  => 'Menunggu SPV',
+                            'disetujui_spv' => 'Menunggu Gudang',
+                            'pending'       => 'Menunggu Gudang',
+                            'disetujui'     => 'Disetujui Gudang ✓',
+                            'ditolak_spv'   => 'Ditolak SPV ✗',
+                            'ditolak'       => 'Ditolak Gudang ✗',
+                            default         => ucfirst($p->status_request),
                         } }}
                     </span>
                 </div>

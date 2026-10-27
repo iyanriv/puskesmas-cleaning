@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\OperanShiftExport;
 use App\Models\OperanShift;
 use App\Models\Area;
 use App\Models\User;
+use App\Models\JenisPekerjaan;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OperanShiftController extends Controller
 {
@@ -63,6 +66,12 @@ class OperanShiftController extends Controller
             ->latest()
             ->get();
 
+        // Daftar master jenis pekerjaan pembersihan yang aktif
+        $daftarJenisPekerjaan = JenisPekerjaan::aktif()
+            ->orderBy('urutan')
+            ->orderBy('nama_pekerjaan')
+            ->get();
+
         return view('operan.index', compact(
             'pengguna',
             'daftarPenerima',
@@ -70,7 +79,8 @@ class OperanShiftController extends Controller
             'operanMasuk',
             'tugasAktif',
             'operanDikirim',
-            'operanDiterima'
+            'operanDiterima',
+            'daftarJenisPekerjaan'
         ));
     }
 
@@ -303,7 +313,13 @@ class OperanShiftController extends Controller
             abort(403);
         }
 
-        return view('operan.detail', compact('operan', 'pengguna'));
+        // Daftar rekan untuk dropdown eskalasi (kecuali diri sendiri)
+        $daftarPenerima = User::whereHas('peran', fn ($q) => $q->whereIn('nama_peran', ['cs', 'pj_lantai']))
+            ->where('id', '!=', $pengguna->id)
+            ->orderBy('name')
+            ->get();
+
+        return view('operan.detail', compact('operan', 'pengguna', 'daftarPenerima'));
     }
 
     /**
@@ -368,5 +384,36 @@ class OperanShiftController extends Controller
             'dari',
             'sampai'
         ));
+    }
+
+    /**
+     * Export data operan shift ke Excel.
+     */
+    public function exportExcel(Request $request)
+    {
+        $periode = $request->get('periode', 'hari_ini');
+        $hariIni = now()->toDateString();
+
+        switch ($periode) {
+            case 'kemarin':
+                $dari   = now()->subDay()->toDateString();
+                $sampai = now()->subDay()->toDateString();
+                break;
+            case 'minggu_ini':
+                $dari   = now()->startOfWeek()->toDateString();
+                $sampai = now()->endOfWeek()->toDateString();
+                break;
+            case 'bulan_ini':
+                $dari   = now()->startOfMonth()->toDateString();
+                $sampai = now()->endOfMonth()->toDateString();
+                break;
+            default: // hari_ini
+                $dari   = $hariIni;
+                $sampai = $hariIni;
+        }
+
+        $namaFile = 'Operan-Shift-' . $dari . '-sd-' . $sampai . '.xlsx';
+
+        return Excel::download(new OperanShiftExport($dari, $sampai), $namaFile);
     }
 }

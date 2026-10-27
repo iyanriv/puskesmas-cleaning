@@ -4,12 +4,84 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>SIM Kebersihan - Puskesmas Cempaka Putih</title>
+    <style>
+        /* ===== SIKAP BERSIH — BRAND CSS VARIABLES ===== */
+        :root {
+            --brand-primary:       #31999E;
+            --brand-primary-hover: #267A7E;
+            --brand-primary-dark:  #205F63;
+            --brand-light:         #E6F4F3;
+            --brand-pale:          #F3FAF9;
+            --color-background:    #F7F9FB;
+            --color-surface:       #FFFFFF;
+            --color-border:        #DFE7EF;
+            --color-text:          #263746;
+            --color-text-muted:    #64748B;
+            --color-accent:        #F2B65D;
+            --color-success:       #27845A;
+            --color-warning:       #B7791F;
+            --color-danger:        #C24141;
+
+            /* Override Bootstrap $primary & $success → teal */
+            --bs-primary:          #31999E;
+            --bs-primary-rgb:      49, 153, 158;
+            --bs-success:          #31999E;
+            --bs-success-rgb:      49, 153, 158;
+        }
+
+        /* ===== BOOTSTRAP CLASS OVERRIDE: success → teal ===== */
+        /* text-success */
+        .text-success { color: var(--brand-primary) !important; }
+        /* bg-success */
+        .bg-success   { background-color: var(--brand-primary) !important; }
+        /* btn-success */
+        .btn-success {
+            background-color: var(--brand-primary) !important;
+            border-color: var(--brand-primary) !important;
+            color: #fff !important;
+        }
+        .btn-success:hover, .btn-success:focus {
+            background-color: var(--brand-primary-hover) !important;
+            border-color: var(--brand-primary-hover) !important;
+        }
+        /* btn-outline-success */
+        .btn-outline-success {
+            color: var(--brand-primary) !important;
+            border-color: var(--brand-primary) !important;
+        }
+        .btn-outline-success:hover {
+            background-color: var(--brand-primary) !important;
+            color: #fff !important;
+        }
+        /* bg-success-subtle */
+        .bg-success-subtle {
+            background-color: var(--brand-light) !important;
+        }
+        /* text-success inside bg-success-subtle */
+        .bg-success-subtle .text-success { color: var(--brand-primary-dark) !important; }
+        /* border-success */
+        .border-success { border-color: var(--brand-primary) !important; }
+        .border-success-subtle { border-color: #C8E9E8 !important; }
+        /* progress bar */
+        .progress-bar.bg-success { background-color: var(--brand-primary) !important; }
+        /* badge bg-success */
+        .badge.bg-success { background-color: var(--brand-primary) !important; }
+        /* spinner */
+        .spinner-border.text-success { color: var(--brand-primary) !important; }
+        /* accent-color checkbox/radio */
+        input[type="checkbox"], input[type="radio"] { accent-color: var(--brand-primary); }
+        /* #12a65a hardcoded override via CSS variable binding — 
+           handled per-component below for inline styles using old hex */
+    </style>
+    <title>SIKAP Bersih | Sistem Informasi Kebersihan dan Penilaian</title>
+    <meta name="description" content="SIKAP Bersih — Sistem Informasi Kebersihan dan Penilaian berbasis web untuk monitoring aktivitas kebersihan, penilaian kinerja Cleaning Service, dan pelaporan di Puskesmas Cempaka Putih.">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    @stack('styles')
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f6f9; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--color-background); color: var(--color-text); }
 
         /* ================================================
            SIDEBAR LAYOUT (Admin, Supervisor, Gudang)
@@ -42,12 +114,12 @@
         }
         .sidebar-nav .nav-link i { font-size: 1.1rem; margin-right: 0.75rem; width: 20px; text-align: center; }
         .sidebar-nav .nav-link:hover {
-            background-color: #f8f9fa;
-            color: #12a65a;
+            background-color: var(--brand-pale);
+            color: var(--brand-primary);
         }
         .sidebar-nav .nav-link.active {
-            background-color: #e8f6ef;
-            color: #12a65a;
+            background-color: var(--brand-light);
+            color: var(--brand-primary);
             font-weight: 600;
         }
         
@@ -67,7 +139,7 @@
             background-color: white;
         }
         
-        .avatar-sm { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background-color: #e8f6ef; color: #12a65a; flex-shrink: 0; }
+        .avatar-sm { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background-color: var(--brand-light); color: var(--brand-primary); flex-shrink: 0; }
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1030; backdrop-filter: blur(2px); }
 
         /* Responsive Sidebar */
@@ -176,7 +248,7 @@
         }
 
         .header-section {  
-            background: linear-gradient(135deg, #12a65a 0%, #0d8a4a 50%, #0a7040 100%);
+            background: linear-gradient(135deg, #31999E 0%, #267A7E 50%, #205F63 100%);
             padding: 2rem 1.5rem 4rem 1.5rem;
             color: white;
         }
@@ -224,7 +296,7 @@
             transition: all 0.2s ease;
             position: relative;
         }
-        .bottom-nav .nav-item.active { color: #12a65a; background-color: #e8f6ef; }
+        .bottom-nav .nav-item.active { color: var(--brand-primary); background-color: var(--brand-light); }
         .bottom-nav .nav-item i { font-size: 1.3rem; margin-bottom: 0.2rem; }
         
         .has-bottom-nav { padding-bottom: 90px !important; }
@@ -236,7 +308,7 @@
         @php
             $isLoginPage = request()->routeIs('login');
             $isCsUser = auth()->check() && in_array(auth()->user()->peran->nama_peran ?? '', ['cs', 'pj_lantai']);
-            $isMobileUI = request()->routeIs('dasbor.cs', 'ceklis.*', 'barang.katalog', 'barang.keranjang', 'barang.ajukan', 'sampah.buat')
+            $isMobileUI = request()->routeIs('dasbor.cs', 'barang.katalog', 'barang.keranjang', 'barang.ajukan', 'sampah.buat')
                 || ($isCsUser && request()->routeIs('tugas-mingguan.*', 'operan.*', 'sampah.rekapan'));
             $showBottomNav = $isCsUser && $isMobileUI;
             $useSidebar = auth()->check() && !$isMobileUI && !$isLoginPage;
@@ -253,8 +325,8 @@
                 <!-- Sidebar -->
                 <nav class="sidebar border-end" id="sidebar">
                     <div class="sidebar-header border-bottom">
-                        <a class="text-success text-decoration-none fs-5 fw-bold d-flex align-items-center" href="{{ auth()->user()->ruteDasbor() }}">
-                            <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 32px; width: auto; margin-right: 10px;"> SIM Kebersihan
+                        <a class="text-decoration-none fw-bold d-flex align-items-center" href="{{ auth()->user()->ruteDasbor() }}" style="color: var(--brand-primary); font-size: 1.1rem;">
+                            <img src="{{ asset('images/logo-sikapbersih.png') }}" alt="Logo SIKAP Bersih" style="height: 40px; width: auto; margin-right: 10px; object-fit: contain;"> SIKAP Bersih
                         </a>
                     </div>
                     
@@ -280,6 +352,21 @@
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('admin.barang.*') ? 'active' : '' }}" href="{{ route('admin.barang.index') }}">
                                         <i class="bi bi-box"></i> Kelola Barang
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.jenis-pekerjaan.*') ? 'active' : '' }}" href="{{ route('admin.jenis-pekerjaan.index') }}">
+                                        <i class="bi bi-list-check"></i> Kelola Jenis Pekerjaan
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('stok-masuk.*') ? 'active' : '' }}" href="{{ route('stok-masuk.index') }}">
+                                        <i class="bi bi-box-arrow-in-down"></i> Stok Masuk / Restok
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('stok-keluar.*') ? 'active' : '' }}" href="{{ route('stok-keluar.index') }}">
+                                        <i class="bi bi-box-arrow-up-right"></i> Laporan Barang Keluar
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -313,6 +400,12 @@
                                     </a>
                                 </li>
                             @elseif(auth()->user()->peran->nama_peran == 'supervisor' || auth()->user()->peran->nama_peran == 'pj_lantai')
+                                @php
+                                    $tugasPerluVerifikasi = \App\Models\TugasMingguan::where('status', 'selesai')->count();
+                                    $permintaanMenunggSpv = auth()->user()->peran->nama_peran === 'supervisor'
+                                        ? \App\Models\PermintaanBarang::where('status_request', 'menunggu_spv')->count()
+                                        : 0;
+                                @endphp
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('dasbor.supervisor') ? 'active' : '' }}" href="{{ route('dasbor.supervisor') }}">
                                         <i class="bi bi-speedometer2"></i> Dasbor
@@ -321,6 +414,29 @@
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('tugas-mingguan.*') ? 'active' : '' }}" href="{{ route('tugas-mingguan.index') }}">
                                         <i class="bi bi-calendar-check"></i> Tugas Mingguan CS
+                                        @if($tugasPerluVerifikasi > 0)
+                                            <span class="badge bg-danger rounded-pill ms-auto" style="font-size:0.65rem;">{{ $tugasPerluVerifikasi }}</span>
+                                        @endif
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('operan.*') ? 'active' : '' }}" href="{{ route('operan.index') }}">
+                                        <i class="bi bi-arrow-left-right"></i> Operan Shift
+                                    </a>
+                                </li>
+                                @if(auth()->user()->peran->nama_peran === 'supervisor')
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('barang.supervisor') ? 'active' : '' }}" href="{{ route('barang.supervisor') }}">
+                                        <i class="bi bi-shield-check"></i> Persetujuan Barang CS
+                                        @if($permintaanMenunggSpv > 0)
+                                            <span class="badge bg-warning text-dark rounded-pill ms-auto" style="font-size:0.65rem;">{{ $permintaanMenunggSpv }}</span>
+                                        @endif
+                                    </a>
+                                </li>
+                                @endif
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.penilaian-pj.*') ? 'active' : '' }}" href="{{ route('admin.penilaian-pj.index') }}">
+                                        <i class="bi bi-clipboard-check"></i> Penilaian PJ Lantai
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -329,11 +445,19 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('stok-barang.*') ? 'active' : '' }}" href="{{ route('stok-barang.index') }}">
+                                        <i class="bi bi-boxes"></i> Monitoring Stok Barang
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}" href="{{ route('laporan.index') }}">
                                         <i class="bi bi-graph-up"></i> Laporan Terpadu
                                     </a>
                                 </li>
                             @elseif(auth()->user()->peran->nama_peran == 'gudang')
+                                @php
+                                    $antriGudang = \App\Models\PermintaanBarang::where('status_request', 'disetujui_spv')->count();
+                                @endphp
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('dasbor.gudang') ? 'active' : '' }}" href="{{ route('dasbor.gudang') }}">
                                         <i class="bi bi-speedometer2"></i> Dasbor
@@ -341,7 +465,16 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('barang.gudang') ? 'active' : '' }}" href="{{ route('barang.gudang') }}">
-                                        <i class="bi bi-box-seam"></i> Kelola Permintaan
+                                        <i class="bi bi-box-seam"></i> Permintaan Barang CS
+                                        @if($antriGudang > 0)
+                                            <span class="badge bg-info text-dark rounded-pill ms-auto" style="font-size:0.65rem;">{{ $antriGudang }}</span>
+                                        @endif
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('barang.rekapan-pemakaian*') ? 'active' : '' }}"
+                                       href="{{ route('barang.rekapan-pemakaian') }}">
+                                        <i class="bi bi-table"></i> Rekapan Pemakaian Barang
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -349,7 +482,17 @@
                                         <i class="bi bi-box"></i> Master Barang
                                     </a>
                                 </li>
-                                <li class="nav-item mt-2">
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('stok-masuk.*') ? 'active' : '' }}" href="{{ route('stok-masuk.index') }}">
+                                        <i class="bi bi-box-arrow-in-down"></i> Stok Masuk / Restok
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('stok-keluar.*') ? 'active' : '' }}" href="{{ route('stok-keluar.index') }}">
+                                        <i class="bi bi-box-arrow-up-right"></i> Laporan Barang Keluar
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('stok-barang.*') ? 'active' : '' }}" href="{{ route('stok-barang.index') }}">
                                         <i class="bi bi-clipboard2-data"></i> Laporan Stok
                                     </a>
@@ -409,8 +552,8 @@
                         <button class="btn btn-light border-0 px-2 py-1 rounded-3" type="button" onclick="toggleSidebar()">
                             <i class="bi bi-list fs-3 text-dark"></i>
                         </button>
-                        <div class="fw-bold text-success fs-5 d-flex align-items-center">
-                            <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 24px; margin-right: 8px;"> SIM Kebersihan
+                        <div class="fw-bold fs-5 d-flex align-items-center" style="color: var(--brand-primary);">
+                            <img src="{{ asset('images/logo-sikapbersih.png') }}" alt="Logo SIKAP Bersih" style="height: 36px; margin-right: 8px; object-fit: contain;"> SIKAP Bersih
                         </div>
                         <div style="width: 42px;"></div> <!-- Spacer for centering -->
                     </div>
@@ -473,5 +616,7 @@
             @endif
         @endif
     </div>
+
+    @stack('scripts')
 </body>
 </html>

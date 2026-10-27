@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TugasMingguanExport;
 use App\Helpers\KompresiFoto;
 use App\Models\TugasMingguan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TugasMingguanController extends Controller
 {
@@ -266,5 +268,23 @@ class TugasMingguanController extends Controller
             'totalTugas', 'totalSelesai', 'totalDisetujui', 'totalProses',
             'dari', 'sampai', 'petugasFilter', 'pengguna', 'status'
         ));
+    }
+
+    /**
+     * Export data tugas mingguan ke Excel.
+     */
+    public function exportExcel(Request $request)
+    {
+        $petugasId = $request->get('petugas_id', '');
+        $status    = $request->get('status', '');
+        $dari      = $request->get('dari', now()->startOfMonth()->toDateString());
+        $sampai    = $request->get('sampai', now()->toDateString());
+
+        $namaFile = 'Tugas-Mingguan-' . $dari . '-sd-' . $sampai . '.xlsx';
+
+        return Excel::download(
+            new TugasMingguanExport($dari, $sampai, $petugasId ?: null, $status ?: null),
+            $namaFile
+        );
     }
 }

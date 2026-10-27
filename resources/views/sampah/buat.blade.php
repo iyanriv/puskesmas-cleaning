@@ -9,9 +9,8 @@
         padding-bottom: 90px;
     }
 
-    /* Header (Updated to Green) */
     .header-section {  
-        background: linear-gradient(135deg, #12a65a 0%, #0a7040 100%);
+        background: linear-gradient(135deg, #31999E 0%, #205F63 100%);
         border-radius: 0 0 30px 30px;
         padding: 1.5rem 1.5rem 3rem 1.5rem; color: white;
     }
@@ -38,11 +37,13 @@
         cursor: pointer; transition: all 0.15s;
         background: white; font-size: 0.84rem; color: #374151;
     }
-    .lokasi-item i { color: #9ca3af; font-size: 1rem; }
+    .lokasi-item i.bi-geo-alt { color: #9ca3af; font-size: 1rem; flex-shrink: 0; }
+    .lokasi-item .check-icon { display: none; color: var(--brand-primary,#31999E); font-size: 1.05rem; margin-left: auto; flex-shrink: 0; }
     .lokasi-item.terpilih {
-        border-color: #12a65a; background: #f0fdf4; color: #059669; font-weight: 600;
+        border-color: var(--brand-primary,#31999E); background: var(--brand-pale,#F3FAF9); color: var(--brand-primary-dark,#205F63); font-weight: 600;
     }
-    .lokasi-item.terpilih i { color: #12a65a; }
+    .lokasi-item.terpilih i.bi-geo-alt { color: var(--brand-primary,#31999E); }
+    .lokasi-item.terpilih .check-icon { display: inline-block; }
     .lokasi-item input[type="radio"] { display: none; }
 
     /* Grid jenis sampah */
@@ -56,46 +57,30 @@
         grid-column: span 1;
     }
     .jenis-item.lainnya { grid-column: span 2; }
-    .jenis-item .emoji { font-size: 1.3rem; line-height: 1; }
+    .jenis-item .emoji { font-size: 1.3rem; line-height: 1; flex-shrink: 0; }
+    .jenis-item .check-icon { display: none; color: var(--brand-primary,#31999E); font-size: 1.05rem; margin-left: auto; flex-shrink: 0; }
     .jenis-item.terpilih {
-        border-color: #12a65a; background: #f0fdf4; color: #059669; font-weight: 600;
+        border-color: var(--brand-primary,#31999E); background: var(--brand-pale,#F3FAF9); color: var(--brand-primary-dark,#205F63); font-weight: 600;
     }
+    .jenis-item.terpilih .check-icon { display: inline-block; }
     .jenis-item input[type="checkbox"] { display: none; }
-
-    /* Berat */
-    .berat-wrapper {
-        display: flex; align-items: center;
-        border: 1.5px solid #e5e7eb; border-radius: 14px;
-        overflow: hidden; margin-bottom: 1.25rem;
-    }
-    .berat-wrapper:focus-within { border-color: #12a65a; }
-    .berat-input {
-        flex: 1; border: none; outline: none;
-        padding: 0.75rem 1rem; font-size: 1.1rem; font-weight: 700;
-        color: #111827; text-align: center; background: transparent;
-    }
-    .berat-unit {
-        padding: 0.75rem 1rem; background: #f9fafb;
-        font-size: 0.85rem; font-weight: 700; color: #6b7280;
-        border-left: 1.5px solid #e5e7eb;
-    }
 
     /* Area foto */
     .foto-box {
-        border: 2px dashed #d1d5db; border-radius: 16px;
-        background: #f9fafb; cursor: pointer;
+        border: 1.5px dashed #d1d5db; border-radius: 16px;
+        background: #f3f4f6; cursor: pointer;
         transition: all 0.2s; margin-bottom: 1.25rem;
         position: relative; overflow: hidden;
     }
-    .foto-box:hover { border-color: #12a65a; background: #f0fdf4; }
-    .foto-box.ada-foto { border-style: solid; border-color: #12a65a; }
+    .foto-box:hover { border-color: var(--brand-primary,#31999E); background: var(--brand-pale,#F3FAF9); }
+    .foto-box.ada-foto { border-style: solid; border-color: var(--brand-primary,#31999E); }
     .foto-placeholder {
         display: flex; flex-direction: column;
         align-items: center; justify-content: center;
-        padding: 2rem; text-align: center;
+        padding: 2.2rem 1rem; text-align: center;
     }
-    .foto-placeholder i { font-size: 2rem; color: #9ca3af; margin-bottom: 0.5rem; }
-    .foto-placeholder span { font-size: 0.82rem; color: #9ca3af; }
+    .foto-placeholder i { font-size: 2.2rem; color: #6b7280; margin-bottom: 0.4rem; }
+    .foto-placeholder span { font-size: 0.85rem; font-weight: 600; color: #4b5563; }
     .foto-preview-img {
         width: 100%; max-height: 200px; object-fit: cover;
         border-radius: 14px; display: none;
@@ -109,12 +94,44 @@
         z-index: 5;
     }
 
+    /* Ringkasan Laporan Box */
+    .ringkasan-box {
+        background: #eaf8f0;
+        border: 1.5px solid #a3e6be;
+        border-radius: 16px;
+        padding: 0.9rem 1.15rem;
+        margin-bottom: 1.25rem;
+    }
+    .ringkasan-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #059669;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+    }
+    .ringkasan-row {
+        font-size: 0.84rem;
+        color: #6b7280;
+        margin-bottom: 0.15rem;
+        line-height: 1.45;
+    }
+    .ringkasan-row:last-child {
+        margin-bottom: 0;
+    }
+    .ringkasan-row strong {
+        color: #111827;
+        font-weight: 700;
+    }
+
     /* Tombol kirim */
     .btn-kirim {
-        width: 100%; background: #12a65a; color: white; border: none;
-        border-radius: 16px; padding: 1rem;
-        font-size: 0.95rem; font-weight: 700; letter-spacing: 0.03em;
-        box-shadow: 0 4px 16px rgba(18,166,90,0.35);
+        width: 100%;
+        background: linear-gradient(135deg, #74d8af 0%, #48c792 100%);
+        color: white; border: none;
+        border-radius: 16px; padding: 0.95rem 1rem;
+        font-size: 0.92rem; font-weight: 800; letter-spacing: 0.04em;
+        box-shadow: 0 4px 14px rgba(72, 199, 146, 0.35);
         transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     }
     .btn-kirim:active { transform: scale(0.98); }
@@ -155,7 +172,7 @@
         font-size: 0.72rem; font-weight: 500;
         padding: 0.4rem 0.75rem; border-radius: 14px;
     }
-    .nav-item.active { color: #12a65a; background-color: #e8f6ef; }
+    .nav-item.active { color: #267A7E; background-color: #e6f4f5; }
     .nav-item i { font-size: 1.25rem; margin-bottom: 0.2rem; }
     @media (min-width: 992px) { 
         .form-body { max-width: 700px; margin: 0 auto; } 
@@ -202,7 +219,8 @@
                             onchange="pilihLokasi({{ $loop->index }})"
                             {{ old('lokasi_setor') === $lok ? 'checked' : '' }}>
                         <i class="bi bi-geo-alt"></i>
-                        {{ $lok }}
+                        <span>{{ $lok }}</span>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
                     </label>
                 @endforeach
             </div>
@@ -225,6 +243,7 @@
                             {{ in_array($nama, old('jenis_sampah', [])) ? 'checked' : '' }}>
                         <span class="emoji">{{ $emoji }}</span>
                         <span>{{ $nama }}</span>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
                     </label>
                 @endforeach
             </div>
@@ -233,7 +252,7 @@
             @enderror
 
             {{-- ============================== --}}
-            {{-- 4. FOTO BUKTI SETOR --}}
+            {{-- 3. FOTO BUKTI SETOR --}}
             {{-- ============================== --}}
             <span class="section-label">Foto Bukti Setor <span class="text-danger">*</span></span>
             <div class="foto-box" id="foto-box" onclick="document.getElementById('input-foto').click()">
@@ -254,15 +273,17 @@
             @enderror
 
             {{-- ============================== --}}
-            {{-- 5. CATATAN (opsional) --}}
+            {{-- 4. RINGKASAN LAPORAN --}}
             {{-- ============================== --}}
-            <span class="section-label">Catatan / Nama Barang <span class="text-danger">*</span></span>
-            <textarea name="catatan" class="form-control mb-2" rows="2"
-                style="border-radius:14px; border:1.5px solid #e5e7eb; font-size:0.85rem; resize:none;"
-                placeholder="Tuliskan nama barang atau keterangan tambahan di sini...">{{ old('catatan') }}</textarea>
-            @error('catatan')
-                <div class="text-danger mb-4" style="font-size:0.78rem;margin-top:-0.2rem;">{{ $message }}</div>
-            @enderror
+            <div class="ringkasan-box" id="box-ringkasan">
+                <div class="ringkasan-title">RINGKASAN LAPORAN</div>
+                <div class="ringkasan-row">
+                    Area: <strong id="ringkasan-area">—</strong>
+                </div>
+                <div class="ringkasan-row">
+                    Sampah: <strong id="ringkasan-sampah">—</strong>
+                </div>
+            </div>
 
             {{-- Tombol Kirim --}}
             <button type="submit" class="btn-kirim" id="btn-kirim">
@@ -300,8 +321,8 @@
         <a href="{{ route('dasbor.cs') }}" class="nav-item">
             <i class="bi bi-house-door"></i><span>Beranda</span>
         </a>
-        <a href="{{ route('ceklis.index') }}" class="nav-item">
-            <i class="bi bi-card-checklist"></i><span>Ceklis</span>
+        <a href="{{ route('tugas-mingguan.index') }}" class="nav-item">
+            <i class="bi bi-calendar2-check"></i><span>Tugas</span>
         </a>
         <a href="{{ route('barang.katalog') }}" class="nav-item">
             <i class="bi bi-box-seam"></i><span>Barang</span>
@@ -314,12 +335,33 @@
 
 <script>
 // ============================================================
+// Update Ringkasan Laporan Realtime
+// ============================================================
+function updateRingkasan() {
+    // Area
+    const checkedLok = document.querySelector('input[name="lokasi_setor"]:checked');
+    const areaEl = document.getElementById('ringkasan-area');
+    if (areaEl) {
+        areaEl.textContent = checkedLok ? checkedLok.value : '—';
+    }
+
+    // Jenis Sampah
+    const checkedJenis = Array.from(document.querySelectorAll('input[name="jenis_sampah[]"]:checked'))
+                              .map(cb => cb.value);
+    const sampahEl = document.getElementById('ringkasan-sampah');
+    if (sampahEl) {
+        sampahEl.textContent = checkedJenis.length > 0 ? checkedJenis.join(', ') : '—';
+    }
+}
+
+// ============================================================
 // Pilih lokasi (radio – satu pilihan)
 // ============================================================
 function pilihLokasi(idx) {
     document.querySelectorAll('.lokasi-item').forEach((el, i) => {
         el.classList.toggle('terpilih', i === idx);
     });
+    updateRingkasan();
 }
 
 // ============================================================
@@ -329,6 +371,7 @@ function toggleJenis(idx) {
     const label = document.getElementById('label-jenis-' + idx);
     const cb    = label.querySelector('input[type="checkbox"]');
     label.classList.toggle('terpilih', cb.checked);
+    updateRingkasan();
 }
 
 // ============================================================
@@ -368,6 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('label-jenis-' + i)?.classList.add('terpilih');
         }
     });
+    updateRingkasan();
 });
 
 // Submit feedback

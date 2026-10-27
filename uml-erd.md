@@ -1,8 +1,9 @@
 # UML, ERD & LRS — SIM Kebersihan Puskesmas Cempaka Putih
 
 **Sistem:** Sistem Informasi Monitoring dan Penilaian Kinerja Cleaning Service  
-**Versi:** 2.0 | **Tanggal:** September 2026  
-**Dibuat berdasarkan:** Implementasi aktual (Laravel 10, MySQL)
+**Versi:** 2.1 | **Tanggal:** September 2026  
+**Dibuat berdasarkan:** Implementasi aktual (Laravel 10, MySQL)  
+**Changelog v2.1:** Unifikasi master barang — `produk_kebersihan` dihapus, `barang_inventori` menjadi master tunggal; tabel `ceklis` digantikan `tugas_mingguan`
 
 ---
 
@@ -47,23 +48,6 @@ erDiagram
         timestamp updated_at
     }
 
-    CEKLIS {
-        int id PK
-        int user_id FK
-        int area_id FK
-        date tanggal
-        time waktu_mulai
-        time waktu_selesai
-        string foto_before
-        string foto_after
-        string lat_long
-        enum status
-        int skor
-        text catatan
-        timestamp created_at
-        timestamp updated_at
-    }
-
     TUGAS_MINGGUAN {
         int id PK
         int user_id FK
@@ -102,7 +86,6 @@ erDiagram
 
     BARANG_INVENTORI {
         int id PK
-        int produk_id FK
         string kode_barang UK
         string nama_barang
         text deskripsi
@@ -142,18 +125,9 @@ erDiagram
         timestamp updated_at
     }
 
-    PRODUK_KEBERSIHAN {
-        int id PK
-        string kode_barang UK
-        string nama_barang
-        string satuan
-        timestamp created_at
-        timestamp updated_at
-    }
-
     LAPORAN_STOK {
         int id PK
-        int produk_id FK
+        int barang_id FK
         int periode_bulan
         int periode_tahun
         date tanggal
@@ -165,7 +139,6 @@ erDiagram
     PEMAKAIAN_STOK {
         int id PK
         int laporan_stok_id FK
-        int produk_id FK
         string unit
         int minggu
         int jumlah
@@ -206,8 +179,6 @@ erDiagram
 
     %% Relasi
     PERAN        ||--o{ USERS              : "memiliki"
-    USERS        ||--o{ CEKLIS             : "membuat"
-    AREA         ||--o{ CEKLIS             : "berlokasi di"
     USERS        ||--o{ TUGAS_MINGGUAN     : "membuat"
     USERS        ||--o{ TUGAS_MINGGUAN     : "memverifikasi (diverifikasi_oleh)"
     USERS        ||--o{ OPERAN             : "mengirim (pengirim_id)"
@@ -215,10 +186,8 @@ erDiagram
     OPERAN       ||--o{ OPERAN             : "dieskalasi ke (parent_operan_id)"
     USERS        ||--o{ PERMINTAAN_BARANG  : "mengajukan"
     BARANG_INVENTORI ||--o{ PERMINTAAN_BARANG : "diminta"
-    PRODUK_KEBERSIHAN ||--o{ BARANG_INVENTORI : "menjadi"
-    PRODUK_KEBERSIHAN ||--o{ LAPORAN_STOK  : "dicatat di"
+    BARANG_INVENTORI ||--o{ LAPORAN_STOK   : "dicatat di"
     LAPORAN_STOK ||--o{ PEMAKAIAN_STOK    : "dirinci di"
-    PRODUK_KEBERSIHAN ||--o{ PEMAKAIAN_STOK : "dipakai"
     USERS        ||--o{ SETORAN_SAMPAH     : "menyetor"
     USERS        ||--o{ SETORAN_SAMPAH     : "memvalidasi (validator_id)"
     USERS        ||--o{ PENILAIAN_PJ_LANTAI : "dinilai (petugas_cs_id)"
@@ -231,16 +200,13 @@ erDiagram
 | Entitas Asal | Kardinalitas | Entitas Tujuan | Keterangan |
 |---|---|---|---|
 | `peran` | 1 — N | `users` | Satu peran dimiliki banyak pengguna |
-| `users` | 1 — N | `ceklis` | Satu CS membuat banyak ceklis |
-| `area` | 1 — N | `ceklis` | Satu area punya banyak ceklis |
-| `users` | 1 — N | `tugas_mingguan` | Satu CS punya banyak tugas |
+| `users` | 1 — N | `tugas_mingguan` | Satu CS punya banyak tugas mingguan |
 | `users` | 1 — N | `operan` (pengirim) | Satu user kirim banyak operan |
 | `users` | 1 — N | `operan` (penerima) | Satu user terima banyak operan |
 | `operan` | 0..1 — N | `operan` (self) | Eskalasi: satu operan jadi induk banyak operan baru |
 | `users` | 1 — N | `permintaan_barang` | Satu CS ajukan banyak permintaan |
 | `barang_inventori` | 1 — N | `permintaan_barang` | Satu barang diminta berkali-kali |
-| `produk_kebersihan` | 1 — 1 | `barang_inventori` | Satu produk → satu stok inventori |
-| `produk_kebersihan` | 1 — N | `laporan_stok` | Satu produk dicatat di banyak periode |
+| `barang_inventori` | 1 — N | `laporan_stok` | Satu barang dicatat di banyak periode stok |
 | `laporan_stok` | 1 — N | `pemakaian_stok` | Satu laporan punya banyak pemakaian per unit |
 | `users` | 1 — N | `setoran_sampah` | Satu CS setor banyak kali |
 | `users` | 1 — N | `penilaian_pj_lantai` | Satu CS dinilai berkali-kali |
@@ -299,33 +265,9 @@ Contoh nilai lantai: "Lantai 1", "Lantai 2", ..., "CSSD", "Rawasari"
 
 ---
 
-### 2.4 Tabel `ceklis`
+### 2.4 Tabel `tugas_mingguan`
 
-```
-CEKLIS
-├── id              : INT(11)        NOT NULL  AUTO_INCREMENT  [PK]
-├── user_id         : INT(11)        NOT NULL  [FK → users.id]
-├── area_id         : INT(11)        NOT NULL  [FK → area.id]
-├── tanggal         : DATE           NOT NULL
-├── waktu_mulai     : TIME           NULL
-├── waktu_selesai   : TIME           NULL
-├── foto_before     : VARCHAR(255)   NULL      (path storage/public)
-├── foto_after      : VARCHAR(255)   NULL      (path storage/public)
-├── lat_long        : VARCHAR(100)   NULL      (format: "-6.123,106.456")
-├── status          : ENUM           NOT NULL  DEFAULT 'belum'
-│                     ['belum','proses','selesai']
-├── skor            : INT(1)         NULL      (1–5, dari supervisor)
-├── catatan         : TEXT           NULL      (catatan supervisor)
-├── created_at      : TIMESTAMP      NULL
-└── updated_at      : TIMESTAMP      NULL
-
-FK: user_id → users(id) ON DELETE CASCADE
-FK: area_id → area(id) ON DELETE RESTRICT
-```
-
----
-
-### 2.5 Tabel `tugas_mingguan`
+> **Catatan:** Tabel `ceklis` telah dihapus (v2.1). Fungsinya digantikan sepenuhnya oleh `tugas_mingguan` yang memiliki fitur lebih lengkap (foto watermark, verifikasi multi-tahap).
 
 ```
 TUGAS_MINGGUAN
@@ -350,7 +292,7 @@ FK: diverifikasi_oleh → users(id) ON DELETE SET NULL
 
 ---
 
-### 2.6 Tabel `operan`
+### 2.5 Tabel `operan`
 
 ```
 OPERAN
@@ -381,29 +323,14 @@ FK: parent_operan_id → operan(id) ON DELETE SET NULL
 
 ---
 
-### 2.7 Tabel `produk_kebersihan`
+### 2.6 Tabel `barang_inventori` *(Master Tunggal Barang)*
 
-```
-PRODUK_KEBERSIHAN
-├── id              : INT(11)       NOT NULL  AUTO_INCREMENT  [PK]
-├── kode_barang     : VARCHAR(20)   NOT NULL  UNIQUE   (format: BRG-0001)
-├── nama_barang     : VARCHAR(200)  NOT NULL
-├── satuan          : VARCHAR(50)   NOT NULL
-├── created_at      : TIMESTAMP     NULL
-└── updated_at      : TIMESTAMP     NULL
-
-Satuan valid: buah | botol | galon | pak | bungkus | pouch | roll | pasang | kaleng
-```
-
----
-
-### 2.8 Tabel `barang_inventori`
+> **Catatan:** Tabel `produk_kebersihan` telah dihapus (v2.1). `barang_inventori` kini menjadi **master tunggal** untuk semua data produk/barang kebersihan, menggantikan kolom `produk_id` yang sebelumnya menjadi FK ke `produk_kebersihan`.
 
 ```
 BARANG_INVENTORI
 ├── id              : INT(11)       NOT NULL  AUTO_INCREMENT  [PK]
-├── produk_id       : INT(11)       NULL      [FK → produk_kebersihan.id]
-├── kode_barang     : VARCHAR(20)   NULL      UNIQUE
+├── kode_barang     : VARCHAR(20)   NULL      UNIQUE   (format: BRG-0001)
 ├── nama_barang     : VARCHAR(200)  NOT NULL
 ├── deskripsi       : TEXT          NULL
 ├── foto_barang     : VARCHAR(255)  NULL
@@ -413,12 +340,13 @@ BARANG_INVENTORI
 ├── created_at      : TIMESTAMP     NULL
 └── updated_at      : TIMESTAMP     NULL
 
-FK: produk_id → produk_kebersihan(id) ON DELETE SET NULL
+Satuan valid: buah | botol | galon | pak | bungkus | pouch | roll | pasang | kaleng | pcs
+$daftarUnit: Lantai 1 | Lantai 2 | Lantai 3 | Lantai 4 | Lantai 5 | Lantai 6 | Rawasari | CPB | CPT | CSSD
 ```
 
 ---
 
-### 2.9 Tabel `permintaan_barang`
+### 2.7 Tabel `permintaan_barang`
 
 ```
 PERMINTAAN_BARANG
@@ -440,12 +368,12 @@ FK: barang_id → barang_inventori(id) ON DELETE RESTRICT
 
 ---
 
-### 2.10 Tabel `laporan_stok`
+### 2.8 Tabel `laporan_stok`
 
 ```
 LAPORAN_STOK
 ├── id              : INT(11)       NOT NULL  AUTO_INCREMENT  [PK]
-├── produk_id       : INT(11)       NOT NULL  [FK → produk_kebersihan.id]
+├── barang_id       : INT(11)       NOT NULL  [FK → barang_inventori.id]
 ├── periode_bulan   : INT(2)        NOT NULL  (1–12)
 ├── periode_tahun   : INT(4)        NOT NULL  (mis. 2026)
 ├── tanggal         : DATE          NOT NULL
@@ -453,19 +381,18 @@ LAPORAN_STOK
 ├── created_at      : TIMESTAMP     NULL
 └── updated_at      : TIMESTAMP     NULL
 
-FK: produk_id → produk_kebersihan(id) ON DELETE CASCADE
-INDEX: (produk_id, periode_bulan, periode_tahun) UNIQUE
+FK: barang_id → barang_inventori(id) ON DELETE CASCADE
+INDEX: (barang_id, periode_bulan, periode_tahun) UNIQUE
 ```
 
 ---
 
-### 2.11 Tabel `pemakaian_stok`
+### 2.9 Tabel `pemakaian_stok`
 
 ```
 PEMAKAIAN_STOK
 ├── id                  : INT(11)       NOT NULL  AUTO_INCREMENT  [PK]
 ├── laporan_stok_id     : INT(11)       NOT NULL  [FK → laporan_stok.id]
-├── produk_id           : INT(11)       NOT NULL  [FK → produk_kebersihan.id]
 ├── unit                : VARCHAR(100)  NOT NULL
 ├── minggu              : INT(1)        NOT NULL  (1–4)
 ├── jumlah              : INT(11)       NOT NULL  DEFAULT 0
@@ -473,13 +400,12 @@ PEMAKAIAN_STOK
 └── updated_at          : TIMESTAMP     NULL
 
 FK: laporan_stok_id → laporan_stok(id) ON DELETE CASCADE
-FK: produk_id       → produk_kebersihan(id) ON DELETE CASCADE
 INDEX: (laporan_stok_id, unit, minggu) UNIQUE
 ```
 
 ---
 
-### 2.12 Tabel `setoran_sampah`
+### 2.10 Tabel `setoran_sampah`
 
 ```
 SETORAN_SAMPAH
@@ -506,7 +432,7 @@ Jenis sampah valid: Botol Plastik | Kardus | Derigen | Kertas |
 
 ---
 
-### 2.13 Tabel `penilaian_pj_lantai`
+### 2.11 Tabel `penilaian_pj_lantai`
 
 ```
 PENILAIAN_PJ_LANTAI
@@ -553,7 +479,7 @@ Kategori: ≥86=Sangat Baik | 76–85=Baik | 75=Cukup | 51–74=Kurang | ≤50=S
 
 ---
 
-### 2.14 Tabel `password_reset_tokens`
+### 2.12 Tabel `password_reset_tokens`
 
 ```
 PASSWORD_RESET_TOKENS
@@ -564,7 +490,7 @@ PASSWORD_RESET_TOKENS
 
 ---
 
-### 2.15 Tabel `failed_jobs`
+### 2.13 Tabel `failed_jobs`
 
 ```
 FAILED_JOBS
@@ -609,7 +535,7 @@ graph TD
     subgraph SPV["👔 Supervisor / PJ Lantai"]
         UC_S1["Lihat Dasbor Supervisor"]
         UC_S2["Verifikasi Tugas Mingguan"]
-        UC_S3["Nilai Ceklis (1–5 Bintang)"]
+        UC_S3["Verifikasi Tugas Mingguan (Status)"]
         UC_S4["Monitor Operan Shift"]
         UC_S5["Cetak Laporan Operan"]
         UC_S6["Validasi Setoran Sampah"]
@@ -887,11 +813,12 @@ sequenceDiagram
     participant Browser
     participant Canvas as HTML5 Canvas
     participant GPS as Geolocation API
-    participant Controller as CeklisController
+    participant Controller as TugasMingguanController
     participant Helper as KompresiFoto
     participant Storage as Storage Disk (public)
+    participant DB as Database
 
-    CS->>Browser: Buka form ceklis
+    CS->>Browser: Buka form Tugas Mingguan
     Browser->>GPS: navigator.geolocation.getCurrentPosition()
     GPS-->>Browser: {latitude, longitude} atau error
 
@@ -903,18 +830,18 @@ sequenceDiagram
     Browser->>Browser: new File([blob], 'before_timestamp.jpg')
 
     CS->>Browser: Tap Submit
-    Browser->>Controller: POST /ceklis/simpan {foto_before, area_id, lat_long}
+    Browser->>Controller: POST /tugas-mingguan/simpan {foto_sebelum[], rincian_kegiatan, tanggal}
 
-    Controller->>Helper: KompresiFoto::simpan(file, 'ceklis', 1280, 80)
+    Controller->>Helper: KompresiFoto::simpanBanyak(files, 'tugas-mingguan', 1280, 80)
     Helper->>Helper: imagecreatefromjpeg(tmpPath)
     Helper->>Helper: imagecopyresampled() — resize 1280px
     Helper->>Helper: imagejpeg($dst, path, 80)
-    Helper-->>Controller: 'ceklis/uuid.jpg'
+    Helper-->>Controller: ['tugas-mingguan/uuid1.jpg', ...]
 
     Controller->>Storage: Simpan file hasil kompresi
-    Controller->>DB: INSERT INTO ceklis (user_id, area_id, foto_before, lat_long, ...)
-    DB-->>Controller: ID ceklis baru
-    Controller-->>Browser: Redirect 302 ke /ceklis/{id}/after
+    Controller->>DB: INSERT INTO tugas_mingguan (user_id, tanggal, foto_sebelum, ...)
+    DB-->>Controller: ID tugas baru
+    Controller-->>Browser: Redirect 302 ke /tugas-mingguan/{id}/after
     Browser-->>CS: Halaman foto AFTER
 ```
 
@@ -1040,7 +967,6 @@ classDiagram
         +string password
         +int peran_id
         +peran() BelongsTo
-        +ceklis() HasMany
         +permintaanBarang() HasMany
         +setoranSampah() HasMany
         +penilaianPj() HasMany
@@ -1057,25 +983,9 @@ classDiagram
     class Area {
         +int id
         +string lantai
-        +ceklis() HasMany
     }
 
-    class CeklisKebersihan {
-        +int id
-        +int user_id
-        +int area_id
-        +date tanggal
-        +time waktu_mulai
-        +time waktu_selesai
-        +string foto_before
-        +string foto_after
-        +string lat_long
-        +string status
-        +int skor
-        +text catatan
-        +pengguna() BelongsTo
-        +area() BelongsTo
-    }
+    %% CeklisKebersihan dihapus (v2.1) — digantikan TugasMingguan
 
     class TugasMingguan {
         +int id
@@ -1134,7 +1044,6 @@ classDiagram
 
     class BarangInventori {
         +int id
-        +int produk_id
         +string kode_barang
         +string nama_barang
         +text deskripsi
@@ -1142,31 +1051,26 @@ classDiagram
         +int stok_saat_ini
         +string satuan
         +int stok_minimum
-        +permintaan() HasMany
-        +produkKebersihan() BelongsTo
-        +stokMenipis() bool
-    }
-
-    class ProdukKebersihan {
-        +int id
-        +string kode_barang
-        +string nama_barang
-        +string satuan
         +$ daftarSatuan[] static
         +$ daftarUnit[] static
+        +permintaan() HasMany
         +laporanStok() HasMany
         +pemakaianStok() HasMany
+        +stokMenipis() bool
         +buatKodeOtomatis()$ string static
+        +pastikanLaporanPeriode(bulan, tahun) LaporanStok
     }
+
+    %% ProdukKebersihan dihapus (v2.1) — seluruh fungsinya dipindah ke BarangInventori
 
     class LaporanStok {
         +int id
-        +int produk_id
+        +int barang_id
         +int periode_bulan
         +int periode_tahun
         +date tanggal
         +int stok_masuk
-        +produk() BelongsTo
+        +barang() BelongsTo
         +pemakaian() HasMany
         +totalPemakaian() int
         +sisaStok() int
@@ -1177,12 +1081,10 @@ classDiagram
     class PemakaianStok {
         +int id
         +int laporan_stok_id
-        +int produk_id
         +string unit
         +int minggu
         +int jumlah
         +laporanStok() BelongsTo
-        +produk() BelongsTo
     }
 
     class SetoranSampah {
@@ -1241,18 +1143,14 @@ classDiagram
 
     %% Relasi
     User "N" --> "1" Peran : memiliki
-    User "1" --> "N" CeklisKebersihan : membuat
-    Area "1" --> "N" CeklisKebersihan : berlokasi di
     User "1" --> "N" TugasMingguan : membuat
     User "1" --> "N" OperanShift : mengirim
     User "1" --> "N" OperanShift : menerima
     OperanShift "0..1" --> "N" OperanShift : dieskalasi ke
     User "1" --> "N" PermintaanBarang : mengajukan
     BarangInventori "1" --> "N" PermintaanBarang : diminta
-    ProdukKebersihan "1" --> "1" BarangInventori : terhubung ke
-    ProdukKebersihan "1" --> "N" LaporanStok : dicatat di
+    BarangInventori "1" --> "N" LaporanStok : dicatat di
     LaporanStok "1" --> "N" PemakaianStok : dirinci di
-    ProdukKebersihan "1" --> "N" PemakaianStok : dipakai
     User "1" --> "N" SetoranSampah : menyetor
     User "1" --> "N" PenilaianPjLantai : dinilai
 ```
@@ -1290,15 +1188,7 @@ classDiagram
         +verifikasi(Request, id) Redirect
     }
 
-    class CeklisKebersihanController {
-        +index() View
-        +buat(area_id) View
-        +simpan(Request) Redirect
-        +isiAfter(id) View
-        +simpanAfter(Request, id) Redirect
-        +detail(id) View
-        +nilaiCeklis(Request, id) Redirect
-    }
+    %% CeklisKebersihanController dihapus (v2.1) — digantikan TugasMingguanController
 
     class OperanShiftController {
         +index() View
@@ -1371,7 +1261,6 @@ classDiagram
     Controller <|-- DasborSupervisorController
     Controller <|-- DasborGudangController
     Controller <|-- TugasMingguanController
-    Controller <|-- CeklisKebersihanController
     Controller <|-- OperanShiftController
     Controller <|-- PermintaanBarangController
     Controller <|-- SetoranSampahController
@@ -1385,19 +1274,28 @@ classDiagram
 
 ## Ringkasan Statistik Sistem
 
-| Komponen | Jumlah |
-|---|---|
-| Tabel Database Aktif | 16 tabel |
-| Model Eloquent | 13 model |
-| Controller | 15 controller |
-| Total Route | 96 route |
-| Peran Pengguna | 5 peran + publik |
-| Export Class | 2 class (PDF + Excel per modul) |
-| Helper Class | 1 (`KompresiFoto`) |
-| View Template | 40+ blade files |
-| Layout | 2 (Sidebar + Mobile UI) |
+| Komponen | Jumlah | Catatan |
+|---|---|---|
+| Tabel Database Aktif | 13 tabel | Hapus: `ceklis`, `produk_kebersihan`, `penilaian_kinerja` |
+| Model Eloquent | 11 model | Hapus: `CeklisKebersihan`, `ProdukKebersihan` |
+| Controller | 14 controller | Hapus: `CeklisKebersihanController` |
+| Total Route | ~85 route | Rute `ceklis.*` dihapus |
+| Peran Pengguna | 5 peran + publik | admin, supervisor, pj_lantai, cs, gudang |
+| Export Class | 2 class (PDF + Excel per modul) | — |
+| Helper Class | 1 (`KompresiFoto`) | — |
+| View Template | 35+ blade files | Hapus folder `views/ceklis/` |
+| Layout | 2 (Sidebar + Mobile UI) | — |
 
 ---
 
-*Dokumen ini dibuat otomatis berdasarkan implementasi aktual sistem per September 2026.*  
+## Riwayat Perubahan
+
+| Versi | Tanggal | Perubahan |
+|---|---|---|
+| 2.0 | Sep 2026 | Rilis awal — sistem lengkap dengan 16 tabel |
+| 2.1 | Sep 2026 | **Unifikasi Master Barang:** hapus `produk_kebersihan`, `barang_inventori` jadi master tunggal; FK `laporan_stok.barang_id` dan `pemakaian_stok` langsung ke `barang_inventori`. **Hapus Legacy Ceklis:** tabel `ceklis`, controller, dan view dihapus; sistem sepenuhnya menggunakan `tugas_mingguan`. |
+
+---
+
+*Dokumen ini dibuat berdasarkan implementasi aktual sistem per September 2026.*  
 *Seluruh diagram menggunakan sintaks **Mermaid** — dapat dirender di GitHub, GitLab, Notion, Obsidian, dan VS Code (plugin Mermaid Preview).*

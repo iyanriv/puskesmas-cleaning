@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BarangInventori;
 use App\Models\LaporanStok;
-use App\Models\ProdukKebersihan;
+use App\Models\MutasiStok;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -27,10 +27,11 @@ class BarangController extends Controller
 
     public function create()
     {
-        $daftarProduk = ProdukKebersihan::orderBy('nama_barang')->get();
-        $daftarSatuan = ProdukKebersihan::$daftarSatuan;
+        $daftarSatuan = BarangInventori::$daftarSatuan;
+        $kodeOtomatis = BarangInventori::buatKodeOtomatis();
+        $daftarProduk = BarangInventori::orderBy('nama_barang')->get();
 
-        return view('admin.barang.buat', compact('daftarProduk', 'daftarSatuan'));
+        return view('admin.barang.buat', compact('daftarSatuan', 'kodeOtomatis', 'daftarProduk'));
     }
 
     public function store(Request $request)
@@ -49,17 +50,11 @@ class BarangController extends Controller
         DB::transaction(function () use ($request) {
             $barang = new BarangInventori();
             $barang->nama_barang   = $request->nama_barang;
-            $barang->kode_barang   = $request->kode_barang ?: null;
+            $barang->kode_barang   = $request->kode_barang ?: BarangInventori::buatKodeOtomatis();
             $barang->deskripsi     = $request->deskripsi;
             $barang->stok_saat_ini = $request->stok_saat_ini;
             $barang->satuan        = $request->satuan;
             $barang->stok_minimum  = $request->stok_minimum ?? 5;
-
-            // Cari pasangan produk_kebersihan berdasarkan kode_barang
-            if ($request->kode_barang) {
-                $produk = ProdukKebersihan::where('kode_barang', $request->kode_barang)->first();
-                $barang->produk_id = $produk?->id;
-            }
 
             if ($request->hasFile('foto_barang')) {
                 $path = $request->file('foto_barang')->store('barang', 'public');
@@ -68,9 +63,23 @@ class BarangController extends Controller
 
             $barang->save();
 
-            // Catat ke laporan stok (stok_masuk) jika stok > 0 dan terhubung ke produk_kebersihan
-            if ($barang->produk_id && $request->stok_saat_ini > 0) {
-                $this->catatStokMasuk($barang->produk_id, $request->stok_saat_ini);
+            // Catat ke laporan stok (stok_masuk) jika stok > 0
+            if ($request->stok_saat_ini > 0) {
+                $this->catatStokMasuk($barang->id, $request->stok_saat_ini);
+                // Catat sebagai stok_awal ke ledger mutasi
+                MutasiStok::create([
+                    'nomor_transaksi'  => MutasiStok::buatNomor('SA'),
+                    'barang_id'        => $barang->id,
+                    'tanggal'          => now()->toDateString(),
+                    'jenis_transaksi'  => 'stok_awal',
+                    'jumlah_masuk'     => (int) $request->stok_saat_ini,
+                    'jumlah_keluar'    => 0,
+                    'saldo_sebelumnya' => 0,
+                    'saldo_setelahnya' => (int) $request->stok_saat_ini,
+                    'tipe_stok'        => 'gudang',
+                    'keterangan'       => 'Stok awal saat barang ditambahkan ke sistem',
+                    'petugas_id'       => auth()->id(),
+                ]);
             }
         });
 
@@ -81,10 +90,10 @@ class BarangController extends Controller
     public function edit($id)
     {
         $barang       = BarangInventori::findOrFail($id);
-        $daftarProduk = ProdukKebersihan::orderBy('nama_barang')->get();
-        $daftarSatuan = ProdukKebersihan::$daftarSatuan;
+        $daftarSatuan = BarangInventori::$daftarSatuan;
+        $daftarProduk = BarangInventori::where('id', '!=', $id)->orderBy('nama_barang')->get();
 
-        return view('admin.barang.ubah', compact('barang', 'daftarProduk', 'daftarSatuan'));
+        return view('admin.barang.ubah', compact('barang', 'daftarSatuan', 'daftarProduk'));
     }
 
     public function update(Request $request, $id)
@@ -106,21 +115,11 @@ class BarangController extends Controller
             $stokLama = $barang->stok_saat_ini;
 
             $barang->nama_barang   = $request->nama_barang;
+            $barang->kode_barang   = $request->kode_barang ?: $barang->kode_barang;
             $barang->deskripsi     = $request->deskripsi;
             $barang->stok_saat_ini = $request->stok_saat_ini;
             $barang->satuan        = $request->satuan;
             $barang->stok_minimum  = $request->stok_minimum ?? $barang->stok_minimum ?? 5;
-
-            // Update kode_barang dan relasi produk_id
-            $kodeBaru = $request->kode_barang ?: null;
-            $barang->kode_barang = $kodeBaru;
-
-            if ($kodeBaru) {
-                $produk = ProdukKebersihan::where('kode_barang', $kodeBaru)->first();
-                $barang->produk_id = $produk?->id;
-            } else {
-                $barang->produk_id = null;
-            }
 
             if ($request->hasFile('foto_barang')) {
                 if ($barang->foto_barang && Storage::disk('public')->exists($barang->foto_barang)) {
@@ -134,8 +133,25 @@ class BarangController extends Controller
 
             // Jika stok bertambah (barang masuk), catat selisihnya ke laporan stok
             $selisih = $request->stok_saat_ini - $stokLama;
-            if ($selisih > 0 && $barang->produk_id) {
-                $this->catatStokMasuk($barang->produk_id, $selisih);
+            if ($selisih > 0) {
+                $this->catatStokMasuk($barang->id, $selisih);
+            }
+
+            // Catat penyesuaian stok ke ledger mutasi jika ada perubahan
+            if ($selisih !== 0) {
+                MutasiStok::create([
+                    'nomor_transaksi'  => MutasiStok::buatNomor('PA'),
+                    'barang_id'        => $barang->id,
+                    'tanggal'          => now()->toDateString(),
+                    'jenis_transaksi'  => 'penyesuaian',
+                    'jumlah_masuk'     => max(0, $selisih),
+                    'jumlah_keluar'    => max(0, -$selisih),
+                    'saldo_sebelumnya' => $stokLama,
+                    'saldo_setelahnya' => (int) $request->stok_saat_ini,
+                    'tipe_stok'        => 'gudang',
+                    'keterangan'       => 'Stok diubah melalui form Master Barang (sebelumnya: ' . $stokLama . ')',
+                    'petugas_id'       => auth()->id(),
+                ]);
             }
         });
 
@@ -165,14 +181,14 @@ class BarangController extends Controller
      * Tambahkan jumlah ke stok_masuk laporan_stok periode berjalan.
      * Jika laporan belum ada, buat baru.
      */
-    private function catatStokMasuk(int $produkId, int $jumlah): void
+    private function catatStokMasuk(int $barangId, int $jumlah): void
     {
         $bulan = now()->month;
         $tahun = now()->year;
 
         $laporan = LaporanStok::firstOrCreate(
             [
-                'produk_id'     => $produkId,
+                'barang_id'     => $barangId,
                 'periode_bulan' => $bulan,
                 'periode_tahun' => $tahun,
             ],

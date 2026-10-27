@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('barang_id')->constrained('barang_inventori')->cascadeOnDelete();
             $table->unsignedInteger('jumlah');
-            $table->enum('status_request', ['pending', 'disetujui', 'ditolak'])->default('pending');
+            $table->string('status_request', 30)->default('menunggu_spv');
             $table->text('alasan_penolakan')->nullable();
             $table->timestamp('waktu_request')->useCurrent();
             $table->timestamp('waktu_approve')->nullable();

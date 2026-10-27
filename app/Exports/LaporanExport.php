@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\CeklisKebersihan;
+use App\Models\TugasMingguan;
 use App\Models\PermintaanBarang;
 use App\Models\SetoranSampah;
 use App\Models\PenilaianPjLantai;
@@ -29,14 +29,14 @@ class LaporanExport implements FromView, ShouldAutoSize
         $sampai = $this->sampai;
         $judul = $this->judul;
 
-        $totalCeklis   = CeklisKebersihan::whereBetween('tanggal', [$dari, $sampai])->count();
-        $ceklisSelesai = CeklisKebersihan::whereBetween('tanggal', [$dari, $sampai])->where('status', 'selesai')->count();
+        $totalCeklis   = TugasMingguan::whereBetween('tanggal', [$dari, $sampai])->count();
+        $ceklisSelesai = TugasMingguan::whereBetween('tanggal', [$dari, $sampai])->whereIn('status', ['selesai', 'disetujui'])->count();
         $ceklisPersen  = $totalCeklis > 0 ? round(($ceklisSelesai / $totalCeklis) * 100) : 0;
         
-        $ceklisPerArea = CeklisKebersihan::with('area')->whereBetween('tanggal', [$dari, $sampai])->get()->groupBy('area_id')->map(fn($g) => [
-            'nama'    => $g->first()->area?->lantai ?? '-',
+        $ceklisPerArea = TugasMingguan::with('user')->whereBetween('tanggal', [$dari, $sampai])->get()->groupBy('user_id')->map(fn($g) => [
+            'nama'    => $g->first()->user?->name ?? 'Petugas CS',
             'total'   => $g->count(),
-            'selesai' => $g->where('status', 'selesai')->count(),
+            'selesai' => $g->whereIn('status', ['selesai', 'disetujui'])->count(),
         ]);
 
         $totalPermintaan     = PermintaanBarang::whereBetween('waktu_request', [$dari . ' 00:00:00', $sampai . ' 23:59:59'])->count();

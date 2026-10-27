@@ -19,6 +19,10 @@
                 @endif
             </p>
         </div>
+        @php
+            $bisaKelola = in_array(auth()->user()->peran->nama_peran ?? '', ['gudang', 'admin']);
+        @endphp
+        @if($bisaKelola)
         <div class="d-flex gap-2 flex-wrap">
             <button class="btn btn-success btn-sm rounded-3 px-3" data-bs-toggle="modal" data-bs-target="#modalTambahBarang">
                 <i class="bi bi-plus-circle me-1"></i> Tambah Barang Baru
@@ -27,6 +31,13 @@
                 <i class="bi bi-list-check me-1"></i> Dari Master
             </button>
         </div>
+        @else
+        <div class="d-flex align-items-center">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-3" style="font-size:0.8rem;">
+                <i class="bi bi-shield-check me-1"></i> Mode Monitoring Supervisor (Lihat Saja)
+            </span>
+        </div>
+        @endif
     </div>
 
     {{-- ================================================================
@@ -287,6 +298,7 @@
                                 <th class="text-center" style="width:110px;">Total Pemakaian</th>
                             @endif
                             <th class="text-center" style="width:85px;">Sisa Stok</th>
+                            <th class="text-center" style="width:115px;">Status</th>
                             <th class="text-center" style="width:90px;">Aksi</th>
                         </tr>
                     </thead>
@@ -360,35 +372,72 @@
                                 {{-- Sisa Stok --}}
                                 <td class="text-center">
                                     @php $sisa = $baris['sisa_stok']; @endphp
-                                    <span class="fw-bold {{ $sisa < 0 ? 'text-danger' : ($sisa == 0 ? 'text-warning' : 'text-success') }}">
+                                    <span class="fw-bold {{ $sisa < 0 ? 'text-danger' : ($sisa <= 5 ? 'text-danger' : 'text-success') }}">
                                         {{ number_format($sisa) }}
                                     </span>
+                                </td>
+
+                                {{-- Status Stok (Badge) --}}
+                                <td class="text-center">
                                     @if($sisa < 0)
-                                        <i class="bi bi-exclamation-triangle-fill text-danger ms-1" style="font-size:0.7rem;"
-                                           title="Stok negatif!"></i>
+                                        <span class="badge bg-danger rounded-pill px-2 py-1" style="font-size:0.72rem;">
+                                            <i class="bi bi-x-circle me-1"></i>Defisit
+                                        </span>
+                                    @elseif($sisa == 0)
+                                        <span class="badge bg-danger text-white rounded-pill px-2 py-1" style="font-size:0.72rem;">
+                                            <i class="bi bi-slash-circle me-1"></i>Habis
+                                        </span>
+                                    @elseif($sisa <= 5)
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1" style="font-size:0.72rem;">
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>Menipis (≤5)
+                                        </span>
+                                    @else
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size:0.72rem;">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Aman
+                                        </span>
                                     @endif
                                 </td>
 
                                 {{-- Aksi --}}
                                 <td class="text-center">
+                                    @if($bisaKelola)
                                     <div class="d-flex gap-1 justify-content-center">
                                         {{-- Tombol input pemakaian (buka modal) --}}
-                                        <button class="btn btn-sm btn-outline-success rounded-2 px-2"
-                                                onclick="bukaModalPemakaian({{ $baris['laporan_id'] }}, '{{ addslashes($baris['nama_barang']) }}')"
+                                        <button type="button" class="btn btn-sm btn-outline-success rounded-2 px-2 btn-buka-pemakaian"
+                                                data-laporan-id="{{ $baris['laporan_id'] }}"
+                                                data-nama="{{ $baris['nama_barang'] }}"
+                                                onclick="bukaModalPemakaian('{{ $baris['laporan_id'] }}', '{{ addslashes($baris['nama_barang']) }}')"
                                                 title="Input pemakaian per unit">
                                             <i class="bi bi-pencil-square" style="font-size:0.8rem;"></i>
                                         </button>
-                                        <button class="btn btn-outline-primary btn-sm rounded-2 px-2"
-                                                onclick="bukaModalEdit({{ $baris['laporan_id'] }}, '{{ addslashes($baris['produk_nama']) }}', '{{ $baris['produk_kode'] }}', '{{ $baris['produk_satuan'] }}', '{{ $baris['tanggal_raw'] }}', {{ $baris['stok_masuk_raw'] }})"
+                                        <button type="button" class="btn btn-outline-primary btn-sm rounded-2 px-2 btn-buka-edit"
+                                                data-laporan-id="{{ $baris['laporan_id'] }}"
+                                                data-nama="{{ $baris['produk_nama'] }}"
+                                                data-kode="{{ $baris['produk_kode'] }}"
+                                                data-satuan="{{ $baris['produk_satuan'] }}"
+                                                data-tanggal="{{ $baris['tanggal_raw'] }}"
+                                                data-stok="{{ (int)($baris['stok_masuk_raw'] ?? 0) }}"
+                                                onclick="bukaModalEdit('{{ $baris['laporan_id'] }}', '{{ addslashes($baris['produk_nama']) }}', '{{ addslashes($baris['produk_kode']) }}', '{{ $baris['produk_satuan'] }}', '{{ $baris['tanggal_raw'] }}', {{ (int)($baris['stok_masuk_raw'] ?? 0) }})"
                                                 title="Edit info barang">
                                             <i class="bi bi-gear" style="font-size:0.8rem;"></i>
                                         </button>
-                                        <button class="btn btn-outline-danger btn-sm rounded-2 px-2"
-                                                onclick="konfirmasiHapus({{ $baris['laporan_id'] }}, '{{ addslashes($baris['nama_barang']) }}')"
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-2 px-2 btn-buka-hapus"
+                                                data-laporan-id="{{ $baris['laporan_id'] }}"
+                                                data-nama="{{ $baris['nama_barang'] }}"
+                                                onclick="konfirmasiHapus('{{ $baris['laporan_id'] }}', '{{ addslashes($baris['nama_barang']) }}')"
                                                 title="Hapus dari periode ini">
                                             <i class="bi bi-trash" style="font-size:0.8rem;"></i>
                                         </button>
                                     </div>
+                                    @else
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-2 px-2"
+                                                onclick="bukaModalPemakaian('{{ $baris['laporan_id'] }}', '{{ addslashes($baris['nama_barang']) }}')"
+                                                title="Lihat rincian pemakaian per unit">
+                                            <i class="bi bi-eye me-1"></i> Rincian
+                                        </button>
+                                    </div>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -466,7 +515,11 @@
             <div class="modal-header border-0 pb-0">
                 <div>
                     <h5 class="modal-title fw-bold" id="labelPemakaian">
-                        <i class="bi bi-pencil-square text-success me-2"></i>Input Pemakaian
+                        @if($bisaKelola)
+                            <i class="bi bi-pencil-square text-success me-2"></i>Input Pemakaian
+                        @else
+                            <i class="bi bi-clipboard2-data text-primary me-2"></i>Rincian Pemakaian per Unit
+                        @endif
                     </h5>
                     <div class="text-muted" id="subLabelPemakaian" style="font-size:0.82rem;"></div>
                 </div>
@@ -482,6 +535,7 @@
     </div>
 </div>
 
+@if($bisaKelola)
 {{-- ================================================================
      MODAL: TAMBAH BARANG BARU
      ================================================================ --}}
@@ -671,6 +725,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- Toast peringatan stok --}}
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100;">
@@ -704,6 +759,7 @@ const ROUTE_LAPORAN      = (id) => `{{ url('/') }}/stok-barang/laporan/${id}`;
 const ROUTE_EXCEL_BASE   = '{{ route("stok-barang.export-excel") }}';
 const ROUTE_PDF_BASE     = '{{ route("stok-barang.cetak-pdf") }}';
 const DAFTAR_UNIT = @json($daftarUnit);
+const BISA_KELOLA = {{ $bisaKelola ? 'true' : 'false' }};
 
 // ── Aktifkan/nonaktifkan select Minggu berdasarkan Unit ──────────
 (() => {
@@ -807,7 +863,7 @@ function bukaModalPemakaian(laporanId, namaBarang) {
             <div class="text-muted" style="font-size:0.82rem;">Memuat data pemakaian...</div>
         </div>`;
 
-    new bootstrap.Modal(document.getElementById('modalPemakaian')).show();
+    bukaModalAman('modalPemakaian');
 
     // Fetch data pemakaian yang sudah tersimpan DULU, baru render grid
     fetch(ROUTE_PEMAKAIAN_DATA(laporanId), {
@@ -842,39 +898,71 @@ function renderGridPemakaian(body, laporanId, savedData) {
         </thead>
         <tbody>`;
 
-    DAFTAR_UNIT.forEach(unit => {
+        DAFTAR_UNIT.forEach(unit => {
         const safeUnit = unit.replace(/\s/g, '_');
         html += `<tr><td class="fw-semibold">${unit}</td>`;
         [1,2,3,4].forEach(w => {
             const val = savedData[unit]?.[w] ?? 0;
-            html += `<td class="p-1 text-center">
-                <input type="number" min="0" value="${val}"
-                    class="form-control form-control-sm text-center rounded-2 input-pemakaian-modal"
-                    style="width:62px; margin:auto;"
-                    data-laporan-id="${laporanId}"
-                    data-unit="${unit}"
-                    data-minggu="${w}">
-            </td>`;
+            if (BISA_KELOLA) {
+                html += `<td class="p-1 text-center">
+                    <input type="number" min="0" value="${val}"
+                        class="form-control form-control-sm text-center rounded-2 input-pemakaian-modal"
+                        style="width:62px; margin:auto;"
+                        data-laporan-id="${laporanId}"
+                        data-unit="${unit}"
+                        data-minggu="${w}">
+                </td>`;
+            } else {
+                html += `<td class="p-1 text-center">
+                    <span class="badge ${val > 0 ? 'bg-primary-subtle text-primary border border-primary-subtle fw-semibold' : 'text-muted'} px-2 py-1" style="font-size:0.82rem;">${val > 0 ? val : '—'}</span>
+                </td>`;
+            }
         });
         html += `<td class="text-center fw-bold text-muted" id="sub-${laporanId}-${safeUnit}">0</td></tr>`;
     });
 
+    const statusNote = BISA_KELOLA
+        ? '<span class="text-muted" style="font-size:0.82rem;"><i class="bi bi-check-circle text-success me-1"></i>Perubahan tersimpan otomatis.</span>'
+        : '<span class="text-muted" style="font-size:0.82rem;"><i class="bi bi-shield-check text-primary me-1"></i>Mode monitoring rincian pemakaian (Read-Only).</span>';
+
     html += `</tbody></table></div>
         <div class="mt-3 p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
-            <span class="text-muted" style="font-size:0.82rem;"><i class="bi bi-check-circle text-success me-1"></i>Perubahan tersimpan otomatis.</span>
+            ${statusNote}
             <span class="fw-bold text-dark">Total: <span id="grand-total-${laporanId}">0</span></span>
         </div>`;
 
     body.innerHTML = html;
 
-    body.querySelectorAll('.input-pemakaian-modal').forEach(input => {
-        input.addEventListener('input', () => {
-            handlePemakaianChange(input);
-            hitungSubtotalModal(laporanId);
+    if (BISA_KELOLA) {
+        body.querySelectorAll('.input-pemakaian-modal').forEach(input => {
+            input.addEventListener('input', () => {
+                handlePemakaianChange(input);
+                hitungSubtotalModal(laporanId);
+            });
         });
-    });
+        hitungSubtotalModal(laporanId);
+    } else {
+        hitungSubtotalModalReadOnly(laporanId, savedData);
+    }
+}
 
-    hitungSubtotalModal(laporanId);
+function hitungSubtotalModalReadOnly(laporanId, savedData) {
+    let grandTotal = 0;
+    DAFTAR_UNIT.forEach(unit => {
+        let sub = 0;
+        [1,2,3,4].forEach(w => {
+            sub += parseInt(savedData[unit]?.[w]) || 0;
+        });
+        grandTotal += sub;
+        const safeUnit = unit.replace(/\s/g, '_');
+        const el = document.getElementById(`sub-${laporanId}-${safeUnit}`);
+        if (el) {
+            el.textContent = sub;
+            el.className = `text-center fw-bold ${sub > 0 ? 'text-primary' : 'text-muted'}`;
+        }
+    });
+    const gt = document.getElementById(`grand-total-${laporanId}`);
+    if (gt) gt.textContent = grandTotal;
 }
 
 function hitungSubtotalModal(laporanId) {
@@ -896,24 +984,86 @@ function hitungSubtotalModal(laporanId) {
     if (gt) gt.textContent = grandTotal;
 }
 
+// ── HELPER MODAL AMAN (Bootstrap / Vanilla Fallback) ─────────────
+function bukaModalAman(modalId) {
+    const el = document.getElementById(modalId);
+    if (!el) return;
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        bootstrap.Modal.getOrCreateInstance(el).show();
+    } else {
+        el.classList.add('show');
+        el.style.display = 'block';
+        document.body.classList.add('modal-open');
+        let backdrop = document.querySelector('.modal-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+        }
+    }
+}
+
 // ── MODAL EDIT ───────────────────────────────────────────────────
 function bukaModalEdit(id, nama, kode, satuan, tanggal, stok) {
     document.getElementById('formEdit').action = ROUTE_LAPORAN(id);
-    document.getElementById('editNamaBarang').value = nama;
-    document.getElementById('editKodeBarang').value = kode;
+    document.getElementById('editNamaBarang').value = nama || '';
+    document.getElementById('editKodeBarang').value = kode || '';
     document.getElementById('editTanggal').value    = tanggal || '';
-    document.getElementById('editStokMasuk').value  = stok;
+    document.getElementById('editStokMasuk').value  = stok || 0;
     const sel = document.getElementById('editSatuan');
     for (let opt of sel.options) opt.selected = (opt.value === satuan);
-    new bootstrap.Modal(document.getElementById('modalEdit')).show();
+    bukaModalAman('modalEdit');
 }
 
 // ── MODAL HAPUS ──────────────────────────────────────────────────
 function konfirmasiHapus(id, nama) {
-    document.getElementById('namaBarangHapus').textContent = nama;
+    document.getElementById('namaBarangHapus').textContent = nama || '';
     document.getElementById('formHapus').action = ROUTE_LAPORAN(id);
-    new bootstrap.Modal(document.getElementById('modalHapus')).show();
+    bukaModalAman('modalHapus');
 }
+
+// Handler penutup modal fallback
+document.addEventListener('click', function(e) {
+    if (e.target.matches('[data-bs-dismiss="modal"]') || e.target.closest('[data-bs-dismiss="modal"]') || e.target.classList.contains('modal')) {
+        const modal = e.target.closest('.modal') || (e.target.classList.contains('modal') ? e.target : null);
+        if (modal) {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                const inst = bootstrap.Modal.getInstance(modal);
+                if (inst) inst.hide();
+            }
+            modal.classList.remove('show');
+            modal.style.display = '';
+            document.body.classList.remove('modal-open');
+            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+        }
+    }
+});
+
+// ── EVENT DELEGATION UNTUK TOMBOL AKSI TABEL ──────────────────────
+document.addEventListener('click', function(e) {
+    const btnPemakaian = e.target.closest('.btn-buka-pemakaian');
+    if (btnPemakaian) {
+        bukaModalPemakaian(btnPemakaian.dataset.laporanId, btnPemakaian.dataset.nama);
+        return;
+    }
+    const btnEdit = e.target.closest('.btn-buka-edit');
+    if (btnEdit) {
+        bukaModalEdit(
+            btnEdit.dataset.laporanId,
+            btnEdit.dataset.nama,
+            btnEdit.dataset.kode,
+            btnEdit.dataset.satuan,
+            btnEdit.dataset.tanggal,
+            btnEdit.dataset.stok
+        );
+        return;
+    }
+    const btnHapus = e.target.closest('.btn-buka-hapus');
+    if (btnHapus) {
+        konfirmasiHapus(btnHapus.dataset.laporanId, btnHapus.dataset.nama);
+        return;
+    }
+});
 
 // ── GENERATE KODE OTOMATIS ───────────────────────────────────────
 async function generateKode() {

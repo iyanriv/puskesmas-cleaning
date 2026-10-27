@@ -11,6 +11,7 @@ class LaporanStok extends Model
     protected $table = 'laporan_stok';
 
     protected $fillable = [
+        'barang_id',
         'produk_id',
         'periode_bulan',
         'periode_tahun',
@@ -25,9 +26,17 @@ class LaporanStok extends Model
         'periode_tahun' => 'integer',
     ];
 
+    public function barang(): BelongsTo
+    {
+        return $this->belongsTo(BarangInventori::class, 'barang_id');
+    }
+
+    /**
+     * Alias relasi ke barang untuk kompatibilitas view.
+     */
     public function produk(): BelongsTo
     {
-        return $this->belongsTo(ProdukKebersihan::class, 'produk_id');
+        return $this->barang();
     }
 
     public function pemakaian(): HasMany
@@ -61,7 +70,7 @@ class LaporanStok extends Model
      */
     public function pemakaianPerUnit(): array
     {
-        $hasil = array_fill_keys(ProdukKebersihan::$daftarUnit, 0);
+        $hasil = array_fill_keys(BarangInventori::$daftarUnit, 0);
 
         foreach ($this->pemakaian as $item) {
             if (array_key_exists($item->unit, $hasil)) {
@@ -79,7 +88,7 @@ class LaporanStok extends Model
     public function pemakaianPerUnitMinggu(): array
     {
         $hasil = [];
-        foreach (ProdukKebersihan::$daftarUnit as $unit) {
+        foreach (BarangInventori::$daftarUnit as $unit) {
             $hasil[$unit] = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
         }
 

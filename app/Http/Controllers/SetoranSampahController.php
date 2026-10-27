@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SetoranSampahExport;
 use App\Helpers\KompresiFoto;
 use App\Models\SetoranSampah;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SetoranSampahController extends Controller
 {
@@ -64,7 +66,7 @@ class SetoranSampahController extends Controller
             'jenis_sampah'  => 'required|array|min:1',
             'jenis_sampah.*'=> 'string',
             'foto_timbangan'=> 'required|image|max:2048',
-            'catatan'       => 'required|string|max:500',
+            'catatan'       => 'nullable|string|max:500',
         ], [
             'lokasi_setor.required'  => 'Pilih lokasi/area setor.',
             'jenis_sampah.required'  => 'Pilih minimal satu jenis sampah.',
@@ -72,7 +74,6 @@ class SetoranSampahController extends Controller
             'foto_timbangan.required'=> 'Foto bukti wajib diupload.',
             'foto_timbangan.image'   => 'File harus berupa gambar.',
             'foto_timbangan.max'     => 'Ukuran foto maksimal 2MB.',
-            'catatan.required'       => 'Catatan/Keterangan nama barang wajib diisi.',
         ]);
 
         $pengguna = auth()->user();
@@ -223,6 +224,35 @@ class SetoranSampahController extends Controller
     }
 
     /**
+     * Kembalikan status setoran sampah ke menunggu.
+     */
+    public function resetStatus($id)
+    {
+        $setoran = SetoranSampah::findOrFail($id);
+        $setoran->update([
+            'status_validasi'  => 'menunggu',
+            'validator_id'     => null,
+            'catatan_validasi' => null,
+        ]);
+
+        return back()->with('sukses', 'Status setoran sampah berhasil dikembalikan ke status Menunggu.');
+    }
+
+    /**
+     * Hapus data setoran sampah.
+     */
+    public function destroy($id)
+    {
+        $setoran = SetoranSampah::findOrFail($id);
+        if ($setoran->foto_timbangan && \Illuminate\Support\Facades\Storage::disk('public')->exists($setoran->foto_timbangan)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($setoran->foto_timbangan);
+        }
+        $setoran->delete();
+
+        return back()->with('sukses', 'Data setoran sampah berhasil dihapus.');
+    }
+
+    /**
      * Cetak laporan bank sampah — format formal.
      */
     public function cetakLaporan(Request $request)
@@ -281,5 +311,35 @@ class SetoranSampahController extends Controller
             'filter', 'bulan', 'labelPeriode',
             'dari', 'sampai', 'pengguna'
         ));
+    }
+
+    /**
+     * Export data bank sampah ke Excel.
+     */
+    public function exportExcel(Request $request)
+    {
+        $filter = $request->get('filter', 'minggu');
+        $bulan  = $request->get('bulan', now()->format('Y-m'));
+
+        switch ($filter) {
+            case 'hari':
+                $dari   = now()->startOfDay();
+                $sampai = now()->endOfDay();
+                break;
+            case 'bulan':
+                $dari   = now()->parse($bulan . '-01')->startOfMonth();
+                $sampai = now()->parse($bulan . '-01')->endOfMonth();
+                break;
+            default: // minggu
+                $dari   = now()->startOfWeek();
+                $sampai = now()->endOfWeek();
+        }
+
+        $namaFile = 'Bank-Sampah-' . $dari->toDateString() . '-sd-' . $sampai->toDateString() . '.xlsx';
+
+        return Excel::download(
+            new SetoranSampahExport($dari->toDateString(), $sampai->toDateString()),
+            $namaFile
+        );
     }
 }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\BarangInventori;
 use App\Models\LaporanStok;
 use App\Models\PermintaanBarang;
-use App\Models\ProdukKebersihan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -76,15 +75,15 @@ class DasborGudangController extends Controller
         // 5. Data Grafik 2: Top 5 Barang Paling Sering / Banyak Dipakai
         $topBarang = DB::table('pemakaian_stok')
             ->join('laporan_stok', 'pemakaian_stok.laporan_stok_id', '=', 'laporan_stok.id')
-            ->join('produk_kebersihan', 'laporan_stok.produk_id', '=', 'produk_kebersihan.id')
+            ->join('barang_inventori', 'laporan_stok.barang_id', '=', 'barang_inventori.id')
             ->where('laporan_stok.periode_bulan', $bulan)
             ->where('laporan_stok.periode_tahun', $tahun)
             ->select(
-                'produk_kebersihan.nama_barang',
-                'produk_kebersihan.satuan',
+                'barang_inventori.nama_barang',
+                'barang_inventori.satuan',
                 DB::raw('SUM(pemakaian_stok.jumlah) as total_pakai')
             )
-            ->groupBy('produk_kebersihan.id', 'produk_kebersihan.nama_barang', 'produk_kebersihan.satuan')
+            ->groupBy('barang_inventori.id', 'barang_inventori.nama_barang', 'barang_inventori.satuan')
             ->having('total_pakai', '>', 0)
             ->orderByDesc('total_pakai')
             ->limit(5)

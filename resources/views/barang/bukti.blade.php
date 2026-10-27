@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Bukti Permintaan Barang #{{ $permintaan->id }}</title>
+    <title>Bukti Transaksi Barang Keluar - {{ $permintaan->kode_transaksi ?? ('BT' . str_pad($permintaan->id, 4, '0', STR_PAD_LEFT)) }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -11,239 +11,297 @@
             font-size: 11px;
             color: #1a1a2e;
             background: #ffffff;
+            padding: 24px 30px;
         }
 
-        /* HEADER */
-        .header {
-            background: #ffffff;
-            padding: 16px 24px;
-            color: #1a1a2e;
-            display: table;
+        /* BANNER HEADER (SIKAP BERSIH) */
+        .banner-header {
+            background-color: #31999E;
+            color: #ffffff;
+            padding: 16px 22px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .banner-header h1 {
+            font-size: 19px;
+            font-weight: bold;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .banner-header .subtitle {
+            font-size: 12px;
+            opacity: 0.95;
+            letter-spacing: 0.4px;
+        }
+
+        /* META TRANSAKSI (DARI / KEPADA vs BUKTI TRANSAKSI) */
+        .meta-table {
             width: 100%;
-            border-bottom: 2px solid #0a7040;
+            border-collapse: collapse;
+            margin-bottom: 22px;
         }
-        .header-logo  { display: table-cell; width: 80px; vertical-align: middle; padding-right: 14px; }
-        .header-logo img { width: 64px; height: 64px; border-radius: 4px; }
-        .header-left  { display: table-cell; width: 52%; vertical-align: middle; }
-        .header-right { display: table-cell; width: 40%; text-align: right; vertical-align: middle; }
-        .instansi-nama  { font-size: 14px; font-weight: bold; letter-spacing: 0.5px; color: #0a7040; }
-        .instansi-sub   { font-size: 9.5px; margin-top: 2px; color: #6b7280; }
-        .doc-title      { font-size: 17px; font-weight: bold; letter-spacing: 1px; color: #1a1a2e; }
-        .doc-nomor      { font-size: 10px; margin-top: 4px; color: #6b7280; }
-
-        /* DIVIDER */
-        .divider { height: 4px; background: #12a65a; }
-
-        /* BODY */
-        .body-wrapper { padding: 24px 30px; }
-
-        /* Status banner */
-        .status-banner {
-            padding: 8px 16px; border-radius: 6px;
-            font-size: 10px; font-weight: bold;
-            text-align: center; margin-bottom: 20px;
-            letter-spacing: 0.5px;
+        .meta-table td {
+            vertical-align: top;
+            font-size: 11.5px;
         }
-        .status-disetujui { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .status-ditolak   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .status-pending   { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-
-        /* Info grid */
-        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .info-table td { padding: 5px 0; vertical-align: top; font-size: 11px; }
-        .info-label  { color: #6b7280; width: 38%; }
-        .info-colon  { width: 4%; color: #6b7280; }
-        .info-value  { font-weight: 600; }
-
-        /* Section title */
-        .section-title {
-            font-size: 10px; font-weight: bold;
-            text-transform: uppercase; letter-spacing: 0.8px;
-            color: #0a7040;
-            border-bottom: 1.5px solid #0a7040;
-            padding-bottom: 4px; margin-bottom: 10px;
+        .meta-left {
+            width: 50%;
+        }
+        .meta-right {
+            width: 50%;
         }
 
-        /* Detail table */
-        .detail-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .detail-table thead tr { background: #0a7040; color: white; }
-        .detail-table th {
-            padding: 8px 10px; text-align: left;
-            font-size: 10px; font-weight: bold; letter-spacing: 0.4px;
+        .meta-label-top {
+            color: #4b5563;
+            font-size: 10.5px;
+            margin-bottom: 4px;
         }
-        .detail-table tbody tr:nth-child(even) { background: #f0fdf4; }
-        .detail-table td { padding: 8px 10px; font-size: 11px; border-bottom: 1px solid #e5e7eb; }
+        .meta-person {
+            font-size: 13px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .meta-area {
+            font-size: 10.5px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .meta-right-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .meta-right-table td {
+            padding: 2px 0;
+            font-size: 11.5px;
+        }
+        .m-lbl { width: 42%; color: #374151; font-weight: 500; }
+        .m-sep { width: 5%; color: #374151; }
+        .m-val { font-weight: bold; color: #0f172a; }
+
+        /* TABEL BARANG (SESUAI CONTOH GAMBAR) */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table thead tr {
+            background-color: #31999E;
+            color: #ffffff;
+        }
+        .items-table th {
+            padding: 8px 10px;
+            font-size: 10.5px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+            text-align: left;
+        }
+        .items-table td {
+            padding: 8px 10px;
+            font-size: 11px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        /* Zebra striping lembut (seperti contoh gambar) */
+        .items-table tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        .items-table tbody tr:nth-child(even) {
+            background-color: #fff9f0;
+        }
+
         .text-center { text-align: center; }
+        .text-right { text-align: right; }
 
-        /* Alasan penolakan */
-        .alasan-box {
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            border-radius: 6px;
-            padding: 10px 14px; margin-bottom: 20px; font-size: 11px;
+        /* TOTAL ROW */
+        .total-row td {
+            font-weight: bold;
+            padding: 10px 10px;
+            border-top: 2px solid #374151;
+            border-bottom: 2px solid #374151;
+            background-color: #ffffff !important;
+            font-size: 11.5px;
         }
-        .alasan-label { font-weight: bold; color: #c2410c; margin-bottom: 3px; }
 
-        /* Tanda tangan */
-        .ttd-table { width: 100%; border-collapse: collapse; margin-top: 28px; }
-        .ttd-table td { text-align: center; vertical-align: top; width: 33%; padding: 0 10px; }
-        .ttd-label   { font-size: 10px; color: #6b7280; margin-bottom: 4px; }
-        .ttd-nama    { font-weight: bold; font-size: 11px; }
-        .ttd-jabatan { font-size: 10px; color: #6b7280; }
-        .ttd-box     { height: 55px; border-bottom: 1px solid #374151; margin: 6px 20px; }
+        /* TANDA TANGAN (SESUAI CONTOH GAMBAR) */
+        .ttd-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 35px;
+        }
+        .ttd-table td {
+            width: 33.33%;
+            text-align: center;
+            vertical-align: top;
+            padding: 0 10px;
+        }
+        .ttd-title {
+            font-size: 11px;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 50px;
+        }
+        .ttd-name {
+            font-size: 11px;
+            font-weight: bold;
+            color: #0f172a;
+            border-top: 1px solid #94a3b8;
+            padding-top: 4px;
+            display: inline-block;
+            min-width: 160px;
+        }
+        .ttd-role {
+            font-size: 9.5px;
+            color: #64748b;
+            margin-top: 2px;
+        }
 
-        /* Footer */
-        .footer {
-            margin-top: 30px; padding-top: 10px;
+        /* FOOTER KECIL */
+        .footer-note {
+            margin-top: 40px;
+            padding-top: 8px;
             border-top: 1px dashed #d1d5db;
-            text-align: center; font-size: 9px; color: #9ca3af;
+            text-align: center;
+            font-size: 9px;
+            color: #94a3b8;
         }
-        .badge-no {
-            background: #f0fdf4; border: 1px solid #bbf7d0;
-            color: #065f46; padding: 2px 10px;
-            border-radius: 20px; font-size: 10px; font-weight: bold;
+
+        /* BADGE STATUS */
+        .badge-status {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 9.5px;
+            font-weight: bold;
         }
+        .badge-disetujui { background: #dcfce7; color: #15803d; }
+        .badge-ditolak { background: #fee2e2; color: #b91c1c; }
+        .badge-pending { background: #fef3c7; color: #b45309; }
     </style>
 </head>
 <body>
 
-    {{-- HEADER --}}
-    <div class="header">
-        <div class="header-logo">
-            <img src="{{ public_path('images/logo.png') }}" alt="Logo Puskesmas">
-        </div>
-        <div class="header-left">
-            <div class="instansi-nama">Puskesmas Cleaning Service</div>
-            <div class="instansi-sub">Sistem Informasi Manajemen Kebersihan</div>
-        </div>
-        <div class="header-right">
-            <div class="doc-title">BUKTI PERMINTAAN BARANG</div>
-            <div class="doc-nomor">No. <strong>BPB-{{ str_pad($permintaan->id, 5, '0', STR_PAD_LEFT) }}</strong></div>
-        </div>
+    {{-- 1. BANNER HEADER --}}
+    <div class="banner-header">
+        <h1>BUKTI TRANSAKSI BARANG KELUAR</h1>
+        <div class="subtitle">Puskesmas Cempaka Putih &bull; Pengelolaan Sanitasi & Kebersihan</div>
     </div>
-    <div class="divider"></div>
 
-    {{-- BODY --}}
-    <div class="body-wrapper">
+    {{-- 2. METADATA TRANSAKSI --}}
+    <table class="meta-table">
+        <tr>
+            {{-- Sisi Kiri: Dari / Kepada --}}
+            <td class="meta-left">
+                <div class="meta-label-top">Dari / Kepada:</div>
+                <div class="meta-person">{{ $permintaan->pengguna->name }}</div>
+                <div class="meta-area">
+                    Peran: {{ $permintaan->pengguna->peran->nama_peran ?? 'Cleaning Service' }}
+                </div>
+            </td>
 
-        {{-- Status Banner --}}
-        @php
-            $statusClass = match($permintaan->status_request) {
-                'disetujui' => 'status-disetujui',
-                'ditolak'   => 'status-ditolak',
-                default     => 'status-pending',
-            };
-            $statusTeks = match($permintaan->status_request) {
-                'disetujui' => 'PERMINTAAN DISETUJUI',
-                'ditolak'   => 'PERMINTAAN DITOLAK',
-                default     => 'MENUNGGU PERSETUJUAN',
-            };
-        @endphp
-        <div class="status-banner {{ $statusClass }}">{{ $statusTeks }}</div>
+            {{-- Sisi Kanan: Nomor Bukti Transaksi, Jenis, Tanggal --}}
+            <td class="meta-right">
+                <table class="meta-right-table">
+                    <tr>
+                        <td class="m-lbl">Bukti Transaksi</td>
+                        <td class="m-sep">:</td>
+                        <td class="m-val">{{ $permintaan->kode_transaksi ?? ('BT' . str_pad($permintaan->id, 4, '0', STR_PAD_LEFT)) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="m-lbl">Jenis</td>
+                        <td class="m-sep">:</td>
+                        <td class="m-val">Keluar (Operasional CS)</td>
+                    </tr>
+                    <tr>
+                        <td class="m-lbl">Tanggal</td>
+                        <td class="m-sep">:</td>
+                        <td class="m-val">{{ $permintaan->waktu_request->format('d F Y') }}</td>
+                    </tr>
+                    @if($permintaan->area)
+                    <tr>
+                        <td class="m-lbl">Area Bertugas</td>
+                        <td class="m-sep">:</td>
+                        <td class="m-val" style="color: #0f766e;">{{ $permintaan->area->nama_rapi }}</td>
+                    </tr>
+                    @endif
+                </table>
+            </td>
+        </tr>
+    </table>
 
-        {{-- Info Dokumen --}}
-        <div class="section-title">Informasi Dokumen</div>
-        <table class="info-table">
-            <tr>
-                <td class="info-label">Nomor Dokumen</td>
-                <td class="info-colon">:</td>
-                <td class="info-value"><span class="badge-no">BPB-{{ str_pad($permintaan->id, 5, '0', STR_PAD_LEFT) }}</span></td>
-            </tr>
-            <tr>
-                <td class="info-label">Tanggal Permintaan</td>
-                <td class="info-colon">:</td>
-                <td class="info-value">{{ $permintaan->waktu_request->format('d/m/Y H:i') }} WIB</td>
-            </tr>
-            @if($permintaan->waktu_approve)
-            <tr>
-                <td class="info-label">Tanggal Diproses</td>
-                <td class="info-colon">:</td>
-                <td class="info-value">{{ $permintaan->waktu_approve->format('d/m/Y H:i') }} WIB</td>
-            </tr>
-            @endif
-            <tr>
-                <td class="info-label">Nama Pemohon</td>
-                <td class="info-colon">:</td>
-                <td class="info-value">{{ $permintaan->pengguna->name }}</td>
-            </tr>
-            <tr>
-                <td class="info-label">Jabatan / Peran</td>
-                <td class="info-colon">:</td>
-                <td class="info-value">{{ $permintaan->pengguna->peran->nama_peran ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="info-label">Area / Lantai</td>
-                <td class="info-colon">:</td>
-                <td class="info-value">{{ $permintaan->pengguna->area->lantai ?? '-' }}</td>
-            </tr>
-        </table>
+    {{-- 3. TABEL DETAIL SELURUH BARANG DALAM TRANSAKSI INI --}}
+    @php
+        $daftarBarang = isset($semuaBarang) && count($semuaBarang) > 0 ? $semuaBarang : [$permintaan];
+        $totalQty = 0;
+    @endphp
 
-        {{-- Detail Barang --}}
-        <div class="section-title">Detail Barang yang Diminta</div>
-        <table class="detail-table">
-            <thead>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th class="text-center" style="width: 6%;">No</th>
+                <th style="width: 16%;">Kode Barang</th>
+                <th style="width: 44%;">Nama Barang</th>
+                <th class="text-center" style="width: 10%;">Qty</th>
+                <th class="text-center" style="width: 12%;">Satuan</th>
+                <th class="text-center" style="width: 12%;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($daftarBarang as $idx => $item)
+                @php $totalQty += (int) $item->jumlah; @endphp
                 <tr>
-                    <th class="text-center" style="width:6%">No</th>
-                    <th>Nama Barang</th>
-                    <th class="text-center">Satuan</th>
-                    <th class="text-center">Jumlah</th>
-                    <th class="text-center">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="text-center">1</td>
-                    <td><strong>{{ $permintaan->barang->nama_barang }}</strong></td>
-                    <td class="text-center">{{ $permintaan->barang->satuan }}</td>
-                    <td class="text-center"><strong>{{ $permintaan->jumlah }}</strong></td>
+                    <td class="text-center">{{ $idx + 1 }}</td>
+                    <td>{{ $item->barang->kode_barang ?? '-' }}</td>
+                    <td><strong>{{ $item->barang->nama_barang }}</strong></td>
+                    <td class="text-center fw-bold">{{ $item->jumlah }}</td>
+                    <td class="text-center">{{ $item->barang->satuan }}</td>
                     <td class="text-center">
-                        @if($permintaan->status_request === 'disetujui') Disetujui
-                        @elseif($permintaan->status_request === 'ditolak') Ditolak
-                        @else Pending @endif
+                        @if($item->status_request === 'disetujui')
+                            <span class="badge-status badge-disetujui">Disetujui</span>
+                        @elseif($item->status_request === 'ditolak')
+                            <span class="badge-status badge-ditolak">Ditolak</span>
+                        @else
+                            <span class="badge-status badge-pending">Pending</span>
+                        @endif
                     </td>
                 </tr>
-            </tbody>
-        </table>
-
-        {{-- Alasan Penolakan --}}
-        @if($permintaan->status_request === 'ditolak' && $permintaan->alasan_penolakan)
-        <div class="alasan-box">
-            <div class="alasan-label">Alasan Penolakan:</div>
-            <div>{{ $permintaan->alasan_penolakan }}</div>
-        </div>
-        @endif
-
-        {{-- Tanda Tangan --}}
-        <div class="section-title">Tanda Tangan</div>
-        <table class="ttd-table">
-            <tr>
-                <td>
-                    <div class="ttd-label">Pemohon</div>
-                    <div class="ttd-box"></div>
-                    <div class="ttd-nama">{{ $permintaan->pengguna->name }}</div>
-                    <div class="ttd-jabatan">{{ $permintaan->pengguna->peran->nama_peran ?? '-' }}</div>
-                </td>
-                <td>
-                    <div class="ttd-label">Diketahui Oleh</div>
-                    <div class="ttd-box"></div>
-                    <div class="ttd-nama">Supervisor</div>
-                    <div class="ttd-jabatan">Supervisor Kebersihan</div>
-                </td>
-                <td>
-                    <div class="ttd-label">Petugas Gudang</div>
-                    <div class="ttd-box"></div>
-                    <div class="ttd-nama">Petugas Gudang</div>
-                    <div class="ttd-jabatan">Pengelola Gudang</div>
-                </td>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="3" class="text-right">Total Qty:</td>
+                <td class="text-center">{{ $totalQty }}</td>
+                <td colspan="2" style="color: #64748b; font-size: 10px;">Item Diserahterimakan</td>
             </tr>
-        </table>
+        </tfoot>
+    </table>
 
-        {{-- Footer --}}
-        <div class="footer">
-            Dokumen dicetak otomatis oleh Sistem Informasi Manajemen Kebersihan Puskesmas &nbsp;|&nbsp;
-            Dicetak: {{ now()->format('d/m/Y H:i') }} WIB
-        </div>
+    {{-- 4. TANDA TANGAN (SESUAI CONTOH GAMBAR) --}}
+    <table class="ttd-table">
+        <tr>
+            <td>
+                <div class="ttd-title">Dibuat / Diterima Oleh:</div>
+                <div class="ttd-name">{{ $permintaan->pengguna->name }}</div>
+                <div class="ttd-role">Petugas Cleaning Service</div>
+            </td>
+            <td>
+                <div class="ttd-title">Diserahkan Oleh:</div>
+                <div class="ttd-name">Admin Warehouse / Gudang</div>
+                <div class="ttd-role">Petugas Logistik Sanitasi</div>
+            </td>
+            <td>
+                <div class="ttd-title">Disetujui Oleh:</div>
+                <div class="ttd-name">{{ $permintaan->supervisor?->name ?? 'Supervisor' }}</div>
+                <div class="ttd-role">Supervisor / Sanitasi Lingkungan</div>
+            </td>
+        </tr>
+    </table>
 
+    {{-- 5. CATATAN DOKUMEN --}}
+    <div class="footer-note">
+        Dokumen Bukti Transaksi Barang Keluar resmi diterbitkan oleh SIKAP Bersih - Puskesmas Cempaka Putih pada {{ now()->format('d/m/Y H:i') }} WIB.
     </div>
+
 </body>
 </html>

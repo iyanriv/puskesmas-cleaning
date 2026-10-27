@@ -34,9 +34,9 @@ class User extends Authenticatable
         return $this->belongsTo(Peran::class, 'peran_id');
     }
 
-    public function ceklis(): HasMany
+    public function tugasMingguan(): HasMany
     {
-        return $this->hasMany(CeklisKebersihan::class, 'user_id');
+        return $this->hasMany(TugasMingguan::class, 'user_id');
     }
 
     public function permintaanBarang(): HasMany
@@ -52,11 +52,6 @@ class User extends Authenticatable
     public function penilaianPj(): HasMany
     {
         return $this->hasMany(PenilaianPjLantai::class, 'petugas_cs_id');
-    }
-
-    public function tugasMingguan(): HasMany
-    {
-        return $this->hasMany(TugasMingguan::class, 'user_id');
     }
 
     public function ruteDasbor(): string

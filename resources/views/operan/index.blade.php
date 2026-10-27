@@ -15,7 +15,7 @@
        HEADER
     ============================================================ */
     .header-section {
-        background: linear-gradient(135deg, #12a65a 0%, #0a7040 100%);
+        background: linear-gradient(135deg, #31999E 0%, #205F63 100%);
         border-radius: 0 0 28px 28px;
         padding: 1.5rem 1.5rem 2.5rem;
         color: white;
@@ -111,10 +111,10 @@
         padding: 1rem 1.2rem;
         margin-bottom: 0.85rem;
         box-shadow: 0 4px 20px rgba(18,166,90,0.1);
-        border-left: 4px solid #12a65a;
+        border-left: 4px solid var(--brand-primary,#31999E);
         transition: all 0.2s;
     }
-    .notif-masuk:hover { box-shadow: 0 6px 24px rgba(18,166,90,0.15); }
+    .notif-masuk:hover { box-shadow: 0 6px 24px rgba(49,153,158,0.15); }
     .notif-badge {
         background: #fee2e2;
         color: #dc2626;
@@ -125,7 +125,7 @@
         animation: pulse-badge 1.5s infinite;
     }
     .btn-terima {
-        background: linear-gradient(135deg, #10B981, #059669);
+        background: linear-gradient(135deg, #31999E, #267A7E);
         color: white;
         border: none;
         border-radius: 12px;
@@ -133,7 +133,7 @@
         font-size: 0.83rem;
         font-weight: 700;
         transition: all 0.2s;
-        box-shadow: 0 3px 10px rgba(16,185,129,0.3);
+        box-shadow: 0 3px 10px rgba(49,153,158,0.30);
     }
     .btn-terima:active { transform: scale(0.96); }
 
@@ -150,7 +150,7 @@
     .form-card-title {
         font-weight: 700;
         font-size: 0.88rem;
-        color: #12a65a;
+        color: var(--brand-primary,#31999E);
         margin-bottom: 1rem;
         display: flex;
         align-items: center;
@@ -166,29 +166,38 @@
         transition: all 0.2s;
     }
     .form-select:focus, .form-control:focus {
-        border-color: #12a65a;
-        box-shadow: 0 0 0 3px rgba(18,166,90,0.1);
+        border-color: var(--brand-primary,#31999E);
+        box-shadow: 0 0 0 3px rgba(49,153,158,0.10);
     }
     .form-label { font-size: 0.82rem; font-weight: 600; color: #374151; margin-bottom: 0.4rem; }
 
     /* Dinamis item tugas */
     .tugas-item-row {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.65rem 0.75rem;
+        margin-bottom: 0.65rem;
+        transition: all 0.2s;
     }
+    .tugas-item-row:focus-within {
+        border-color: var(--brand-primary,#31999E);
+        box-shadow: 0 0 0 2px rgba(49,153,158,0.10);
+        background: #ffffff;
+    }
+    .tugas-item-row select,
     .tugas-item-row input {
-        flex: 1;
         border-radius: 10px;
-        border: 1.5px solid #e5e7eb;
+        border: 1.5px solid #e2e8f0;
         padding: 0.55rem 0.75rem;
         font-size: 0.85rem;
+        transition: all 0.2s;
     }
+    .tugas-item-row select:focus,
     .tugas-item-row input:focus {
         outline: none;
-        border-color: #12a65a;
-        box-shadow: 0 0 0 2px rgba(18,166,90,0.1);
+        border-color: var(--brand-primary,#31999E);
+        box-shadow: 0 0 0 2px rgba(49,153,158,0.10);
     }
     .btn-hapus-item {
         background: #fee2e2;
@@ -204,9 +213,8 @@
     }
     .btn-hapus-item:hover { background: #fecaca; }
     .btn-tambah-item {
-        background: #ecfdf5;
-        color: #12a65a;
-        border: 1.5px dashed #12a65a;
+        color: var(--brand-primary,#31999E);
+        border: 1.5px dashed var(--brand-primary,#31999E);
         border-radius: 10px;
         padding: 0.5rem 1rem;
         font-size: 0.82rem;
@@ -216,7 +224,7 @@
         cursor: pointer;
         transition: all 0.2s;
     }
-    .btn-tambah-item:hover { background: #d1fae5; }
+    .btn-tambah-item:hover { background: var(--brand-light,#E6F4F3); }
 
     /* Checkbox alat */
     .alat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
@@ -227,19 +235,18 @@
         cursor: pointer; transition: all 0.2s;
         font-size: 0.82rem;
     }
-    .alat-item input[type="checkbox"] { margin-right: 0.5rem; accent-color: #12a65a; }
+    .alat-item input[type="checkbox"] { margin-right: 0.5rem; accent-color: #31999E; }
     .alat-item:has(input:checked) {
-        background: #ecfdf5; border-color: #12a65a; color: #12a65a; font-weight: 600;
+        background: var(--brand-light,#E6F4F3); border-color: var(--brand-primary,#31999E); color: var(--brand-primary,#31999E); font-weight: 600;
     }
 
     /* Tombol kirim */
     .btn-kirim {
-        width: 100%;
-        background: linear-gradient(135deg, #12a65a, #0a7040);
+        background: linear-gradient(135deg, #31999E, #205F63);
         color: white; border: none;
         border-radius: 14px; padding: 0.9rem;
         font-size: 0.95rem; font-weight: 700;
-        box-shadow: 0 4px 14px rgba(18,166,90,0.3);
+        box-shadow: 0 4px 14px rgba(49,153,158,0.30);
         transition: all 0.2s;
     }
     .btn-kirim:active { transform: scale(0.98); }
@@ -257,7 +264,7 @@
     .riwayat-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
     .avatar-circle {
         width: 40px; height: 40px; border-radius: 50%;
-        background: #ecfdf5; color: #12a65a;
+        background: #e6f4f5; color: #267A7E;
         display: flex; align-items: center; justify-content: center;
         font-size: 0.95rem; font-weight: 700; flex-shrink: 0;
     }
@@ -556,22 +563,58 @@
                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1" style="font-size:0.65rem;">Opsional</span>
                     </label>
                     <small class="text-muted d-block mb-2" style="font-size:0.78rem;">
-                        Isi jika ada tugas yang belum selesai dan harus dilanjutkan oleh shift berikutnya.
+                        Pilih jenis pekerjaan dari daftar atau pilih <strong>Lainnya</strong> untuk mengetik manual jika pekerjaan belum terdaftar.
                     </small>
                     <div id="container-tugas-items">
                         <div class="tugas-item-row" id="baris-1">
-                            <input type="text" name="tugas_items[]"
-                                placeholder="Contoh: Menguras dispenser di ruang poli umum..."
-                                maxlength="300">
-                            <button type="button" class="btn-hapus-item" onclick="hapusBaris(this)" style="display:none;">
-                                <i class="bi bi-x"></i>
-                            </button>
+                            <div class="d-flex align-items-center gap-2">
+                                <select class="form-select form-select-sm select-pekerjaan flex-grow-1" onchange="pilihPekerjaanItem(this)">
+                                    <option value="">-- Pilih Jenis Pekerjaan --</option>
+                                    @foreach($daftarJenisPekerjaan as $jp)
+                                        <option value="{{ $jp->nama_pekerjaan }}">{{ $jp->nama_pekerjaan }}</option>
+                                    @endforeach
+                                    <option value="__lainnya__">➕ Lainnya (Ketik Sendiri)...</option>
+                                </select>
+                                <button type="button" class="btn-hapus-item" onclick="hapusBaris(this)" style="display:none;" title="Hapus item">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                            <div class="input-lainnya-wrapper mt-2" style="display:none;">
+                                <input type="text" class="form-control form-control-sm input-pekerjaan-lainnya"
+                                       placeholder="Ketik jenis pekerjaan yang perlu diselesaikan..." maxlength="300"
+                                       oninput="updateNilaiItem(this)">
+                            </div>
+                            <input type="hidden" name="tugas_items[]" class="nilai-tugas-item" value="">
                         </div>
                     </div>
-                    <button type="button" class="btn-tambah-item" onclick="tambahBarisItem()">
+                    <button type="button" class="btn-tambah-item mt-1" onclick="tambahBarisItem()">
                         <i class="bi bi-plus-circle me-1"></i> + Tambah Item Tugas
                     </button>
                 </div>
+
+                {{-- Template Item Tugas Dinamis --}}
+                <template id="template-tugas-item">
+                    <div class="tugas-item-row">
+                        <div class="d-flex align-items-center gap-2">
+                            <select class="form-select form-select-sm select-pekerjaan flex-grow-1" onchange="pilihPekerjaanItem(this)">
+                                <option value="">-- Pilih Jenis Pekerjaan --</option>
+                                @foreach($daftarJenisPekerjaan as $jp)
+                                    <option value="{{ $jp->nama_pekerjaan }}">{{ $jp->nama_pekerjaan }}</option>
+                                @endforeach
+                                <option value="__lainnya__">➕ Lainnya (Ketik Sendiri)...</option>
+                            </select>
+                            <button type="button" class="btn-hapus-item" onclick="hapusBaris(this)" title="Hapus item">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                        <div class="input-lainnya-wrapper mt-2" style="display:none;">
+                            <input type="text" class="form-control form-control-sm input-pekerjaan-lainnya"
+                                   placeholder="Ketik jenis pekerjaan yang perlu diselesaikan..." maxlength="300"
+                                   oninput="updateNilaiItem(this)">
+                        </div>
+                        <input type="hidden" name="tugas_items[]" class="nilai-tugas-item" value="">
+                    </div>
+                </template>
 
                 <button type="submit" class="btn-kirim">
                     <i class="bi bi-send me-2"></i> Kirim Operan Sekarang
@@ -697,27 +740,45 @@ if (catatanEl && hitungEl) {
 }
 
 // ─────────────────────────────────────────────────────
-// 2. Dinamis Item Tugas (tambah/hapus baris)
+// 2. Dinamis Item Tugas (pilihan list + tambah/hapus baris)
 // ─────────────────────────────────────────────────────
 let jumlahBaris = 1;
 
+function pilihPekerjaanItem(select) {
+    const row = select.closest('.tugas-item-row');
+    const wrapper = row.querySelector('.input-lainnya-wrapper');
+    const inputLainnya = row.querySelector('.input-pekerjaan-lainnya');
+    const hidden = row.querySelector('.nilai-tugas-item');
+
+    if (select.value === '__lainnya__') {
+        wrapper.style.display = 'block';
+        inputLainnya.focus();
+        hidden.value = inputLainnya.value.trim();
+    } else {
+        wrapper.style.display = 'none';
+        inputLainnya.value = '';
+        hidden.value = select.value.trim();
+    }
+}
+
+function updateNilaiItem(input) {
+    const row = input.closest('.tugas-item-row');
+    const hidden = row.querySelector('.nilai-tugas-item');
+    hidden.value = input.value.trim();
+}
+
 function tambahBarisItem() {
-    if (jumlahBaris >= 10) return;
+    if (jumlahBaris >= 15) {
+        alert('Maksimal 15 item tugas per operan.');
+        return;
+    }
     jumlahBaris++;
     const container = document.getElementById('container-tugas-items');
-    const div = document.createElement('div');
-    div.className = 'tugas-item-row';
-    div.id = 'baris-' + jumlahBaris;
-    div.innerHTML = `
-        <input type="text" name="tugas_items[]"
-            placeholder="Tambahkan item tugas..."
-            maxlength="300">
-        <button type="button" class="btn-hapus-item" onclick="hapusBaris(this)">
-            <i class="bi bi-x"></i>
-        </button>
-    `;
-    container.appendChild(div);
-    div.querySelector('input').focus();
+    const template = document.getElementById('template-tugas-item');
+    const clone = template.content.cloneNode(true);
+    const newRow = clone.querySelector('.tugas-item-row');
+    newRow.id = 'baris-' + jumlahBaris;
+    container.appendChild(clone);
     perbarauiTombolHapus();
 }
 
@@ -729,7 +790,7 @@ function hapusBaris(btn) {
 
 function perbarauiTombolHapus() {
     const semua = document.querySelectorAll('.tugas-item-row');
-    semua.forEach((baris, index) => {
+    semua.forEach((baris) => {
         const tombolHapus = baris.querySelector('.btn-hapus-item');
         if (tombolHapus) {
             tombolHapus.style.display = semua.length > 1 ? 'flex' : 'none';

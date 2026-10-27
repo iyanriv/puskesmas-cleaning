@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\PenilaianPjExport;
 use App\Http\Controllers\Controller;
 use App\Models\PenilaianPjLantai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PenilaianPjController extends Controller
 {
@@ -114,5 +116,25 @@ class PenilaianPjController extends Controller
         $penilaiData = auth()->user();
 
         return view('admin.penilaian-pj.cetak-formal', compact('penilaian', 'indikator', 'penilaiData'));
+    }
+
+    /**
+     * Export daftar penilaian PJ Lantai ke Excel.
+     */
+    public function exportExcel(Request $request)
+    {
+        $bulan = $request->get('bulan', '');
+        $tahun = $request->get('tahun', now()->year);
+        $cari  = $request->get('cari', '');
+
+        $labelBulan = $bulan
+            ? now()->month($bulan)->translatedFormat('F')
+            : 'Semua-Bulan';
+        $namaFile = 'Penilaian-PJ-' . $labelBulan . '-' . $tahun . '.xlsx';
+
+        return Excel::download(
+            new PenilaianPjExport($bulan ?: null, $tahun, $cari ?: null),
+            $namaFile
+        );
     }
 }

@@ -1,14 +1,23 @@
 // Body
-$body-bg: #f4f6f9;
+$body-bg: #F7F9FB;
 
 // Typography
 $font-family-sans-serif: 'Inter', sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
-// Brand Colors — Hijau Puskesmas
-$primary: #12a65a;
-$success: #10B981;
-$info: #06b6d4;
-$warning: #f59e0b;
-$danger: #ef4444;
+// Brand Colors — SIKAP Bersih Teal
+$primary:   #31999E;
+$success:   #27845A;
+$info:      #71869A;
+$warning:   #B7791F;
+$danger:    #C24141;
+
+// Teal variant overrides
+$primary-hover:    #267A7E;
+$primary-dark:     #205F63;
+$primary-light:    #E6F4F3;
+$primary-pale:     #F3FAF9;
+
+// Border
+$border-color: #DFE7EF;

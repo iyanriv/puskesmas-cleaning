@@ -3,100 +3,241 @@
 @section('content')
 <style>
     /* =========================================================
-       SIM KEBERSIHAN - CLEAN GLASS TRANSPARENT LOGIN
+       SIKAP Bersih - JAKSEHAT INSPIRED SPLIT SCREEN LOGIN
        ========================================================= */
+    :root {
+        --teal-primary: #31999E;
+        --teal-hover:   #267A7E;
+        --teal-dark:    #205F63;
+        --wave-bg:      #205F63;
+        --text-heading: #263746;
+        --text-muted:   #64748B;
+        --input-bg:     #F3FAF9;
+        --input-border: #DFE7EF;
+    }
+
     body {
         margin: 0;
         padding: 0;
         min-height: 100vh;
+        background-color: #ffffff;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        background: linear-gradient(135deg, rgba(6, 46, 26, 0.78) 0%, rgba(13, 85, 48, 0.72) 50%, rgba(15, 23, 42, 0.82) 100%),
-                    url('{{ asset('images/cleaning-illustration.jpg') }}') center center / cover no-repeat fixed;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        overflow-x: hidden;
     }
 
-    .login-wrapper {
+    .split-container {
+        display: flex;
         min-height: 100vh;
-        width: 100%;
+        width: 100vw;
+        position: relative;
+    }
+
+    /* ── SISI KIRI: ILUSTRASI & WAVE ORGANIK ── */
+    .split-visual {
+        flex: 1.1;
+        position: relative;
+        background: linear-gradient(155deg, #31999E 0%, #267A7E 45%, #205F63 100%);
+        overflow: hidden;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem 1rem;
-        position: relative;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 2.5rem 3rem 2rem;
+        color: #ffffff;
     }
 
-    /* Glassmorphic Transparent Card Box */
-    .glass-card {
-        width: 100%;
-        max-width: 440px;
-        background: rgba(255, 255, 255, 0.88);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1.5px solid rgba(255, 255, 255, 0.75);
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35),
-                    0 0 0 1px rgba(255, 255, 255, 0.2);
-        padding: 2.75rem 2.25rem 2.25rem;
-        position: relative;
-        z-index: 2;
-    }
-
-    /* Header Logo & Branding */
-    .brand-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-
-    .logo-container {
-        width: 82px;
-        height: 82px;
+    /* Gelombang kurva organik khas JakSehat */
+    .split-visual::after {
+        content: '';
+        position: absolute;
+        top: -10%;
+        right: -80px;
+        width: 220px;
+        height: 120%;
         background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-        margin: 0 auto 1.25rem;
+        border-radius: 50% 0 0 50% / 50%;
+        transform: rotate(3deg);
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    /* Awan & elemen dekoratif di background */
+    .deco-cloud {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.22);
+        border-radius: 50px;
+        backdrop-filter: blur(4px);
+        z-index: 1;
+    }
+    .deco-cloud-1 {
+        width: 130px;
+        height: 38px;
+        top: 12%;
+        left: 8%;
+    }
+    .deco-cloud-2 {
+        width: 160px;
+        height: 44px;
+        top: 22%;
+        left: 32%;
+    }
+    .deco-cloud-3 {
+        width: 110px;
+        height: 34px;
+        top: 36%;
+        right: 18%;
+    }
+
+    /* Header di sisi kiri */
+    .visual-header {
+        position: relative;
+        z-index: 3;
+    }
+    .visual-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #ffffff;
+        padding: 0.45rem 1rem;
+        border-radius: 50px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Karakter Petugas Kebersihan di sisi kiri */
+    .visual-character-wrap {
+        position: relative;
+        z-index: 3;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid rgba(18, 166, 90, 0.15);
-        padding: 10px;
+        flex: 1;
+        margin: 1rem 0;
     }
 
-    .logo-container img {
+    .visual-character-card {
+        max-width: 440px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 28px;
+        padding: 1rem;
+        box-shadow: 0 20px 40px -15px rgba(6, 78, 59, 0.35),
+                    0 0 0 1px rgba(255, 255, 255, 0.4);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    .visual-character-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .visual-character-card img {
+        width: 100%;
+        height: auto;
+        max-height: 520px;
+        object-fit: cover;
+        border-radius: 20px;
+        display: block;
+    }
+
+    /* Footer di sisi kiri */
+    .visual-footer {
+        position: relative;
+        z-index: 10;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.9);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 160px;
+    }
+
+    /* ── SISI KANAN: FORM LOGIN BERSIH (JAKSEHAT STYLE) ── */
+    .split-form {
+        flex: 1;
+        background-color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 4rem;
+        position: relative;
+        z-index: 3;
+    }
+
+    .form-inner {
+        width: 100%;
+        max-width: 420px;
+    }
+
+    /* Brand Logo & Title di Sisi Kanan */
+    .brand-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .brand-logo-box {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: var(--input-bg);
+        border: 1.5px solid #C8E9E8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        box-shadow: 0 4px 14px rgba(49, 153, 158, 0.15);
+    }
+    .brand-logo-box img {
         width: 100%;
         height: 100%;
         object-fit: contain;
     }
 
-    .brand-header h1 {
+    .brand-text h1 {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1.2;
+        letter-spacing: -0.3px;
+    }
+    .brand-text h1 span {
+        color: var(--teal-primary);
+    }
+    .brand-text p {
+        font-size: 0.82rem;
+        color: #64748b;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    /* Heading Form */
+    .form-heading {
+        margin-bottom: 2rem;
+    }
+    .form-heading h2 {
         font-size: 1.65rem;
         font-weight: 800;
         color: #0f172a;
-        margin: 0 0 0.25rem;
+        margin: 0 0 0.35rem;
         letter-spacing: -0.5px;
     }
-
-    .brand-header .subtitle {
-        color: #0d8a4a;
+    .form-heading p {
         font-size: 0.88rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin: 0 0 0.5rem;
-    }
-
-    .brand-header .desc {
         color: #64748b;
-        font-size: 0.86rem;
         margin: 0;
     }
 
-    /* Input Styling */
+    /* Group Input */
     .form-group-custom {
         margin-bottom: 1.35rem;
     }
-
     .form-label-custom {
         display: block;
         font-size: 0.85rem;
@@ -113,7 +254,7 @@
 
     .input-box i.input-icon {
         position: absolute;
-        left: 1.1rem;
+        left: 1.15rem;
         color: #94a3b8;
         font-size: 1.15rem;
         pointer-events: none;
@@ -122,25 +263,28 @@
 
     .input-field {
         width: 100%;
-        height: 50px;
-        padding: 0.65rem 2.8rem 0.65rem 2.85rem;
-        border: 1.5px solid #cbd5e1;
+        height: 52px;
+        padding: 0.65rem 2.85rem 0.65rem 2.95rem;
+        border: 1.5px solid var(--input-border);
         border-radius: 14px;
         font-size: 0.95rem;
-        background: rgba(255, 255, 255, 0.9);
+        background: var(--input-bg);
         color: #0f172a;
         transition: all 0.25s ease;
+    }
+    .input-field::placeholder {
+        color: #94a3b8;
+        font-size: 0.9rem;
     }
 
     .input-field:focus {
         outline: none;
-        border-color: #0d8a4a;
+        border-color: var(--teal-primary);
         background: #ffffff;
-        box-shadow: 0 0 0 4px rgba(13, 138, 74, 0.15);
+        box-shadow: 0 0 0 4px rgba(49, 153, 158, 0.15);
     }
-
     .input-field:focus ~ i.input-icon {
-        color: #0d8a4a;
+        color: var(--teal-primary);
     }
 
     .password-toggle {
@@ -150,44 +294,46 @@
         border: none;
         color: #94a3b8;
         cursor: pointer;
-        padding: 0.25rem;
+        padding: 0.35rem;
         font-size: 1.15rem;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: color 0.2s;
     }
-
     .password-toggle:hover {
-        color: #0d8a4a;
+        color: var(--teal-primary);
     }
 
-    /* Options & Button */
+    /* Pilihan Remember */
     .form-options {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.6rem;
         font-size: 0.85rem;
         color: #64748b;
     }
-
     .form-options input[type="checkbox"] {
         cursor: pointer;
-        accent-color: #0d8a4a;
+        accent-color: var(--teal-primary);
+        width: 16px;
+        height: 16px;
     }
 
+    /* Tombol Masuk (JakSehat Style) */
     .btn-submit {
         width: 100%;
-        height: 50px;
-        background: linear-gradient(135deg, #12a65a 0%, #0d8a4a 100%);
+        height: 52px;
+        background: var(--teal-primary);
         border: none;
         border-radius: 14px;
         color: #ffffff;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 1rem;
-        letter-spacing: 0.3px;
-        box-shadow: 0 10px 20px -5px rgba(13, 138, 74, 0.4);
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        box-shadow: 0 8px 18px -4px rgba(0, 168, 132, 0.38);
         cursor: pointer;
         transition: all 0.25s ease;
         display: flex;
@@ -195,112 +341,192 @@
         justify-content: center;
         gap: 0.5rem;
     }
-
     .btn-submit:hover {
-        background: linear-gradient(135deg, #15b764 0%, #0e9651 100%);
+        background: var(--teal-hover);
         transform: translateY(-2px);
-        box-shadow: 0 14px 25px -5px rgba(13, 138, 74, 0.48);
+        box-shadow: 0 12px 22px -4px rgba(49, 153, 158, 0.45);
     }
-
     .btn-submit:active {
         transform: translateY(0);
     }
 
-    /* Bottom Copyright */
-    .card-footer-meta {
+    /* Footer Info Bantuan */
+    .form-footer-help {
         margin-top: 2rem;
         text-align: center;
-        font-size: 0.76rem;
+        font-size: 0.82rem;
+        color: #64748b;
+        line-height: 1.6;
+    }
+    .form-footer-help a {
+        color: var(--teal-primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .form-footer-help a:hover {
+        text-decoration: underline;
+    }
+
+    .form-copyright {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.75rem;
         color: #94a3b8;
     }
 
-    @media (max-width: 576.98px) {
-        .glass-card {
-            padding: 2rem 1.5rem;
+    /* ── RESPONSIVE MOBILE / TABLET ── */
+    @media (max-width: 991.98px) {
+        .split-container {
+            flex-direction: column;
         }
-        .logo-container {
-            width: 70px;
-            height: 70px;
-            margin-bottom: 1rem;
+        .split-visual {
+            flex: none;
+            padding: 2rem 1.5rem 1.5rem;
+            min-height: auto;
+        }
+        .split-visual::after {
+            display: none;
+        }
+        .visual-character-wrap {
+            margin: 0.75rem 0;
+        }
+        .visual-character-card {
+            max-width: 320px;
+        }
+        .visual-footer {
+            display: none;
+        }
+        .split-form {
+            flex: 1;
+            padding: 2.25rem 1.5rem;
         }
     }
 </style>
 
-<div class="login-wrapper">
-    <!-- Transparent Glass Login Card Box -->
-    <div class="glass-card">
-        <!-- Logo & Branding -->
-        <div class="brand-header">
-            <div class="logo-container">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo Puskesmas" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Logo_Puskesmas.png/480px-Logo_Puskesmas.png'">
+<div class="split-container">
+    <!-- =========================================================
+         SISI KIRI: VISUAL ILUSTRASI & BRANDING PUSKESMAS
+         ========================================================= -->
+    <div class="split-visual">
+        <!-- Awan dekoratif melayang -->
+        <div class="deco-cloud deco-cloud-1"></div>
+        <div class="deco-cloud deco-cloud-2"></div>
+        <div class="deco-cloud deco-cloud-3"></div>
+
+        <!-- Header Sisi Kiri -->
+        <div class="visual-header">
+            <div class="visual-badge">
+                <i class="bi bi-shield-check"></i>
+                <span>SIKAP Bersih &mdash; Sistem Informasi Kebersihan dan Penilaian</span>
             </div>
-            <h1>SIM Kebersihan</h1>
-            <div class="subtitle">Puskesmas Cempaka Putih</div>
-            <p class="desc">Sistem Informasi Pengelolaan & Pemantauan Sanitasi</p>
         </div>
 
-        <!-- Form Login -->
-        <form method="POST" action="{{ route('login') }}" id="loginForm">
-            @csrf
+        <!-- Karakter Petugas Kebersihan Puskesmas -->
+        <div class="visual-character-wrap">
+            <div class="visual-character-card">
+                <img src="{{ asset('images/cleaning-staff-hero.jpg') }}" alt="Petugas Kebersihan Puskesmas Cempaka Putih">
+            </div>
+        </div>
 
-            <!-- Field Nomor Pegawai -->
-            <div class="form-group-custom">
-                <label for="nik" class="form-label-custom">Nomor Pegawai</label>
+        <!-- Footer Sisi Kiri -->
+        <div class="visual-footer">
+            <span><i class="bi bi-geo-alt-fill me-1"></i>Puskesmas Cempaka Putih</span>
+            <span>Dinas Kesehatan DKI Jakarta</span>
+        </div>
+    </div>
 
-                <div class="input-box">
-                    <i class="bi bi-person-badge input-icon"></i>
-                    <input id="nik" type="text"
-                        class="input-field @error('nik') is-invalid @enderror"
-                        name="nik" value="{{ old('nik') }}"
-                        placeholder="Masukkan nomor pegawai Anda..."
-                        required autofocus autocomplete="username">
+    <!-- =========================================================
+         SISI KANAN: FORM LOGIN BERSIH (JAKSEHAT STYLE)
+         ========================================================= -->
+    <div class="split-form">
+        <div class="form-inner">
+            <!-- Brand Logo & Header -->
+            <div class="brand-section">
+                <div class="brand-logo-box">
+                    <img src="{{ asset('images/logo-sikapbersih.png') }}" alt="Logo SIKAP Bersih">
                 </div>
-                @error('nik')
-                    <div class="text-danger mt-1 ms-1 fw-semibold" style="font-size: 0.8rem;">
-                        <i class="bi bi-exclamation-circle-fill me-1"></i>{{ $message }}
-                    </div>
-                @enderror
-            </div>
-
-            <!-- Field Kata Sandi -->
-            <div class="form-group-custom">
-                <label for="password" class="form-label-custom">Kata Sandi (Password)</label>
-                <div class="input-box">
-                    <i class="bi bi-lock input-icon"></i>
-                    <input id="password" type="password"
-                        class="input-field @error('password') is-invalid @enderror"
-                        name="password"
-                        placeholder="Masukkan kata sandi..."
-                        required autocomplete="current-password">
-                    <button type="button" class="password-toggle" id="togglePasswordBtn" title="Lihat/Sembunyikan Kata Sandi">
-                        <i class="bi bi-eye" id="togglePasswordIcon"></i>
-                    </button>
+                <div class="brand-text">
+                    <h1>SIKAP <span>Bersih</span></h1>
+                    <p>Pantau Kebersihan, Tingkatkan Kinerja.</p>
                 </div>
-                @error('password')
-                    <div class="text-danger mt-1 ms-1 fw-semibold" style="font-size: 0.8rem;">
-                        <i class="bi bi-exclamation-circle-fill me-1"></i>{{ $message }}
+            </div>
+
+            <!-- Form Heading -->
+            <div class="form-heading">
+                <h2>Masuk</h2>
+                <p>Silakan masukkan nomor karyawan dan kata sandi Anda.</p>
+            </div>
+
+            <!-- Form Login -->
+            <form method="POST" action="{{ route('login') }}" id="loginForm">
+                @csrf
+
+                <!-- Field Nomor Karyawan -->
+                <div class="form-group-custom">
+                    <label for="nik" class="form-label-custom">Nomor Karyawan</label>
+                    <div class="input-box">
+                        <i class="bi bi-person-badge input-icon"></i>
+                        <input id="nik" type="text"
+                            class="input-field @error('nik') is-invalid @enderror"
+                            name="nik" value="{{ old('nik') }}"
+                            placeholder="cth: 317101... atau username"
+                            required autofocus autocomplete="username">
                     </div>
-                @enderror
+                    @error('nik')
+                        <div class="text-danger mt-1 ms-1 fw-semibold" style="font-size: 0.8rem;">
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>{{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
+                <!-- Field Kata Sandi -->
+                <div class="form-group-custom">
+                    <label for="password" class="form-label-custom">Kata Sandi (Password)</label>
+                    <div class="input-box">
+                        <i class="bi bi-lock input-icon"></i>
+                        <input id="password" type="password"
+                            class="input-field @error('password') is-invalid @enderror"
+                            name="password"
+                            placeholder="Masukkan kata sandi..."
+                            required autocomplete="current-password">
+                        <button type="button" class="password-toggle" id="togglePasswordBtn" title="Lihat/Sembunyikan Kata Sandi">
+                            <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                        </button>
+                    </div>
+                    @error('password')
+                        <div class="text-danger mt-1 ms-1 fw-semibold" style="font-size: 0.8rem;">
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>{{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
+                <!-- Remember Me -->
+                <div class="form-options">
+                    <label class="d-flex align-items-center gap-2 user-select-none" style="cursor: pointer;">
+                        <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <span>Ingat saya</span>
+                    </label>
+                </div>
+
+                <!-- Tombol Submit MASUK -->
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <span>MASUK</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Informasi Bantuan Petugas -->
+            <div class="form-footer-help">
+                <div>Kendala masuk akun atau lupa kata sandi?</div>
+                <div class="mt-1">
+                    Silakan hubungi <strong>Supervisor Sanitasi</strong> atau <strong>Admin Puskesmas</strong>
+                </div>
             </div>
 
-            <!-- Remember Me -->
-            <div class="form-options">
-                <label class="d-flex align-items-center gap-2 user-select-none" style="cursor: pointer;">
-                    <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                    <span>Ingat saya</span>
-                </label>
+            <!-- Copyright Meta -->
+            <div class="form-copyright">
+                &copy; {{ date('Y') }} Puskesmas Cempaka Putih &bull; Dinas Kesehatan Provinsi DKI Jakarta
             </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn-submit" id="btnSubmit">
-                <i class="bi bi-box-arrow-in-right fs-5"></i>
-                <span>Masuk ke Sistem</span>
-            </button>
-        </form>
-
-        <!-- Footer Meta -->
-        <div class="card-footer-meta">
-            <span>&copy; {{ date('Y') }} Puskesmas Cempaka Putih &bull; SIM Kebersihan</span>
         </div>
     </div>
 </div>
@@ -324,7 +550,7 @@
     const btnSubmit = document.getElementById('btnSubmit');
     if (loginForm && btnSubmit) {
         loginForm.addEventListener('submit', function () {
-            btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memverifikasi...`;
+            btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> MEMVERIFIKASI...`;
             btnSubmit.disabled = true;
             setTimeout(() => {
                 btnSubmit.disabled = false;

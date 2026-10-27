@@ -51,7 +51,7 @@
             <tr>
                 <td class="label">Petugas yang Dilaporkan</td>
                 <td class="separator">:</td>
-                <td>{{ $petugasFilter->name }} (NIK: {{ $petugasFilter->nik }})</td>
+                <td>{{ $petugasFilter->name }} (Nomor Karyawan: {{ $petugasFilter->nik }})</td>
             </tr>
             @endif
             @if($status)

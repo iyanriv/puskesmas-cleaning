@@ -13,11 +13,11 @@
     }
 
     .header-section {
-        background: linear-gradient(135deg, #0d8a4a 0%, #076033 100%);
+        background: linear-gradient(135deg, #31999E 0%, #267A7E 50%, #205F63 100%);
         border-radius: 0 0 28px 28px;
         padding: 1.5rem 1.5rem 2rem 1.5rem;
         color: white;
-        box-shadow: 0 4px 15px rgba(13, 138, 74, 0.2);
+        box-shadow: 0 4px 15px rgba(38, 122, 126, 0.2);
     }
 
     .content-area {
@@ -44,7 +44,7 @@
         overflow: hidden;
         position: relative;
         margin-bottom: 1rem;
-        border: 2px solid #0d8a4a;
+        border: 2px solid #31999E;
         box-shadow: 0 8px 20px rgba(0,0,0,0.12);
     }
 
@@ -76,18 +76,18 @@
         width: 68px; height: 68px;
         border-radius: 50%;
         background: white;
-        border: 4px solid #0d8a4a;
-        color: #0d8a4a;
+        border: 4px solid #31999E;
+        color: #31999E;
         font-size: 1.6rem;
         display: flex; align-items: center; justify-content: center;
         margin: 0 auto 0.75rem auto;
         cursor: pointer;
         transition: all 0.2s;
-        box-shadow: 0 6px 20px rgba(13, 138, 74, 0.35);
+        box-shadow: 0 6px 20px rgba(49, 153, 158, 0.35);
     }
 
     .btn-kamera:active { transform: scale(0.92); }
-    .btn-kamera.captured { background: #10B981; border-color: #10B981; color: white; }
+    .btn-kamera.captured { background: #31999E; border-color: #31999E; color: white; }
 
     .btn-action-small {
         background: white;
@@ -99,7 +99,7 @@
         font-weight: 600;
         transition: all 0.2s;
     }
-    .btn-action-small:hover { background: #f1f5f9; color: #0d8a4a; }
+    .btn-action-small:hover { background: #f1f5f9; color: #267A7E; }
 
     .card-custom {
         background: white;
@@ -117,20 +117,20 @@
         font-size: 0.92rem;
     }
     .form-control-custom:focus {
-        border-color: #0d8a4a;
-        box-shadow: 0 0 0 3px rgba(13, 138, 74, 0.15);
+        border-color: #31999E;
+        box-shadow: 0 0 0 3px rgba(49, 153, 158, 0.15);
     }
 
     .btn-simpan {
         width: 100%;
-        background: linear-gradient(135deg, #12a65a 0%, #0d8a4a 100%);
+        background: linear-gradient(135deg, #31999E 0%, #267A7E 100%);
         color: white;
         border: none;
         border-radius: 16px;
         padding: 1rem;
         font-size: 1rem;
         font-weight: 700;
-        box-shadow: 0 4px 15px rgba(13, 138, 74, 0.35);
+        box-shadow: 0 4px 15px rgba(38, 122, 126, 0.35);
         transition: all 0.2s;
     }
     .btn-simpan:disabled {
@@ -150,7 +150,7 @@
         height: 65px;
         border-radius: 10px;
         object-fit: cover;
-        border: 2px solid #0d8a4a;
+        border: 2px solid #31999E;
         flex-shrink: 0;
     }
 
@@ -189,12 +189,12 @@
             <!-- Card Informasi Petugas & Kegiatan -->
             <div class="card-custom">
                 <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
-                    <div style="width: 38px; height: 38px; border-radius: 50%; background: #ecfdf5; color: #0d8a4a; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                    <div style="width: 38px; height: 38px; border-radius: 50%; background: #e6f4f5; color: #267A7E; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                         <i class="bi bi-person-fill"></i>
                     </div>
                     <div>
                         <div class="fw-bold text-dark" style="font-size: 0.95rem;">{{ $pengguna->name }}</div>
-                        <div class="text-muted" style="font-size: 0.78rem;">Nomor Pegawai: {{ $pengguna->nik }}</div>
+                        <div class="text-muted" style="font-size: 0.78rem;">Nomor Karyawan: {{ $pengguna->nik }}</div>
                     </div>
                 </div>
 
@@ -375,7 +375,7 @@
         // Watermark text
         ctx.fillStyle = '#22c55e';
         ctx.font = 'bold 22px sans-serif';
-        ctx.fillText('● SIM KEBERSIHAN - PUSKESMAS CEMPAKA PUTIH', 25, canvas.height - 52);
+        ctx.fillText('● SIKAP BERSIH - PUSKESMAS CEMPAKA PUTIH', 25, canvas.height - 52);
 
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 20px sans-serif';
@@ -438,7 +438,7 @@
             ctx.fillRect(0, canvas.height - 85, canvas.width, 85);
             ctx.fillStyle = '#22c55e';
             ctx.font = 'bold 22px sans-serif';
-            ctx.fillText('● SIM KEBERSIHAN - PUSKESMAS CEMPAKA PUTIH', 25, canvas.height - 52);
+            ctx.fillText('● SIKAP BERSIH - PUSKESMAS CEMPAKA PUTIH', 25, canvas.height - 52);
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 20px sans-serif';
             ctx.fillText(`[BEFORE] ${dateStr} • ${timeStr}`, 25, canvas.height - 24);
